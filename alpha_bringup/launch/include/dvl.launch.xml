@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="robot_name" default="alpha"/>
+  <arg name="ip" default="192.168.4.18"/>
+  <arg name="port" default="16171"/>
+
+  <node ns="$(arg robot_name)" pkg="waterlinked_a50_ros_driver" type="publisher.py" name="dvl_ros_node">
+    <param name="ip" value="$(arg ip)"/>
+    <param name="port" value="$(arg port)"/>
+  </node>
+</launch>
+

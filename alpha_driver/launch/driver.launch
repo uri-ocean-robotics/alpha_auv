@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="port" default="/dev/mbed_mcu"/>
+
+  <node 
+    pkg="alpha_driver" 
+    type="alpha_driver_node" 
+    name="alpha_driver" 
+    ns="alpha"
+    output="screen">
+    <param name="port" value="$(arg port)" type="string"/>
+  </node>
+</launch>

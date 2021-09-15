@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="robot_name" default="alpha"/>
+  <arg name="port" default="/dev/microstrain_imu"/>
+
+  <include file="$(find ros_mscl)/launch/microstrain.launch">
+    <arg name="name" value="$(arg robot_name)"/>
+    <arg name="port" value="$(arg port)"/>
+    <arg name="imu_frame_id" value="imu"/>
+    <arg name="diagnostics" value="false"/>
+  </include>
+
+</launch>

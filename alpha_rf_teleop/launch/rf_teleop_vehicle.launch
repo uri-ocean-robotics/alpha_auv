@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<launch>
+
+    <node pkg="alpha_rf_teleop" type="alpha_rf_teleop_node" name="rf_teleop">
+        <remap from="rf/thrust" to="/alpha/thrust_cmd"/>
+        <remap from="rf/gps" to="/alpha/gps"/>
+    </node>
+
+</launch>

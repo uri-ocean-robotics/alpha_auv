@@ -1,0 +1,9 @@
+sequence:
+  - duration: 5
+    main: 1000
+    horizontal: 1500
+    vertical: 1500
+  - duration: 15
+    main: 1700
+    horizontal: 1000
+    vertical: 1000

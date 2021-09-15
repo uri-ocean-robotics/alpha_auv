@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+    <node type="simulator_node" name="simulator_node" pkg="alpha_simulator" ns="alpha">
+
+    </node>
+</launch>

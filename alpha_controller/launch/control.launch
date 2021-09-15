@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+    <node name="controller" pkg="cola2_control" type="controller_node" output="screen">
+        <rosparam command="load" file="$(find alpha_controller)/config/controller.yaml"/>
+    </node>
+
+</launch>

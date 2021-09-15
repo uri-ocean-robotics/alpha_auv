@@ -1,0 +1,23 @@
+teleop:
+  walk:
+    type: topic
+    message_type: geometry_msgs/PointStamped
+    topic_name: thrust_cmd
+    deadman_buttons: [4]
+
+    axis_mappings:
+      -
+        axis: 1
+        target: point.x
+        scale: 200
+        offset: 1500
+      -
+        axis: 3
+        target: point.y
+        scale: -200
+        offset: 1500
+      -
+        axis: 4
+        target: point.z
+        scale: -200
+        offset: 1500
