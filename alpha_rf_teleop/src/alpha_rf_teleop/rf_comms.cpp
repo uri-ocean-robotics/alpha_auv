@@ -12,11 +12,9 @@ RfComms::RfComms(std::string port, int baud) :
         m_serial_port(m_io),
         m_port(port),
         m_baud(baud),
-        m_active(true)
+        m_active(false)
 {
 
-    m_serial_port.open(m_port);
-    m_serial_port.set_option(boost::asio::serial_port_base::baud_rate(m_baud));
 }
 
 
@@ -53,6 +51,11 @@ bool RfComms::sendLine(std::string msg) {
 }
 
 bool RfComms::activate() {
+
+    m_active = true;
+    m_serial_port.open(m_port);
+    m_serial_port.set_option(boost::asio::serial_port_base::baud_rate(m_baud));
+
     if(m_serial_read_th.joinable()) {
         m_serial_read_th.join();
     }

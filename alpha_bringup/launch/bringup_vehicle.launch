@@ -15,4 +15,10 @@
     <arg name="robot_name" value="$(arg robot_name)"/>
   </include>
 
+  <include file="$(find alpha_bringup)/launch/include/gps.launch.xml">
+    <arg name="robot_name" value="$(arg robot_name)"/>
+  </include>
+
+  <include file="$(find alpha_rf_teleop)/launch/rf_teleop_vehicle.launch"/>
+
 </launch>
