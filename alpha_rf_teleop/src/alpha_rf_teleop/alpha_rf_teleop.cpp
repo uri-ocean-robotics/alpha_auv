@@ -4,6 +4,8 @@
 #include "rf_comms.h"
 #include "nmea.h"
 #include "geometry_msgs/Vector3Stamped.h"
+#include "chrono"
+#include "thread"
 
 RfTeleop::RfTeleop() :
     m_nh(""),
