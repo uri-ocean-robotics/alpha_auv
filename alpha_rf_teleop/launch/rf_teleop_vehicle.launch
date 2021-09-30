@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <launch>
 
-    <node ns="alpha" pkg="alpha_rf_teleop" type="alpha_rf_teleop_node" name="rf_teleop" output="screen">
+    <node ns="alpha" pkg="alpha_rf_teleop" type="alpha_rf_teleop_node" name="rf_teleop" output="screen" respawn="true">
         <remap from="thrust_cmd" to="thrust_cmd"/>
         <remap from="gps" to="fix"/>
         <remap from="nmea" to="incoming_raw_nmea"/>

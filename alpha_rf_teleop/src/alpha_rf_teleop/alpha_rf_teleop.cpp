@@ -29,6 +29,10 @@ RfTeleop::RfTeleop() :
 }
 
 void RfTeleop::f_serial_callback(std::string incoming) {
+    if(!ros::ok()) {
+        return;
+    }
+
     std_msgs::String raw_msg;
     raw_msg.data = incoming;
 

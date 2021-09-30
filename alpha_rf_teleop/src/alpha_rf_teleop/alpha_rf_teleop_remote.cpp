@@ -18,14 +18,15 @@ RfRemote::RfRemote() :
 
     m_comms = boost::make_shared<RfComms>(m_port, m_baud);
 
-    m_comms->activate();
 
     m_comms->setCallback(boost::bind(&RfRemote::f_serial_callback, this, boost::placeholders::_1));
 
     m_joy_teleop_callback = m_nh.subscribe("thrust_cmd", 10, &RfRemote::f_joy_teleop_callback, this);
 
     m_incoming_publisher = m_nh.advertise<std_msgs::String>("incoming", 10);
+    m_gps_publisher = m_nh.advertise<sensor_msgs::NavSatFix>("fix", 10);
 
+    m_comms->activate();
 }
 
 void RfRemote::f_joy_teleop_callback(const geometry_msgs::Vector3Stamped::ConstPtr &msg) {
@@ -41,17 +42,21 @@ void RfRemote::f_joy_teleop_callback(const geometry_msgs::Vector3Stamped::ConstP
 }
 
 void RfRemote::f_serial_callback(std::string incoming) {
+    if(!ros::ok()) {
+        return;
+    }
 
     std_msgs::String d;
     d.data = incoming;
 
+    ROS_WARN_STREAM(d);
     m_incoming_publisher.publish(d);
 
     std_msgs::String raw_msg;
     raw_msg.data = incoming;
 
     NMEA data;
-    data.parse(incoming.c_str());
+    data.parse(incoming);
 
     if(not data.get_valid()) {
         return;
@@ -64,14 +69,15 @@ void RfRemote::f_serial_callback(std::string incoming) {
     nmea_msg.values = std::vector<float>(data.get_values(), data.get_values() + data.get_argc());
 
     if (nmea_msg.command == "GPS"){
-        sensor_msgs::NavSatFix m;
-        m.header.stamp = ros::Time::now();
-        m.status.status = nmea_msg.values[0];
-        m.status.service = nmea_msg.values[1];
-        m.latitude = nmea_msg.values[2];
-        m.longitude = nmea_msg.values[3];
-        m.altitude = nmea_msg.values[4];
+        sensor_msgs::NavSatFix gps_msg;
+        gps_msg.header.stamp = ros::Time::now();
+        gps_msg.status.status = (uint)nmea_msg.values[0];
+        gps_msg.status.service = (int)nmea_msg.values[1];
+        gps_msg.latitude = nmea_msg.values[2];
+        gps_msg.longitude = nmea_msg.values[3];
+        gps_msg.altitude = nmea_msg.values[4];
 
-        m_gps_publisher.publish(m);
+        ROS_WARN_STREAM(gps_msg);
+        m_gps_publisher.publish(gps_msg);
     }
 }

@@ -3,4 +3,11 @@
     <node type="simulator_node" name="simulator_node" pkg="alpha_simulator" ns="alpha">
 
     </node>
+
+    <include file="$(find alpha_description)/launch/tf.launch"/>
+
+    <include file="$(find alpha_teleop)/launch/teleop.launch"/>
+
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find alpha_description)/rviz/config.rviz"/>
+
 </launch>

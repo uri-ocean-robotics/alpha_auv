@@ -3,13 +3,13 @@ teleop:
     type: topic
     message_type: geometry_msgs/Vector3Stamped
     topic_name: thrust_cmd
-    deadman_buttons: [4]
+    # deadman_buttons: [4]
 
     axis_mappings:
       -
         axis: 1
         target: vector.x
-        scale: 200
+        scale: 150
         offset: 1500
       -
         axis: 3

@@ -1,21 +1,22 @@
 #ifndef NMEA_H_
 #define NMEA_H_
 
-#include "stdio.h"
-#include "stdint.h"
-#include "stdarg.h"
+#include "cstdio"
+#include "cstdint"
+#include "cstdarg"
+#include "string"
 
 #define PURGE(x) \
-    if(x) {free(x) ; x = nullptr;}
+    if(x != nullptr) {free(x) ; x = nullptr;}
 
 
 class NMEA {
 private:
-    char* _raw;
+    char _raw[BUFSIZ];
 
-    char* _cmd;
+    char _cmd[BUFSIZ];
 
-    float* _values;
+    float _values[BUFSIZ];
 
     int _argc;
 
@@ -39,7 +40,9 @@ public:
     void parse();
 
     void parse(const char *msg);
-    
+
+    void parse(std::string msg);
+
     void construct(const char* cmd, float* values, size_t size);
     
     void construct(const char* format, ...);

@@ -5,6 +5,7 @@
 #include "thread"
 #include "tf2_ros/transform_broadcaster.h"
 #include "geometry_msgs/TransformStamped.h"
+#include "geometry_msgs/Vector3Stamped.h"
 #include "tf2/LinearMath/Quaternion.h"
 
 void Simulator::iterate(control_commands_t cmd) {
@@ -155,10 +156,10 @@ Simulator::Simulator() : m_nh() {
     m_loop_thread = std::thread(std::bind(&Simulator::loop, this));
 }
 
-void Simulator::cmd_callback(const geometry_msgs::Point::ConstPtr &msg) {
-    g_controls.thruster_x = msg->x;
-    g_controls.thruster_y = msg->y;
-    g_controls.thruster_z = msg->z;
+void Simulator::cmd_callback(const geometry_msgs::Vector3Stamped::ConstPtr &msg) {
+    g_controls.thruster_x = msg->vector.x;
+    g_controls.thruster_y = msg->vector.y;
+    g_controls.thruster_z = msg->vector.z;
 }
 
 void Simulator::publish_odometry() {

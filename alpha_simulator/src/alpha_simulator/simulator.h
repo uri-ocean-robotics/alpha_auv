@@ -6,6 +6,7 @@
 #include "ros/ros.h"
 #include "nav_msgs/Odometry.h"
 #include "alpha_msgs/ThrustSignal.h"
+#include "geometry_msgs/Vector3Stamped.h"
 #include "chrono"
 #include "thread"
 
@@ -19,7 +20,7 @@ private:
 
     void publish_odometry();
 
-    void cmd_callback(const geometry_msgs::Point::ConstPtr& msg);
+    void cmd_callback(const geometry_msgs::Vector3Stamped::ConstPtr& msg);
 
     ros::NodeHandle m_nh;
 
