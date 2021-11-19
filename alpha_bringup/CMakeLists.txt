@@ -12,7 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   alpha_driver
   alpha_msgs
   alpha_teleop
-  waterlinked_a50_ros_driver
+  waterlinked_dvl 
 )
 
 ## System dependencies are found with CMake's conventions

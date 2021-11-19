@@ -1,6 +1,3 @@
-[submodule "alpha_devices/dvl-a50-ros-driver"]
-	path = alpha_devices/dvl-a50-ros-driver
-	url = https://github.com/waterlinked/dvl-a50-ros-driver.git
 [submodule "alpha_devices/ROS-MSCL"]
 	path = alpha_devices/ROS-MSCL
 	url = https://github.com/LORD-MicroStrain/ROS-MSCL.git
