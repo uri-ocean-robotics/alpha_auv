@@ -16,6 +16,11 @@ find_package(catkin REQUIRED COMPONENTS
   tf2
   tf2_ros
   alpha_msgs
+  sensor_msgs
+  waterlinked_dvl
+  cola2_msgs
+  diagnostic_msgs
+  cola2_sim
 )
 
 find_package(Eigen3 REQUIRED)
@@ -112,7 +117,7 @@ find_package(Eigen3 REQUIRED)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES alpha_simulator
-#  CATKIN_DEPENDS geometry_msgs nav_msgs roscpp std_msgs
+#  CATKIN_DEPENDS geometry_msgs nav_msgs roscpp std_msgs sensor_msgs
 #  DEPENDS system_lib
 )
 

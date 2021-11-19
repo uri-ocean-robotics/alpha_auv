@@ -4,6 +4,7 @@
 #include "Eigen/Core"
 #include "Eigen/Geometry"
 
+
 Eigen::Matrix3d rotx(double deg) {
     Eigen::Matrix3d m;
     m = Eigen::AngleAxisd(deg, Eigen::Vector3d::UnitX());
@@ -31,8 +32,8 @@ Eigen::Quaterniond rot(double roll, double pitch, double yaw) {
 }
 
 double pwm2thrust(double pwm) {
-    double pwm_l = 1300;
-    double pwm_r = 1700;
+    double pwm_l = 1100;
+    double pwm_r = 1900;
 
     if (pwm > pwm_r) {
         pwm = pwm_r;
