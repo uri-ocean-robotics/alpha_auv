@@ -58,6 +58,7 @@
   <depend>tf2_ros</depend>
   <depend>eigen</depend>
   <depend>eigen_conversions</depend>
+  <depend>cola2_msgs</depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

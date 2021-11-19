@@ -1,0 +1,11 @@
+# Maximum allowed distance to a waypoint. Just for safety reasons
+max_distance_to_waypoint: 750.0
+
+# Controlled surface depth for the keep position
+controlled_surface_depth: 0.0
+
+# No altitude reactive behavior
+idle_no_altitude_goes_up: false
+enable_no_altitude_goes_up_service: "safe_depth_altitude/enable_no_altitude_goes_up"
+disable_no_altitude_goes_up_service: "safe_depth_altitude/disable_no_altitude_goes_up"
+vehicle_config_launch_mission_package: alpha_controller

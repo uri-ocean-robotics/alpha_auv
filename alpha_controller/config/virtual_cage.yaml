@@ -1,0 +1,4 @@
+# Define circular virtual cage in NED (the vehicle is not allowed to move outside of this area)
+cage_center_north: 0.0
+cage_center_east: 0.0
+cage_radius: 500.0

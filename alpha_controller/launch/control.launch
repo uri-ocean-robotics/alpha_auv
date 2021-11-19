@@ -1,8 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
 
-    <node name="controller" pkg="cola2_control" type="controller_node" output="screen">
-        <rosparam command="load" file="$(find alpha_controller)/config/controller.yaml"/>
-    </node>
+    <arg name="robot_name" default="alpha"/>
+
+    <group ns="$(arg robot_name)">
+        <node
+                name="controller"
+                pkg="cola2_control"
+                type="controller_node"
+                >
+            <rosparam command="load" file="$(find alpha_controller)/config/controller.yaml"/>
+        </node>
+
+        <node
+                name="pilot"
+                pkg="cola2_control"
+                type="pilot_node"
+                >
+            <rosparam command="load" file="$(find alpha_controller)/config/pilot.yaml"/>
+        </node>
+
+        <node
+                name="captain"
+                pkg="cola2_control"
+                type="captain_node"
+                output="screen">
+            <rosparam command="load" file="$(find alpha_controller)/config/captain.yaml"/>
+        </node>
+
+        <node
+                name="safe_depth_altitude"
+                pkg="cola2_safety"
+                type="safe_depth_altitude_node"
+                output="screen">
+            <rosparam command="load" file="$(find alpha_controller)/config/safe_depth_altitude.yaml"/>
+        </node>
+
+        <!-- Safety nodes -->
+        <node
+                name="diagnostic_aggregator"
+                pkg="diagnostic_aggregator"
+                type="aggregator_node"
+                output="screen">
+            <rosparam command="load" file="$(find alpha_controller)/config/diagnostic_aggregator.yaml"/>
+            <remap from="/diagnostics" to="/$(arg robot_name)/diagnostics"/>
+            <remap from="/diagnostics_agg" to="/$(arg robot_name)/diagnostics_agg"/>
+            <remap from="/diagnostics_toplevel_state" to="/$(arg robot_name)/diagnostics_toplevel_state"/>
+        </node>
+
+
+        <node
+                name="safety_supervisor"
+                pkg="cola2_safety"
+                type="safety_supervisor_node"
+                output="screen">
+            <rosparam command="load" file="$(find alpha_controller)/config/safety_supervisor.yaml"/>
+        </node>
+
+        <node
+                name="safety_supervisor_checker"
+                pkg="cola2_safety"
+                type="safety_supervisor_checker_node"
+                output="screen">
+        </node>
+
+        <node
+                name="virtual_cage"
+                pkg="cola2_safety"
+                type="virtual_cage_node"
+                output="screen">
+            <rosparam command="load" file="$(find alpha_controller)/config/virtual_cage.yaml"/>
+        </node>
+
+        <node name="watchdog_timer" pkg="cola2_safety" type="watchdog_timer_node" output="screen">
+
+        </node>
+
+        <!-- Throttle messages -->
+        <node name="navigation_throttle" pkg="topic_tools" type="throttle" args="messages navigator/navigation 4.0"/>
+        <node name="odometry_throttle" pkg="topic_tools" type="throttle" args="messages navigator/odometry 4.0"/>
+        <node name="merged_world_waypoint_req_throttle" pkg="topic_tools" type="throttle" args="messages controller/merged_world_waypoint_req 2.0"/>
+        <node name="merged_body_velocity_req_throttle" pkg="topic_tools" type="throttle" args="messages controller/merged_body_velocity_req 2.0"/>
+        <node name="merged_body_force_req_throttle" pkg="topic_tools" type="throttle" args="messages controller/merged_body_force_req 2.0"/>
+        <node name="thruster_setpoints_throttle" pkg="topic_tools" type="throttle" args="messages setpoints_selector/thruster_setpoints 4.0"/>
+
+    </group>
 
 </launch>

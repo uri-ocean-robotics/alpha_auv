@@ -1,0 +1,90 @@
+# Safety supervisor general parameters
+emergency_surface_setpoints: [0.0, 0.0, 0.0]  # Be careful here!
+drop_weight_service: ""
+safety_rule_names:
+  - "batteries"
+  - "battery_control_board"
+  - "captain"
+  - "check_enabled_abort_and_surface"
+  - "check_enabled_emergency_surface"
+  - "check_enabled_informative"
+  # - "teleoperation"
+  - "manual"
+  - "navigator"
+  # - "temperature_batteries"
+  # - "temperature_cpu"
+  # - "temperature_pc_cylinder"
+  - "virtual_cage"
+  - "watchdog_timer"
+  - "water_inside"
+
+# Battery level safety rule
+batteries/type: "BatteryLevel"
+batteries/min_charge: 14.5
+batteries/min_voltage: 26.4
+
+# Battery control board safety rule
+battery_control_board/type: "BatteryControlBoard"
+
+# Captain safety rule
+captain/type: "Captain"
+
+# Check enabled with abort and surface action
+check_enabled_abort_and_surface/type: "CheckEnabled"
+check_enabled_abort_and_surface/diagnostic_status_names_to_check: ["/safety/safe_depth_altitude"]
+check_enabled_abort_and_surface/level_if_not_enabled: 3
+
+# Check enabled with emergency surface action
+check_enabled_emergency_surface/type: "CheckEnabled"
+check_enabled_emergency_surface/diagnostic_status_names_to_check: ["/control/controller", "/control/captain", "/control/pilot", "/safety/safety_supervisor_checker"]
+check_enabled_emergency_surface/level_if_not_enabled: 4
+
+# Check enabled with informative action
+check_enabled_informative/type: "CheckEnabled"
+check_enabled_informative/diagnostic_status_names_to_check: ["/control/thrusters", "/safety/param_logger"]
+check_enabled_informative/level_if_not_enabled: 1
+
+# Comms safety rule
+#comms/type: "Comms"
+#comms/modem_data_timeout: 600.0
+
+# Teleoperation safety rule
+teleoperation/type: "Teleoperation"
+teleoperation/teleoperation_link_timeout: 60.0
+
+# Manual safety rule
+manual/type: "Manual"
+
+# Navigator safety rule
+navigator/type: "Navigator"
+navigator/nav_data_timeout: 2.0
+navigator/imu_data_timeout: 10.0
+navigator/depth_data_timeout: 10.0
+navigator/altitude_data_timeout: 30.0
+navigator/dvl_data_timeout: 30.0
+navigator/gps_data_timeout: 30.0
+navigator/min_frequency: 18.0
+
+# Temperature safety rules
+temperature_batteries/type: "Temperature"
+temperature_batteries/diagnostic_status_name: "/safety/batteries"
+temperature_batteries/max_temperature: 55.0
+temperature_cpu/type: "Temperature"
+temperature_cpu/diagnostic_status_name: "/safety/computer_logger"
+temperature_cpu/max_temperature: 80.0
+temperature_pc_cylinder/type: "Temperature"
+temperature_pc_cylinder/diagnostic_status_name: "/safety/battery_control_board"
+temperature_pc_cylinder/max_temperature: 80.0
+
+# Virtual cage safety rule
+virtual_cage/type: "VirtualCage"
+virtual_cage/enables_abort_and_surface: false
+
+# Watchdog timer safety rule
+watchdog_timer/type: "WatchdogTimer"
+watchdog_timer/timeout: 3600
+
+# Water inside safety rules
+water_inside/type: "CombinedWaterInside"
+water_inside/check_battery_housing: false
+water_inside/check_extra_housing: false
