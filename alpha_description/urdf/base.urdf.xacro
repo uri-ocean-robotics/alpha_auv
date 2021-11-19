@@ -1,23 +1,90 @@
 <?xml version="1.0"?>
 <robot name="micro_uuv" xmlns:xacro="http://ros.org/wiki/xacro">
 
+
     <link name="base_link">
         <visual>
-            <origin rpy="0.0 0.0 1.5707963267948966"/>
-
+            <origin xyz="-0.045 0.0 -0.13" rpy="0.0 1.57079632679 1.57079632679"/>
 
             <geometry>
-                <mesh filename="package://alpha_description/mesh/alpha.dae" scale="0.001 0.001 0.001"/>
+                <mesh filename="package://alpha_description/mesh/alpha.stl" scale="0.001 0.001 0.001"/>
             </geometry>
         </visual>
     </link>
 
-    <link name="imu_link"></link>
+    <link name="imu"></link>
+    <link name="imu_filter"></link>
 
     <joint name="imu_joint" type="fixed">
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0.0465 0.060 -0.14648" rpy="0 0 0"/>
         <parent link="base_link"/>
-        <child link="imu_link"/>
+        <child link="imu"/>
     </joint>
+
+    <joint name="imu_filter_joint" type="fixed">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+        <parent link="imu"/>
+        <child link="imu_filter"/>
+    </joint>
+
+    <link name="gps"></link>
+
+    <joint name="gps_joint" type="fixed">
+        <origin xyz="-0.110 0.0 -0.337241" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="gps"/>
+    </joint>
+
+    <link name="pressure"></link>
+
+    <joint name="pressure_joint" type="fixed">
+        <origin xyz="-0.087845 0.060 -0.124465" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="pressure"/>
+    </joint>
+
+
+    <link name="dvl"></link>
+    <link name="dvl_altitude"></link>
+
+    <joint name="dvl_joint" type="fixed">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="dvl"/>
+    </joint>
+
+    <joint name="dvl_altitude_joint" type="fixed">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+        <parent link="dvl"/>
+        <child link="dvl_altitude"/>
+    </joint>
+    <link name="stern_thruster_link"></link>
+
+    <joint name="stern_thruster_joint" type="fixed">
+        <origin xyz="-0.297 0.0 -0.130" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="stern_thruster_link"/>
+    </joint>
+
+    <link name="vertical_thruster_link"></link>
+
+    <joint name="vertical_thruster_joint" type="fixed">
+        <origin xyz="0.612 0.0 -0.029" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="vertical_thruster_link"/>
+    </joint>
+
+    <link name="horizontal_thruster_link"></link>
+
+    <joint name="horizontal_thruster_joint" type="fixed">
+        <origin xyz="0.691 -0.118 -0.125" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="horizontal_thruster_link"/>
+    </joint>
+
+
+
+
+
 
 </robot>
