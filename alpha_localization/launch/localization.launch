@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+    <node name="navigator" pkg="cola2_nav" type="navigator_node" output="screen">
+        <rosparam command="load" file="$(find alpha_localization)/config/navigator.yaml"/>
+    </node>
+
+    <node name="param_logger" pkg="cola2_log" type="param_logger_node.py" output="screen"/>
+
+</launch>
