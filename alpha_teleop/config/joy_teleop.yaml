@@ -2,22 +2,23 @@ teleop:
   walk:
     type: topic
     message_type: geometry_msgs/Vector3Stamped
-    topic_name: thrust_cmd
+    topic_name: controller/cmd_vel
     # deadman_buttons: [4]
 
     axis_mappings:
       -
         axis: 1
         target: vector.x
-        scale: 150
-        offset: 1500
+        scale: 1
+        offset: 0
       -
         axis: 3
         target: vector.y
-        scale: -200
-        offset: 1500
+        scale: 1
+        offset: 0
       -
         axis: 4
         target: vector.z
-        scale: -200
-        offset: 1500
+        scale: 1
+        offset: 0
+
