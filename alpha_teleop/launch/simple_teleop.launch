@@ -2,6 +2,8 @@
 <launch>
   <arg name="teleop_config" default="$(find alpha_teleop)/config/joy_teleop.yaml"/>
 
+
+  <group ns="alpha">
   <node pkg="joy" type="joy_node" name="joy_node">
     <param name="autorepeat_rate" value="10"/>
     <param name="coalesce_interval" value="0.10"/>
@@ -9,7 +11,7 @@
 
   <rosparam file="$(arg teleop_config)" command="load"/>
   <node pkg="joy_teleop" type="joy_teleop.py" name="joy_teleop">
-    <remap from="thrust_cmd" to="alpha/thrust_cmd"/>  
-  </node>
 
+  </node>
+  </group>
 </launch>

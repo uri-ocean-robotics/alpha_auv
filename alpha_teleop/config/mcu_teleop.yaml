@@ -1,0 +1,24 @@
+teleop:
+  walk:
+    type: topic
+    message_type: geometry_msgs/Vector3Stamped
+    topic_name: thrust_cmd
+    deadman_buttons: [4]
+
+    axis_mappings:
+      -
+        axis: 1
+        target: vector.x
+        scale: 500
+        offset: 1500
+      -
+        axis: 3
+        target: vector.y
+        scale: -500
+        offset: 1500
+      -
+        axis: 4
+        target: vector.z
+        scale: -500
+        offset: 1500
+
