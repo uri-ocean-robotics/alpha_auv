@@ -49,7 +49,7 @@ public:
     void setSerialCallback(decltype(serial_callback_) c) {serial_callback_  = c;}
     auto getSerialCallback() -> decltype(serial_callback_) {return serial_callback_;}
 
-    void cmdPwm(uint16_t x, uint16_t y, uint16_t z);
+    void cmdPwm(double x, double y, double z);
 
 };
 

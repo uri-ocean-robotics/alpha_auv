@@ -64,10 +64,10 @@ void AlphaDriver::sendRaw(std::string nmea) {
     serialSendLine(nmea);
 }
 
-void AlphaDriver::cmdPwm(uint16_t x, uint16_t y, uint16_t z) {
+void AlphaDriver::cmdPwm(double x, double y, double z) {
     NMEA thrust_msg;
     
-    thrust_msg.construct("%s,%d,%d,%d", NMEA_THRUST_PWM_CMD, x, y, z);
+    thrust_msg.construct("%s,%.5f,%.5f,%.5f", NMEA_THRUST_PWM_CMD, x, y, z);
     
     serialSendLine(std::string(thrust_msg.get_raw()));
 }

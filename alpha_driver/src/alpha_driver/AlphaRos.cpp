@@ -3,24 +3,24 @@
 
 AlphaRos::AlphaRos() : nh_(""), pnh_("~")
 {
-    raw_nmea_sub_ = nh_.subscribe("raw_nmea",100, &AlphaRos::raw_nmea_callback, this);
+    raw_nmea_sub_ = nh_.subscribe("driver/raw_nmea",100, &AlphaRos::raw_nmea_callback, this);
 
-    struct_nmea_sub_ = nh_.subscribe("struct_nmea", 100, &AlphaRos::struct_nmea_callback, this);
+    struct_nmea_sub_ = nh_.subscribe("driver/struct_nmea", 100, &AlphaRos::struct_nmea_callback, this);
 
-    thrust_cmd_sub_ = nh_.subscribe("thrust_cmd", 100, &AlphaRos::thrust_cmd_callback, this);
+    thrust_cmd_sub_ = nh_.subscribe("controller/cmd_vel", 100, &AlphaRos::thrust_cmd_callback, this);
 
-    raw_nmea_pub_ = nh_.advertise<std_msgs::String>("incoming_raw_nmea", 1000);
+    raw_nmea_pub_ = nh_.advertise<std_msgs::String>("driver/incoming_raw_nmea", 1000);
 
-    struct_nmea_pub_ = nh_.advertise<alpha_msgs::NMEA>("incoming_struct_nmea", 1000);
+    struct_nmea_pub_ = nh_.advertise<alpha_msgs::NMEA>("driver/incoming_struct_nmea", 1000);
 
-    thrust_report_pub_ = nh_.advertise<geometry_msgs::Vector3Stamped>("thrust_report", 1000);
+    thrust_report_pub_ = nh_.advertise<geometry_msgs::Vector3Stamped>("driver/thrust_report", 1000);
 
-    pressure_pub_ = nh_.advertise<alpha_msgs::Pressure>("pressure", 1000);
+    pressure_pub_ = nh_.advertise<alpha_msgs::Pressure>("driver/pressure", 1000);
 
-    power_pub_ = nh_.advertise<alpha_msgs::Power>("power", 1000);
+    power_pub_ = nh_.advertise<alpha_msgs::Power>("driver/power", 1000);
 
     pnh_.param<std::string>("port", port_,"/dev/ttyACM0");
-    pnh_.param<int>("baud", baud_, 115200);
+    pnh_.param<int>("baud", baud_, 921600);
 
     driver_ = boost::make_shared<AlphaDriver>(port_, baud_);
 
@@ -42,7 +42,7 @@ void AlphaRos::struct_nmea_callback(const alpha_msgs::NMEA::ConstPtr &msg) {
 }
 
 void AlphaRos::thrust_cmd_callback(const geometry_msgs::Vector3Stamped::ConstPtr &msg) {
-    driver_->cmdPwm((uint16_t)msg->vector.x,(uint16_t) msg->vector.y,(uint16_t) msg->vector.z);
+    driver_->cmdPwm(msg->vector.x, msg->vector.y, msg->vector.z);
 }
 
 void AlphaRos::driver_serial_callback(std::string incoming) {
