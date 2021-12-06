@@ -20,7 +20,7 @@ AlphaRos::AlphaRos() : nh_(""), pnh_("~")
     power_pub_ = nh_.advertise<alpha_msgs::Power>("driver/power", 1000);
 
     pnh_.param<std::string>("port", port_,"/dev/ttyACM0");
-    pnh_.param<int>("baud", baud_, 921600);
+    pnh_.param<int>("baud", baud_, 115200);
 
     driver_ = boost::make_shared<AlphaDriver>(port_, baud_);
 
