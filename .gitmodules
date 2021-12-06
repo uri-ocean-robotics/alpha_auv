@@ -4,3 +4,12 @@
 [submodule "alpha_devices/xsens_mti_ros_driver"]
 	path = alpha_devices/xsens_mti_ros_driver
 	url = https://github.com/GSO-soslab/xsens_mti_ros_driver
+[submodule "alpha_cola/cola2_msgs"]
+	path = alpha_cola/cola2_msgs
+	url = https://bitbucket.org/iquarobotics/cola2_msgs/src/master/
+[submodule "alpha_cola/cola2_core"]
+	path = alpha_cola/cola2_core
+	url = https://bitbucket.org/iquarobotics/cola2_core/src/master/
+[submodule "alpha_cola/cola2_lib_ros"]
+	path = alpha_cola/cola2_lib_ros
+	url = https://bitbucket.org/iquarobotics/cola2_lib_ros/src/master/
