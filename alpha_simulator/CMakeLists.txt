@@ -18,9 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   alpha_msgs
   sensor_msgs
   waterlinked_dvl
-  cola2_msgs
   diagnostic_msgs
-  cola2_sim
 )
 
 find_package(Eigen3 REQUIRED)

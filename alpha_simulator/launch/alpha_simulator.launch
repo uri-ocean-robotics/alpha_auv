@@ -14,22 +14,6 @@
                 output="screen"/>
 
         <node
-                type="sim_auv_nav_sensors_node.py"
-                name="sim_auv_nav_sensors"
-                pkg="cola2_sim"
-                output="screen">
-            <rosparam command="load" file="$(find alpha_simulator)/config/sim_auv_nav_sensors.yaml"/>
-        </node>
-
-        <node
-                name="sim_internal_sensors"
-                pkg="cola2_sim"
-                type="sim_internal_sensors_node"
-                output="screen">
-            <rosparam command="load" file="$(find alpha_simulator)/config/sim_internal_sensors.yaml"/>
-        </node>
-
-        <node
                 type="alpha_controller_mapper_node"
                 name="alpha_control_mapper_node"
                 pkg="alpha_controller"

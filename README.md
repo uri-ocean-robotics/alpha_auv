@@ -19,25 +19,8 @@ Install pip and setup python3 as default
 sudo apt install python3-pip
 ```
 
-Install cola2 requirements
-```bash
-sudo apt install ros-noetic-rosbridge-server ros-noetic-joy lm-sensors lcov
-pip install ruamel.yaml
-```
-
 Install dependencies
 ```bash
 cd `echo $ROS_PACKAGE_PATH | awk -F: '{ print $1 }'`
 rosdep install --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} -y
-```
-
-Install cola2_lib standalone library
-```bash
-mkdir ~/soslab_ws
-git clone https://bitbucket.org/iquarobotics/cola2_lib.git
-cd cola2_lib
-mkdir build
-cmake ..
-make -j4
-sudo make install
 ```

@@ -21,9 +21,7 @@
   <depend>alpha_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>waterlinked_dvl</depend>
-  <depend>cola2_msgs</depend>
   <depend>diagnostic_msgs</depend>
-  <depend>cola2_sim</depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
