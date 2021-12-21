@@ -103,8 +103,8 @@ t_sway_td: 0.0
 t_sway_i_limit: 1.0
 t_sway_fff: 0.0
 
-t_heave_kp: 0.75
-t_heave_ti: 5.0
+t_heave_kp: 0.95
+t_heave_ti: 0.1
 t_heave_td: 0.0
 t_heave_i_limit: 0.15
 t_heave_fff: 0.1

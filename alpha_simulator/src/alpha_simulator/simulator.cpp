@@ -68,8 +68,8 @@ void Simulator::iterate(control_commands_t cmd) {
     */
     g_inertia.ZG = 1 * INCH_TO_METER;
 
-    g_thruster.MT = -g_thruster.XT * g_inertia.ZG - g_thruster.ZT * (20 * INCH_TO_METER - g_inertia.XG);
-    g_thruster.NT = g_thruster.YT * (-20 * INCH_TO_METER + g_inertia.XG);
+    g_thruster.MT = -g_thruster.XT * g_inertia.ZG + g_thruster.ZT * (20 * INCH_TO_METER - g_inertia.XG);
+    g_thruster.NT = g_thruster.YT * (20 * INCH_TO_METER + g_inertia.XG);
 
     g_vehicle_state_ned.u_dot = 1.0 / (g_mass.weight / GRAVITY + g_hydro.added_mass[0]) *
                                 (g_thruster.XT - g_hydro.damping[0] * g_vehicle_state_ned.u * std::fabs(g_vehicle_state_ned.u)

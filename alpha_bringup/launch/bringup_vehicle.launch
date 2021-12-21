@@ -4,7 +4,7 @@
   <arg name="robot_name" default="alpha"/>
 
   <include file="$(find alpha_driver)/launch/driver.launch">
-    <arg name="port" value="/dev/mbed_mcu"/>
+    <arg name="port" value="/dev/pico"/>
   </include>
 
   <include file="$(find alpha_bringup)/launch/include/dvl.launch.xml">
