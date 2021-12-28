@@ -29,6 +29,8 @@ private:
 
     ros::NodeHandle m_nh;
 
+    ros::NodeHandle m_pnh;
+
     ros::Publisher m_odom_publisher;
 
     ros::Publisher m_diagnostic_publisher;

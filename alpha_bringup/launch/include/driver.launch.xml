@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
 <launch>
 
+  <arg name="robot_name" default="alpha"/>
+
   <node pkg="alpha_driver" type="alpha_driver_node" name="alpha_driver" output="screen">
-    <param command="load" file="$(arg alpha_driver)/config/driver.yaml"/>
+    <rosparam command="load" file="$(find alpha_config)/config/driver.yaml"/>
   </node>
+
 </launch>

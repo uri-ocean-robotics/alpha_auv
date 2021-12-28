@@ -3,23 +3,19 @@
 
   <arg name="robot_name" default="alpha"/>
 
-  <!--node
+  <node
+    name="world2ned"
     pkg="tf2_ros"
     type="static_transform_publisher"
-    name="sim_odom_world_tf_publisher"
-    args="1 0 0 0 0 0 1 world_ned $(arg robot_name)/odom" /-->
-    <!-- Static transform -->
-
-  <node name="world2ned" pkg="tf2_ros" type="static_transform_publisher" args="0 0 0 0 0 3.141592653589793 world world_ned"/>
-
-
-  <param name="tf_prefix" value="$(arg robot_name)"/>
+    args="0 0 0 0 0 3.141592653589793 world world_ned"/>
 
   <param name="robot_description" command="$(find xacro)/xacro '$(find alpha_description)/urdf/base.urdf.xacro'"/>
 
   <param name="use_gui" value="True"/>
 
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"></node>
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="tf_prefix" value="$(arg robot_name)"/>
+  </node>
 
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
     <param name="publish_frequency" type="double" value="30.0"/>

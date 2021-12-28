@@ -3,8 +3,8 @@
 
   <arg name="robot_name" default="alpha"/>
 
-  <include file="$(find xsens_mti_driver)/launch/xsens_mti_node.launch">
-
-  </include>
+  <node  name="xsens_mti_node" pkg="xsens_mti_driver" type="xsens_mti_node" output="screen">
+    <rosparam command="load" file="$(find alpha_config)/config/xsens_mti_node.yaml" />
+  </node>
 
 </launch>

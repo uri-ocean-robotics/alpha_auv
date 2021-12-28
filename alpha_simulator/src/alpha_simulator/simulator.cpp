@@ -160,13 +160,13 @@ void Simulator::iterate(control_commands_t cmd) {
 
 }
 
-Simulator::Simulator() : m_nh() {
+Simulator::Simulator() : m_nh() , m_pnh("~") {
 
     m_dt = 0.01; //seconds
 
     m_simulated_depth = 50;
 
-    m_nh.param<std::string>("tf_prefix", m_tf_prefix, "");
+    m_pnh.param<std::string>("tf_prefix", m_tf_prefix, "");
 
     m_odom_publisher = m_nh.advertise<nav_msgs::Odometry>("dynamics/odometry", 1000);
 
@@ -211,8 +211,8 @@ void Simulator::publish_odometry() {
     nav_msgs::Odometry msg;
 
     msg.header.stamp = ros::Time::now();
-    msg.header.frame_id = m_tf_prefix + "/sim_odom";
-    msg.child_frame_id = m_tf_prefix + "/base_link";
+    msg.header.frame_id = m_tf_prefix.empty() ? "odom" : m_tf_prefix + "/odom";
+    msg.child_frame_id = m_tf_prefix.empty() ? "base_link" : m_tf_prefix + "/base_link";
 
     auto world_enu = ned_to_enu(g_world_state_ned);
 
@@ -252,7 +252,7 @@ void Simulator::publish_odometry() {
     tf_stamped.transform.rotation.y = quat.y();
     tf_stamped.transform.rotation.z = quat.z();
 
-    // br.sendTransform(tf_stamped);
+    br.sendTransform(tf_stamped);
 
 }
 

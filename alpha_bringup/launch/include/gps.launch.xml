@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <launch>
 
-    <arg name="robot_name" default="alpha"/>
+  <arg name="robot_name" default="alpha"/>
 
-    <node pkg="gpsd_client" type="gpsd_client" name="gpsd_client" ns="$(arg robot_name)"/>
+  <node pkg="gpsd_client" type="gpsd_client" name="gpsd_client"/>
 
 </launch>

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+
+    <arg name="robot_name" default="alpha"/>
+    <arg name="ground_truth" default="true"/>
+
+    <include file="$(find alpha_simulator)/launch/alpha_simulator.launch">
+        <arg name="ground_truth" default="$(arg ground_truth)"/>
+        <arg name="robot_name" default="$(arg robot_name)"/>
+    </include>
+
+</launch>

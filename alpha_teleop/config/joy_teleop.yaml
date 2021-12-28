@@ -1,47 +1,22 @@
-teleop:
-  vel:
-    type: topic
-    message_type: geometry_msgs/Vector3Stamped
-    topic_name: controller/cmd_vel
-    # deadman_buttons: [4]
+vel:
+  type: topic
+  message_type: geometry_msgs/Vector3Stamped
+  topic_name: controller/cmd_vel
+  # deadman_buttons: [4]
 
-    axis_mappings:
-      -
-        axis: 1
-        target: vector.x
-        scale: 1
-        offset: 0
-      -
-        axis: 3
-        target: vector.y
-        scale: 1
-        offset: 0
-      -
-        axis: 4
-        target: vector.z
-        scale: 1
-        offset: 0
-
-
-  pwm:
-    type: topic
-    message_type: geometry_msgs/Vector3Stamped
-    topic_name: controller/cmd_pwm
-    # deadman_buttons: [4]
-
-    axis_mappings:
-      -
-        axis: 1
-        target: vector.x
-        scale: 400
-        offset: 1500
-      -
-        axis: 3
-        target: vector.y
-        scale: 400
-        offset: 1500
-      -
-        axis: 4
-        target: vector.z
-        scale: 400
-        offset: 1500
+  axis_mappings:
+    -
+      axis: 1
+      target: vector.x
+      scale: 1
+      offset: 0
+    -
+      axis: 3
+      target: vector.y
+      scale: 1
+      offset: 0
+    -
+      axis: 4
+      target: vector.z
+      scale: 1
+      offset: 0
