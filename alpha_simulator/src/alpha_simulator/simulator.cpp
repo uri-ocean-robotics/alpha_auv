@@ -172,7 +172,7 @@ Simulator::Simulator() : m_nh() , m_pnh("~") {
 
     m_diagnostic_publisher = m_nh.advertise<diagnostic_msgs::DiagnosticArray>("diagnostics", 1000);
 
-    m_cmd_subscriber = m_nh.subscribe("controller/cmd_pwm", 100, &Simulator::cmd_callback, this);
+    m_cmd_subscriber = m_nh.subscribe("controller/cmd_vel", 100, &Simulator::cmd_callback, this);
 
     m_loop_thread = std::thread(std::bind(&Simulator::loop, this));
 
@@ -200,9 +200,9 @@ Simulator::Simulator() : m_nh() , m_pnh("~") {
 }
 
 void Simulator::cmd_callback(const geometry_msgs::Vector3Stamped::ConstPtr &msg) {
-    g_controls.thruster_x = msg->vector.x;
-    g_controls.thruster_y = msg->vector.y;
-    g_controls.thruster_z = msg->vector.z;
+    g_controls.thruster_x = (msg->vector.x * 500.0) + 1500.0;
+    g_controls.thruster_y = (msg->vector.y * 500.0) + 1500.0;
+    g_controls.thruster_z = (msg->vector.z * 500.0) + 1500.0;
 }
 
 
