@@ -1,0 +1,102 @@
+##
+# Thruster IDs
+# Each thruster has its unique ID. These unique IDs
+# will be used for configuring them. In the rest of the
+# configuration file, those IDs must match.
+#
+# There are no defaults for parameters below.
+##
+thruster_ids:
+- main
+- horizontal
+- vertical
+
+##
+# Thruster set point topic names.
+# Each topic should have type of std_msgs/Float32
+# Thruster set point messages will be sent out to this
+# topic addresses.
+#
+# There are no defaults for parameters below.
+##
+thruster_topics:
+  main: control/thruster/main
+  horizontal: control/thruster/horizontal
+  vertical: control/thruster/vertical
+
+##
+# Control allocation matrix generator type
+#
+# Possible types: "tf" or "user"
+# Default value: "tf"
+#
+# if "matrix" is selected, control allocation matrix will
+# be generated based on "control_allocation_matrix" object
+# if "tf" is selected, control allocation matrix will be
+# generated automatically based on transform tree defined
+# in "control_tf" object.
+##
+generator_type: tf
+
+##
+# "tf_prefix" for transform tree
+# There is no default for parameter below.
+##
+tf_prefix: alpha
+
+##
+# Center of gravity link name in transform tree
+# There is no default for parameter below.
+##
+cg_link: cg_link
+
+##
+# World link
+# There is no default for parameter below.
+##
+world_link: world_ned
+
+##
+# Odometry source
+# There is no default for parameter below.
+##
+odometry_source: /dynamics/odometry
+
+##
+# Control Transform Tree
+##
+control_tf:
+  # Thruster links in transform tree
+  thruster_links:
+    main: main_thruster_link
+    horizontal: horizontal_thruster_link
+    vertical: vertical_thruster_link
+
+# Control rule that described by each index
+#  1. Roll
+#  2. Pitch
+#  3. Yaw
+#  4. u, X speed
+#  5. v, Y speed
+#  6. w, Z speed
+control_allocation_matrix:
+  main:
+    [1, 2, 3, 4, 5, 6]
+  horizontal:
+    [1, 2, 3, 4, 5, 6]
+  vertical:
+    [1, 2, 3, 4, 5, 6]
+
+##
+# PID gains for each degree of freedom
+##
+pid:
+  x:      {p: 10, i: 0, d: 2}
+  y:      {p: 10, i: 0, d: 2}
+  z:      {p: 10, i: 0, d: 2}
+  roll:   { p: 10, i: 0, d: 2 }
+  pitch:  { p: 10, i: 0, d: 2 }
+  yaw:    { p: 10, i: 0, d: 2 }
+  u:      {p: 10, i: 0, d: 2}
+  v:      {p: 10, i: 0, d: 2}
+  w:      {p: 10, i: 0, d: 2}
