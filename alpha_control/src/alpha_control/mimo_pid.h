@@ -27,29 +27,29 @@ private:
      *
      * This variable holds the maximum value of a gain
      */
-    Eigen::ArrayXd m_max;
+    Eigen::ArrayXf m_max;
 
     /**
      * @brief Minimum value
      *
      * This variable holds the minimum value of a gain
      */
-    Eigen::ArrayXd m_min;
+    Eigen::ArrayXf m_min;
 
     //! @brief Proportional gain
-    Eigen::ArrayXd m_kp;
+    Eigen::ArrayXf m_kp;
 
     //! @brief Derivation gain
-    Eigen::ArrayXd m_kd;
+    Eigen::ArrayXf m_kd;
 
     //! @brief Integration gain
-    Eigen::ArrayXd m_ki;
+    Eigen::ArrayXf m_ki;
 
     //! @brief Error from the previous iteration
-    Eigen::ArrayXd m_pe;
+    Eigen::ArrayXf m_pe;
 
     //! @brief Integral queue
-    std::deque<Eigen::ArrayXd> m_integral_queue;
+    std::deque<Eigen::ArrayXf> m_integral_queue;
 
 public:
 
@@ -61,7 +61,7 @@ public:
      * @param current   A vector defines the current state of the system
      * @return          A vector with control gains
      */
-    Eigen::ArrayXd calculate(const Eigen::ArrayXd& desired, const Eigen::ArrayXd& current);
+    Eigen::ArrayXf calculate(const Eigen::ArrayXf& desired, const Eigen::ArrayXf& current);
 
     /** @brief Calculates PID gain with given desired and current state
      *
@@ -70,7 +70,7 @@ public:
      * @param dt        Time difference between readings
      * @return          A vector with control gains
      */
-    Eigen::ArrayXd calculate(const Eigen::ArrayXd& desired, const Eigen::ArrayXd& current, double dt);
+    Eigen::ArrayXf calculate(const Eigen::ArrayXf& desired, const Eigen::ArrayXf& current, double dt);
 
     //! @brief Generic shared pointer
     typedef std::shared_ptr<MimoPID> Ptr;

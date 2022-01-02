@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(alpha_control)
 
-## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11)
+# add_compile_options(-std=c++17)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -118,6 +119,20 @@ catkin_package(
 ###########
 ## Build ##
 ###########
+include(FetchContent)
+# OSQP
+if (NOT TARGET osqp-cpp)
+  message(STATUS "${PROJECT_NAME}: `osqp-cpp` targets not found. Attempting to fetch contents...")
+  FetchContent_Declare(
+    osqp-cpp
+    GIT_REPOSITORY https://github.com/google/osqp-cpp/
+    GIT_TAG        origin/master
+  )
+  FetchContent_MakeAvailable(osqp-cpp)
+else()
+  message(STATUS "osqp-cpp: `osqp` targets found.")
+endif()
+
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
@@ -160,6 +175,7 @@ add_dependencies(${PROJECT_NAME}_ros_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_ros_node
+  osqp-cpp
   ${catkin_LIBRARIES}
 )
 

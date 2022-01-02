@@ -14,9 +14,9 @@ AlphaControlROS::AlphaControlROS()
 {
 
 
-    m_system_state = Eigen::VectorXd::Zero(STATE_VECTOR_SIZE);
+    m_system_state = Eigen::VectorXf::Zero(STATE_VECTOR_SIZE);
 
-    m_desired_state = Eigen::VectorXd::Zero(STATE_VECTOR_SIZE);
+    m_desired_state = Eigen::VectorXf::Zero(STATE_VECTOR_SIZE);
 
     // Read all the configuration file to get all the listed thrusters
     std::vector<std::string> thruster_id_list;
@@ -102,7 +102,7 @@ void AlphaControlROS::f_generate_control_allocation_matrix() {
         }
     }
 
-    m_control_allocation_matrix = Eigen::MatrixXd::Zero(STATE_VECTOR_SIZE, (int) m_thrusters.size());
+    m_control_allocation_matrix = Eigen::MatrixXf::Zero(STATE_VECTOR_SIZE, (int) m_thrusters.size());
 
     if (m_generator_type == GeneratorType::USER) {
         for (int i = 0; i < m_thrusters.size(); i++) {
@@ -124,17 +124,17 @@ void AlphaControlROS::f_read_pid_gains() {
     std::vector<std::string> axis{"x","y","z","roll","pitch","yaw","u","v","w"};
     std::vector<std::string> gains{"p","i","d"};
 
-    Eigen::MatrixXd gain_matrix(axis.size(), gains.size());
+    Eigen::MatrixXf gain_matrix(axis.size(), gains.size());
 
     for(int i = 0 ; i < axis.size() ; i++) {
         for(int j = 0 ; j < gains.size() ; j++) {
-            m_pnh.param<double>("pid/" + axis.at(i) + "/" + gains.at(j), gain_matrix(i,j),0);
+            m_pnh.param<float>("pid/" + axis.at(i) + "/" + gains.at(j), gain_matrix(i,j),0);
         }
     }
 
-    m_alpha_control->get_pid()->set_kp(gain_matrix.col(0));
-    m_alpha_control->get_pid()->set_ki(gain_matrix.col(1));
-    m_alpha_control->get_pid()->set_kd(gain_matrix.col(2));
+    m_alpha_control->get_pid()->set_kp(gain_matrix.col(0).cast<float>());
+    m_alpha_control->get_pid()->set_ki(gain_matrix.col(1).cast<float>());
+    m_alpha_control->get_pid()->set_kd(gain_matrix.col(2).cast<float>());
 
 }
 
@@ -148,18 +148,18 @@ void AlphaControlROS::initialize() {
 
     m_control_rate = std::make_shared<ros::Rate>(20);
 
-    m_controller_worker = std::thread(std::bind(&AlphaControlROS::f_control_loop, this));
+    m_controller_worker = std::thread([this] { f_control_loop(); });
 
 }
 
 void AlphaControlROS::f_generate_control_allocation_from_user() {
     for(const auto& t : m_thrusters) {
-        Eigen::VectorXd contribution_vector;
-        std::vector<double> v;
+        Eigen::VectorXf contribution_vector;
+        std::vector<float> v;
         m_pnh.param<decltype(v)>("control_allocation/" + t->get_thruster_id(),
                                  v,
                                  decltype(v)());
-        contribution_vector = Eigen::Map<Eigen::VectorXd>(&v[0], (int) v.size());
+        contribution_vector = Eigen::Map<Eigen::VectorXf>(&v[0], (int) v.size());
 
         t->set_contribution_vector(contribution_vector);
     }
@@ -180,7 +180,6 @@ void AlphaControlROS::f_generate_control_allocation_from_tf() {
     // For each thruster look up transformation
     for(const auto& t : m_thrusters) {
 
-
         auto tf = m_transform_buffer.lookupTransform(
                 m_cg_link_id,
                 t->get_link_id(),
@@ -189,16 +188,16 @@ void AlphaControlROS::f_generate_control_allocation_from_tf() {
         );
         auto eigen_tf = tf2::transformToEigen(tf);
 
-        Eigen::VectorXd rpyuvw(6);
+        Eigen::VectorXf rpyuvw(6);
 
-        rpyuvw.tail(3) = eigen_tf.rotation().col(0);
+        rpyuvw.tail(3) = eigen_tf.rotation().col(0).cast<float>();
 
         // for each axis, roll pitch and yaw
         for(int i = 0 ; i < 3 ; i++ ) {
             int a = (i + 1) % 3;
             int b = (i + 2) % 3;
-            double hypotenuse = sqrt(pow(eigen_tf.translation()[a], 2) + pow(eigen_tf.translation()[b], 2 ));
-            rpyuvw[i] = hypotenuse * sin(eigen_tf.rotation().eulerAngles(0,1,2)[i]);
+            float hypotenuse = sqrtf(powf(eigen_tf.translation().cast<float>()[a], 2) + powf(eigen_tf.translation().cast<float>()[b], 2 ));
+            rpyuvw[i] = hypotenuse * sinf(eigen_tf.rotation().cast<float>().eulerAngles(0,1,2)[i]);
         }
 
         t->set_contribution_vector(rpyuvw);
@@ -219,7 +218,7 @@ bool AlphaControlROS::f_compute_state() {
 
         auto cg_world_eigen = tf2::transformToEigen(cg_world);
 
-        auto euler = cg_world_eigen.rotation().eulerAngles(0,1,2);
+        Eigen::MatrixXf euler = cg_world_eigen.rotation().eulerAngles(0,1,2).cast<float>();
         m_system_state(STATE_ROLL_INDEX) = euler(0);
         m_system_state(STATE_PITCH_INDEX) = euler(1);
         m_system_state(STATE_YAW_INDEX) = euler(2);
@@ -243,16 +242,16 @@ bool AlphaControlROS::f_compute_state() {
 
         auto cg_odom_eigen = tf2::transformToEigen(cg_odom);
 
-        Eigen::Vector3d uvw;
-        uvw(0) = m_odometry_msg.twist.twist.linear.x;
-        uvw(1) = m_odometry_msg.twist.twist.linear.y;
-        uvw(2) = m_odometry_msg.twist.twist.linear.z;
+        Eigen::Vector3f uvw;
+        uvw(0) = static_cast<float>(m_odometry_msg.twist.twist.linear.x);
+        uvw(1) = static_cast<float>(m_odometry_msg.twist.twist.linear.y);
+        uvw(2) = static_cast<float>(m_odometry_msg.twist.twist.linear.z);
 
-        uvw = cg_odom_eigen.rotation() * uvw;
+        uvw = cg_odom_eigen.rotation().cast<float>() * uvw;
 
-        m_system_state(STATE_U_INDEX) = uvw(0);
-        m_system_state(STATE_V_INDEX) = uvw(1);
-        m_system_state(STATE_W_INDEX) = uvw(2);
+        m_system_state(STATE_U_INDEX) = (float)uvw(0);
+        m_system_state(STATE_V_INDEX) = (float)uvw(1);
+        m_system_state(STATE_W_INDEX) = (float)uvw(2);
 
     }catch(tf2::LookupException &e) {
         ROS_WARN_STREAM_THROTTLE(10, e.what());
@@ -261,12 +260,14 @@ bool AlphaControlROS::f_compute_state() {
 
     alpha_control::ControlState s;
 
-    s.roll = (float)m_system_state(STATE_ROLL_INDEX);
-    s.pitch = (float)m_system_state(STATE_PITCH_INDEX);
-    s.yaw = (float)m_system_state(STATE_YAW_INDEX);
-    s.u = (float)m_system_state(STATE_U_INDEX);
-    s.v = (float)m_system_state(STATE_V_INDEX);
-    s.w = (float)m_system_state(STATE_W_INDEX);
+    s.roll = m_system_state(STATE_ROLL_INDEX);
+    s.pitch = m_system_state(STATE_PITCH_INDEX);
+    s.yaw = m_system_state(STATE_YAW_INDEX);
+    s.u = m_system_state(STATE_U_INDEX);
+    s.v = m_system_state(STATE_V_INDEX);
+    s.w = m_system_state(STATE_W_INDEX);
+
+    m_alpha_control->set_system_state(m_system_state);
 
     m_current_state_publisher.publish(s);
 
@@ -283,8 +284,13 @@ void AlphaControlROS::f_control_loop() {
             continue;
         }
 
+        auto setpoints = m_alpha_control->calculate_setpoints(
+                static_cast<float>(m_control_rate->cycleTime().toSec())
+        );
 
-
+        for(int i = 0 ; i < m_thrusters.size() ; i++) {
+            m_thrusters.at(i)->setpoint((float)setpoints(i));
+        }
 
     }
 
@@ -297,4 +303,14 @@ void AlphaControlROS::f_odometry_cb(const nav_msgs::Odometry::ConstPtr &msg) {
 
 void AlphaControlROS::f_desired_state_cb(const alpha_control::ControlState::ConstPtr &msg) {
     m_desired_state_msg = *msg;
+
+    m_desired_state(STATE_ROLL_INDEX) = msg->roll;
+    m_desired_state(STATE_PITCH_INDEX) = msg->pitch;
+    m_desired_state(STATE_YAW_INDEX) = msg->yaw;
+    m_desired_state(STATE_U_INDEX) = msg->u;
+    m_desired_state(STATE_V_INDEX) = msg->v;
+    m_desired_state(STATE_W_INDEX) = msg->w;
+
+    m_alpha_control->set_desired_state(m_desired_state);
+
 }

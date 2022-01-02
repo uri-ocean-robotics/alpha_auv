@@ -4,9 +4,11 @@
 #define ALPHA_CONTROL_ALPHA_CONTROL_H
 
 #include "memory"
-
 #include "Eigen/Dense"
 #include "mimo_pid.h"
+#include "osqp++.h"
+
+#define THRUST_LIMIT_NEWTON 40
 
 /** @brief AlphaControl Class
  *
@@ -15,13 +17,16 @@ class AlphaControl {
 private:
 
     //! @brief Control allocation matrix
-    Eigen::MatrixXd m_control_allocation_matrix;
+    Eigen::MatrixXf m_control_allocation_matrix;
 
     //! @brief MIMO PID Controller
     MimoPID::Ptr m_pid;
 
     //! @brief System State
-    Eigen::VectorXd m_system_state;
+    Eigen::VectorXf m_system_state;
+
+    //! @brief Desired State
+    Eigen::VectorXf m_desired_state;
 
 public:
     /** @brief Alpha Control default constructor
@@ -69,6 +74,20 @@ public:
      * @param system_state
      */
     void set_system_state(const decltype(m_system_state) &system_state);
+
+    /** @brief Trivial getter for desired state
+     *
+     * @return #AlphaControl::m_desired_state
+     */
+    auto get_desired_state() -> decltype(m_desired_state);
+
+    /** @brief Trivial setter for desired state
+     *
+     * @param desired_state
+     */
+    void set_desired_state(const decltype(m_desired_state) &desired_state);
+
+    Eigen::VectorXf calculate_setpoints(float dt);
 
 };
 

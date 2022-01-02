@@ -31,7 +31,7 @@ private:
      * Each element in the vector describes contribution on
      * vehicle motion of the thruster in each degree of freedom
      */
-    Eigen::VectorXd m_contribution_vector;
+    Eigen::VectorXf m_contribution_vector;
 
     //! @brief Thrust publisher
     ros::Publisher m_thrust_publisher;
@@ -50,7 +50,7 @@ public:
      * @param topic_id
      * @param contribution_vector
      */
-    ThrusterROS(std::string thruster_id, std::string topic_id, Eigen::VectorXd contribution_vector);
+    ThrusterROS(std::string thruster_id, std::string topic_id, Eigen::VectorXf contribution_vector);
 
 
     void initialize();
@@ -108,6 +108,8 @@ public:
     //! @brief Generic typedef for shared pointer
     typedef std::shared_ptr<ThrusterROS> Ptr;
 
+
+    void setpoint(float point);
 
 };
 

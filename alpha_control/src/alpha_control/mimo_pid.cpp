@@ -4,17 +4,17 @@ MimoPID::MimoPID() {
 
 }
 
-Eigen::ArrayXd MimoPID::calculate(const Eigen::ArrayXd &desired, const Eigen::ArrayXd &current) {
+Eigen::ArrayXf MimoPID::calculate(const Eigen::ArrayXf &desired, const Eigen::ArrayXf &current) {
     return calculate(desired, current, m_dt);
 }
 
-Eigen::ArrayXd MimoPID::calculate(const Eigen::ArrayXd& desired, const Eigen::ArrayXd& current, double dt) {
+Eigen::ArrayXf MimoPID::calculate(const Eigen::ArrayXf& desired, const Eigen::ArrayXf& current, double dt) {
 
-    Eigen::ArrayXd error = desired - current;
+    Eigen::ArrayXf error = desired - current;
 
     // Logging errors in a certain timeframe
     m_integral_queue.emplace_back(error * dt);
-    if((double)m_integral_queue.size() > ceil(dt / m_dt_i)) {
+    if(m_integral_queue.size() > (int)ceil(dt / m_dt_i)) {
         m_integral_queue.pop_front();
     }
 
@@ -22,7 +22,7 @@ Eigen::ArrayXd MimoPID::calculate(const Eigen::ArrayXd& desired, const Eigen::Ar
     auto p = m_kp * error;
 
     // Integration term
-    Eigen::ArrayXd i = Eigen::ArrayXd::Zero(desired.size());
+    Eigen::ArrayXf i = Eigen::ArrayXf::Zero(desired.size());
 
     for(auto& it : m_integral_queue) {
         i += it;
@@ -31,7 +31,7 @@ Eigen::ArrayXd MimoPID::calculate(const Eigen::ArrayXd& desired, const Eigen::Ar
     // Derivation term
     auto d = (error - m_pe) / dt;
 
-    Eigen::ArrayXd output = p + i + d;
+    Eigen::ArrayXf output = p + i + d;
 
     output = (output > m_max).select(m_max, output);
     output = (output < m_min).select(m_min, output);

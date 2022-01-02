@@ -3,7 +3,7 @@
 
 ThrusterROS::ThrusterROS() = default;
 
-ThrusterROS::ThrusterROS(std::string thruster_id, std::string topic_id, Eigen::VectorXd contribution_vector) :
+ThrusterROS::ThrusterROS(std::string thruster_id, std::string topic_id, Eigen::VectorXf contribution_vector) :
         m_thruster_id(std::move(thruster_id)),
         m_topic_id(std::move(topic_id)),
         m_contribution_vector(std::move(contribution_vector))
@@ -53,4 +53,10 @@ auto ThrusterROS::get_link_id() -> decltype(m_link_id) {
 
 void ThrusterROS::set_link_id(const decltype(m_link_id)& link_id) {
     m_link_id = link_id;
+}
+
+void ThrusterROS::setpoint(float point) {
+    std_msgs::Float32 msg;
+    msg.data = point;
+    m_thrust_publisher.publish(msg);
 }

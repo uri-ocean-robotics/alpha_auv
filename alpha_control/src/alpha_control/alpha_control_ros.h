@@ -58,7 +58,7 @@ private:
      *  Control allocation matrix is generated from individual
      *  configurations of the thrusters.
      */
-    Eigen::MatrixXd m_control_allocation_matrix;
+    Eigen::MatrixXf m_control_allocation_matrix;
 
     //! @brief Control allocation matrix generator type
     GeneratorType m_generator_type;
@@ -82,10 +82,10 @@ private:
     AlphaControl::Ptr m_alpha_control;
 
     //! @brief System state
-    Eigen::VectorXd m_system_state;
+    Eigen::VectorXf m_system_state;
 
     //! @brief Desired state
-    Eigen::VectorXd m_desired_state;
+    Eigen::VectorXf m_desired_state;
 
     //! @brief control rate
     std::shared_ptr<ros::Rate> m_control_rate;
