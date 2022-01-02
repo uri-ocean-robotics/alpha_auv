@@ -72,6 +72,10 @@ AlphaControlROS::AlphaControlROS()
 
     m_odometry_subscriber = m_nh.subscribe(odometry_topic, 100, &AlphaControlROS::f_odometry_cb, this);
 
+    m_desired_state_subscriber = m_nh.subscribe("state/desired", 100, &AlphaControlROS::f_desired_state_cb, this);
+
+    m_current_state_publisher = m_nh.advertise<alpha_control::ControlState>("state/current", 100);
+
     // initialize alpha control object
     m_alpha_control = std::make_shared<AlphaControl>();
 
@@ -255,6 +259,17 @@ bool AlphaControlROS::f_compute_state() {
         return false;
     }
 
+    alpha_control::ControlState s;
+
+    s.roll = (float)m_system_state(STATE_ROLL_INDEX);
+    s.pitch = (float)m_system_state(STATE_PITCH_INDEX);
+    s.yaw = (float)m_system_state(STATE_YAW_INDEX);
+    s.u = (float)m_system_state(STATE_U_INDEX);
+    s.v = (float)m_system_state(STATE_V_INDEX);
+    s.w = (float)m_system_state(STATE_W_INDEX);
+
+    m_current_state_publisher.publish(s);
+
     return true;
 }
 
@@ -269,6 +284,8 @@ void AlphaControlROS::f_control_loop() {
         }
 
 
+
+
     }
 
 }
@@ -276,4 +293,8 @@ void AlphaControlROS::f_control_loop() {
 void AlphaControlROS::f_odometry_cb(const nav_msgs::Odometry::ConstPtr &msg) {
     const std::lock_guard<std::mutex> lock(g_odom_lock);
     m_odometry_msg = *msg;
+}
+
+void AlphaControlROS::f_desired_state_cb(const alpha_control::ControlState::ConstPtr &msg) {
+    m_desired_state_msg = *msg;
 }

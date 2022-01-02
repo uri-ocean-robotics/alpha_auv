@@ -9,6 +9,7 @@
 #include "std_msgs/Float32.h"
 #include "tf2_eigen/tf2_eigen.h"
 #include "nav_msgs/Odometry.h"
+#include "alpha_control/ControlState.h"
 
 #include "alpha_control.h"
 
@@ -92,8 +93,17 @@ private:
     //! @brief Trivial subscriber
     ros::Subscriber m_odometry_subscriber;
 
+    //! @brief Current state publisher
+    ros::Publisher m_current_state_publisher;
+
+    //! @brief Desired state subscriber
+    ros::Subscriber m_desired_state_subscriber;
+
     //! @brief Holder for latest odometry msg
     nav_msgs::Odometry m_odometry_msg;
+
+    //! @brief Desired state message
+    alpha_control::ControlState m_desired_state_msg;
 
     /** @brief Generates control allocation matrix from transform tree
      *
@@ -135,7 +145,10 @@ private:
      */
     void f_odometry_cb(const nav_msgs::Odometry::ConstPtr& msg);
 
+    void f_desired_state_cb(const alpha_control::ControlState::ConstPtr& msg);
 
+
+    //! @brief Controller worker
     std::thread m_controller_worker;
 
 public:
