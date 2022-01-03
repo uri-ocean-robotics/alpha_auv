@@ -3,8 +3,6 @@
 
 ## Installation
 
-
-
 Pull repository
 ```bash
 cd `echo $ROS_PACKAGE_PATH | awk -F: '{ print $1 }'`
@@ -23,4 +21,16 @@ Install dependencies
 ```bash
 cd `echo $ROS_PACKAGE_PATH | awk -F: '{ print $1 }'`
 rosdep install --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} -y
+```
+
+## Quick Start
+
+To run the simulation
+```bash
+roslaunch alpha_bringup bringup_simulation.launch
+```
+
+To run the teleop node
+```bash
+roslaunch alpha_teleop simple_teleop.launch
 ```
