@@ -120,6 +120,24 @@ public:
      */
     void set_dt_i(const decltype(m_dt_i) &gain);
 
+    //! @brief Default getter for max
+    auto get_max() ->  decltype(m_max);
+
+    /*! @brief Default setter for max
+     *
+     * @param gain
+     */
+    void set_max(const decltype(m_max) &gain);
+
+    //! @brief Default getter for min
+    auto get_min() ->  decltype(m_min);
+
+    /*! @brief Default setter for min
+     *
+     * @param gain
+     */
+    void set_min(const decltype(m_min) &gain);
+
 };
 
 

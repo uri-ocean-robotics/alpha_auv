@@ -122,7 +122,7 @@ void AlphaControlROS::f_read_pid_gains() {
 
     // This is just a fancy way of reading ros params
     std::vector<std::string> axis{"x","y","z","roll","pitch","yaw","u","v","w"};
-    std::vector<std::string> gains{"p","i","d"};
+    std::vector<std::string> gains{"p","i","d", "max", "min"};
 
     Eigen::MatrixXf gain_matrix(axis.size(), gains.size());
 
@@ -135,10 +135,18 @@ void AlphaControlROS::f_read_pid_gains() {
     m_alpha_control->get_pid()->set_kp(gain_matrix.col(0).cast<float>());
     m_alpha_control->get_pid()->set_ki(gain_matrix.col(1).cast<float>());
     m_alpha_control->get_pid()->set_kd(gain_matrix.col(2).cast<float>());
+    m_alpha_control->get_pid()->set_max(gain_matrix.col(3).cast<float>());
+    m_alpha_control->get_pid()->set_min(gain_matrix.col(4).cast<float>());
 
 }
 
 void AlphaControlROS::initialize() {
+
+    m_alpha_control->set_controlled_freedoms(std::vector<int>{
+        STATE_U_INDEX,
+        STATE_PITCH_INDEX,
+        STATE_YAW_INDEX
+    });
 
     f_generate_control_allocation_matrix();
 
@@ -148,7 +156,12 @@ void AlphaControlROS::initialize() {
 
     m_control_rate = std::make_shared<ros::Rate>(20);
 
+    m_alpha_control->set_desired_state(m_desired_state);
+    m_alpha_control->set_system_state(m_system_state);
+
     m_controller_worker = std::thread([this] { f_control_loop(); });
+
+
 
 }
 

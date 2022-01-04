@@ -91,12 +91,25 @@ control_allocation_matrix:
 # PID gains for each degree of freedom
 ##
 pid:
-  x:      {p: 10, i: 0, d: 2}
-  y:      {p: 10, i: 0, d: 2}
-  z:      {p: 10, i: 0, d: 2}
-  roll:   { p: 10, i: 0, d: 2 }
-  pitch:  { p: 10, i: 0, d: 2 }
-  yaw:    { p: 10, i: 0, d: 2 }
-  u:      {p: 10, i: 0, d: 2}
-  v:      {p: 10, i: 0, d: 2}
-  w:      {p: 10, i: 0, d: 2}
+  x:      {p: 10, i: 0, d: 2, max: 10, min: -10}
+  y:      {p: 10, i: 0, d: 2, max: 10, min: -10}
+  z:      {p: 10, i: 0, d: 2, max: 10, min: -10}
+  roll:   {p: 10, i: 0, d: 2, max: 10, min: -10}
+  pitch:  {p: 10, i: 0, d: 2, max: 10, min: -10}
+  yaw:    {p: 10, i: 0, d: 2, max: 10, min: -10}
+  u:      {p: 10, i: 0, d: 2, max: 10, min: -10}
+  v:      {p: 10, i: 0, d: 2, max: 10, min: -10}
+  w:      {p: 10, i: 0, d: 2, max: 10, min: -10}
+
+types:
+  flight:
+    - u
+    - pitch
+    - yaw
+
+  hold:
+    - x
+    - y
+    - z
+    - yaw
+    - pitch

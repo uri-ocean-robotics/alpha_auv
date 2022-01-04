@@ -28,6 +28,12 @@ private:
     //! @brief Desired State
     Eigen::VectorXf m_desired_state;
 
+    void f_calculate_pid(Eigen::VectorXf &u, double dt);
+
+    bool f_optimize_thrust(Eigen::VectorXf &t, Eigen::VectorXf u);
+
+    std::vector<int> m_controlled_freedoms;
+
 public:
     /** @brief Alpha Control default constructor
      *
@@ -88,6 +94,8 @@ public:
     void set_desired_state(const decltype(m_desired_state) &desired_state);
 
     Eigen::VectorXf calculate_setpoints(float dt);
+
+    void set_controlled_freedoms(decltype(m_controlled_freedoms) f);
 
 };
 

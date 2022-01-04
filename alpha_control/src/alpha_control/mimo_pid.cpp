@@ -19,7 +19,7 @@ Eigen::ArrayXf MimoPID::calculate(const Eigen::ArrayXf& desired, const Eigen::Ar
     }
 
     // Proportional term
-    auto p = m_kp * error;
+    Eigen::ArrayXf p = m_kp * error;
 
     // Integration term
     Eigen::ArrayXf i = Eigen::ArrayXf::Zero(desired.size());
@@ -28,17 +28,18 @@ Eigen::ArrayXf MimoPID::calculate(const Eigen::ArrayXf& desired, const Eigen::Ar
         i += it;
     }
 
+    i = (i > m_max).select(m_max, i);
+    i = (i < m_min).select(m_min, i);
+
     // Derivation term
-    auto d = (error - m_pe) / dt;
-
-    Eigen::ArrayXf output = p + i + d;
-
-    output = (output > m_max).select(m_max, output);
-    output = (output < m_min).select(m_min, output);
+    if(!m_pe.data()) {
+        m_pe = Eigen::VectorXf::Zero(error.size());
+    }
+    Eigen::ArrayXf d = (error - m_pe) / dt;
 
     m_pe = error;
 
-    return output;
+    return p + i + d;
 }
 
 auto MimoPID::get_kp() -> decltype(m_kp) {
@@ -81,3 +82,18 @@ void MimoPID::set_dt_i(const decltype(m_dt_i) &gain) {
     m_dt_i = gain;
 }
 
+auto MimoPID::get_max() -> decltype(m_max) {
+    return m_max;
+}
+
+void MimoPID::set_max(const decltype(m_max) &gain) {
+    m_max= gain;
+}
+
+auto MimoPID::get_min() -> decltype(m_max) {
+    return m_min;
+}
+
+void MimoPID::set_min(const decltype(m_min) &gain) {
+    m_min= gain;
+}

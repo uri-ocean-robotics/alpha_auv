@@ -41,85 +41,115 @@ void AlphaControl::set_desired_state(const decltype(m_desired_state) &desired_st
 
 Eigen::VectorXf AlphaControl::calculate_setpoints(float dt) {
 
-    Eigen::VectorXf u = m_pid->calculate(m_desired_state, m_system_state, dt);
+    Eigen::VectorXf u;
+    f_calculate_pid(u, dt);
+
+    Eigen::VectorXf t;
+    if(f_optimize_thrust(t, u)) {
+        std::cout << t.transpose() << std::endl;
+    } else {
+        ROS_WARN_STREAM("Optimum solution can not be found");
+    }
+
+    return Eigen::VectorXf::Zero(m_control_allocation_matrix.cols());
+}
+
+void AlphaControl::f_calculate_pid(Eigen::VectorXf &u, double dt) {
+    u = m_pid->calculate(m_desired_state, m_system_state, dt);
+}
+
+bool AlphaControl::f_optimize_thrust(Eigen::VectorXf &t, Eigen::VectorXf u) {
+
+    // Control allocation matrix
+    Eigen::MatrixXf T(m_controlled_freedoms.size(), m_control_allocation_matrix.cols());
+
+    // Control matrix
+    Eigen::VectorXf U(m_controlled_freedoms.size());
+
+    for(int i = 0 ; i < m_controlled_freedoms.size() ; i++) {
+        T.row(i) = m_control_allocation_matrix.row(m_controlled_freedoms.at(i));
+        U(i) = u(m_controlled_freedoms.at(i));
+    }
 
     // Q -> objective matrix
-    // TODO: objective matrix doesn't change at each iteration. Computing it in every iteration is an absolute waste-of-a-cycle-time.
-    Eigen::MatrixXf Q = 2 * m_control_allocation_matrix.transpose() * m_control_allocation_matrix;
+    Eigen::MatrixXf Q = 2 * T.transpose() * T;
+    // c -> objective vector
+    Eigen::VectorXd c = (-(T.transpose() * U).transpose() - (U.transpose() * T)).transpose().cast<double>();
 
-    std::vector<Eigen::Triplet<float>> Q_triplets;
+    std::vector<Eigen::Triplet<double>> Q_triplets;
     for(int i = 0 ; i < Q.rows() ; i++) {
         for(int j = 0 ; j < Q.cols() ; j++) {
-            Q_triplets.emplace_back(Eigen::Triplet<float>{i, j, Q(i,j)});
+            Q_triplets.emplace_back(Eigen::Triplet<double>{i, j, static_cast<double>(Q(i,j))});
         }
     }
 
-    // c -> objective vector
-    Eigen::MatrixXf c = (-(m_control_allocation_matrix.transpose() * u).transpose() - (u.transpose() * m_control_allocation_matrix)).transpose();
-
-    auto limit_u = THRUST_LIMIT_NEWTON * Eigen::VectorXd::Ones(m_control_allocation_matrix.cols());
-
-    auto limit_l = -THRUST_LIMIT_NEWTON * Eigen::VectorXd::Ones(m_control_allocation_matrix.cols());
-
     osqp::OsqpInstance qp_instance;
+    Eigen::SparseMatrix<double> Q_sparse(Q.rows(), Q.cols());
+    Q_sparse.setFromTriplets(Q_triplets.begin(), Q_triplets.end());
+    qp_instance.objective_matrix = Q_sparse;
 
-    qp_instance.objective_matrix.setFromTriplets(Q_triplets.begin(), Q_triplets.end());
-    qp_instance.objective_vector = c.cast<double>();
-    qp_instance.lower_bounds = limit_l;
-    qp_instance.upper_bounds = limit_u;
+    qp_instance.objective_vector = c;
+    Eigen::VectorXd upper_bounds = THRUST_LIMIT_NEWTON * Eigen::VectorXd::Ones(T.cols());
+    Eigen::VectorXd lower_bounds = -THRUST_LIMIT_NEWTON * Eigen::VectorXd::Ones(T.cols());
+    qp_instance.lower_bounds = lower_bounds;
+    qp_instance.upper_bounds = upper_bounds;
+    qp_instance.constraint_matrix = Eigen::SparseMatrix<double>(Q.cols(),Q.cols());
 
     osqp::OsqpSolver solver;
-
     osqp::OsqpSettings settings;
+
+    settings.verbose = false;
 
     auto status = solver.Init(qp_instance, settings);
 
-    if(status.ok()) {
-        osqp::OsqpExitCode exitCode = solver.Solve();
-
-        Eigen::VectorXf optimal_solution;
-
-        switch (exitCode) {
-            case osqp::OsqpExitCode::kOptimal:
-                optimal_solution = solver.primal_solution().cast<float>();
-                return optimal_solution;
-                break;
-            case osqp::OsqpExitCode::kPrimalInfeasible:
-                ROS_WARN_STREAM("kPrimalInfeasible");
-                break;
-            case osqp::OsqpExitCode::kDualInfeasible:
-                ROS_WARN_STREAM("kDualInfeasible");
-                break;
-            case osqp::OsqpExitCode::kOptimalInaccurate:
-                ROS_WARN_STREAM("kOptimalInaccurate");
-                break;
-            case osqp::OsqpExitCode::kPrimalInfeasibleInaccurate:
-                ROS_WARN_STREAM("kPrimalInfeasibleInaccurate");
-                break;
-            case osqp::OsqpExitCode::kDualInfeasibleInaccurate:
-                ROS_WARN_STREAM("kDualInfeasibleInaccurate");
-                break;
-            case osqp::OsqpExitCode::kMaxIterations:
-                ROS_WARN_STREAM("kMaxIterations");
-                break;
-            case osqp::OsqpExitCode::kInterrupted:
-                ROS_WARN_STREAM("kInterrupted");
-                break;
-            case osqp::OsqpExitCode::kTimeLimitReached:
-                ROS_WARN_STREAM("kTimeLimitReached");
-                break;
-            case osqp::OsqpExitCode::kNonConvex:
-                ROS_WARN_STREAM("kNonConvex");
-                break;
-            case osqp::OsqpExitCode::kUnknown:
-                ROS_WARN_STREAM("kUnknown");
-                break;
-            default:
-                break;
-        }
-
+    if(not status.ok()) {
+        return false;
     }
 
+    osqp::OsqpExitCode exitCode = solver.Solve();
 
-    return Eigen::VectorXf::Zero(m_control_allocation_matrix.cols());
+    switch (exitCode) {
+        case osqp::OsqpExitCode::kOptimal:
+            t = solver.primal_solution().cast<float>();
+            return true;
+            break;
+        case osqp::OsqpExitCode::kPrimalInfeasible:
+            ROS_WARN_STREAM("kPrimalInfeasible");
+            break;
+        case osqp::OsqpExitCode::kDualInfeasible:
+            ROS_WARN_STREAM("kDualInfeasible");
+            break;
+        case osqp::OsqpExitCode::kOptimalInaccurate:
+            ROS_WARN_STREAM("kOptimalInaccurate");
+            break;
+        case osqp::OsqpExitCode::kPrimalInfeasibleInaccurate:
+            ROS_WARN_STREAM("kPrimalInfeasibleInaccurate");
+            break;
+        case osqp::OsqpExitCode::kDualInfeasibleInaccurate:
+            ROS_WARN_STREAM("kDualInfeasibleInaccurate");
+            break;
+        case osqp::OsqpExitCode::kMaxIterations:
+            ROS_WARN_STREAM("kMaxIterations");
+            break;
+        case osqp::OsqpExitCode::kInterrupted:
+            ROS_WARN_STREAM("kInterrupted");
+            break;
+        case osqp::OsqpExitCode::kTimeLimitReached:
+            ROS_WARN_STREAM("kTimeLimitReached");
+            break;
+        case osqp::OsqpExitCode::kNonConvex:
+            ROS_WARN_STREAM("kNonConvex");
+            break;
+        case osqp::OsqpExitCode::kUnknown:
+            ROS_WARN_STREAM("kUnknown");
+            break;
+        default:
+            break;
+    }
+
+    return false;
+}
+
+void AlphaControl::set_controlled_freedoms(decltype(m_controlled_freedoms) f) {
+    m_controlled_freedoms = f;
 }
