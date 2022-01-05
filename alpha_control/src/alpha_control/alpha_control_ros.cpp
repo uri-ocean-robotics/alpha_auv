@@ -10,17 +10,13 @@ std::mutex g_odom_lock;
 AlphaControlROS::AlphaControlROS()
         : m_nh(),
         m_pnh("~"),
-        m_transform_listener(m_transform_buffer)
+        m_transform_listener(m_transform_buffer),
+        m_generator_type(AlphaControlROS::GeneratorType::UNKNOWN)
 {
-
 
     m_system_state = Eigen::VectorXf::Zero(STATE_VECTOR_SIZE);
 
     m_desired_state = Eigen::VectorXf::Zero(STATE_VECTOR_SIZE);
-
-    // Read all the configuration file to get all the listed thrusters
-    std::vector<std::string> thruster_id_list;
-    m_pnh.param<decltype(thruster_id_list)>("thruster_ids", thruster_id_list, decltype(thruster_id_list)());
 
     // Read tf prefix
     std::string tf_prefix;
@@ -37,36 +33,6 @@ AlphaControlROS::AlphaControlROS()
     // Read world link
     m_pnh.param<std::string>("world_link", m_world_link_id, "world");
 
-    // Read generator type
-    std::string generator_type;
-    m_pnh.param<std::string>("generator_type", generator_type,
-                             CONTROL_ALLOCATION_MATRIX_GENERATOR_TYPE_TF);
-
-    if(generator_type == CONTROL_ALLOCATION_MATRIX_GENERATOR_TYPE_TF) {
-       m_generator_type = GeneratorType::TF;
-    } else if (generator_type == CONTROL_ALLOCATION_MATRIX_GENERATOR_TYPE_USER) {
-        m_generator_type = GeneratorType::USER;
-    } else {
-        m_generator_type = GeneratorType::UNKNOWN;
-    }
-
-    // create thruster objects
-    for(const auto& id : thruster_id_list) {
-        ThrusterROS::Ptr t = std::make_shared<ThrusterROS>();
-        t->set_thruster_id(std::string(id));
-        m_thrusters.emplace_back(t);
-    }
-
-    // initialize thrust setpoint publishers
-    for(const auto& t : m_thrusters) {
-        std::string topic_id;
-        m_pnh.param<std::string>("thruster_topics/" + t->get_thruster_id(),
-                                 topic_id,
-                                 "control/thruster/" + t->get_thruster_id() + "/setpoint");
-        t->set_topic_id(topic_id);
-    }
-
-
     std::string odometry_topic;
     m_pnh.param<std::string>("odometry_source", odometry_topic, "odometry");
 
@@ -82,6 +48,19 @@ AlphaControlROS::AlphaControlROS()
 }
 
 void AlphaControlROS::f_generate_control_allocation_matrix() {
+
+    // Read generator type
+    std::string generator_type;
+    m_pnh.param<std::string>("generator_type", generator_type,
+                             CONTROL_ALLOCATION_MATRIX_GENERATOR_TYPE_TF);
+
+    if(generator_type == CONTROL_ALLOCATION_MATRIX_GENERATOR_TYPE_TF) {
+        m_generator_type = GeneratorType::TF;
+    } else if (generator_type == CONTROL_ALLOCATION_MATRIX_GENERATOR_TYPE_USER) {
+        m_generator_type = GeneratorType::USER;
+    } else {
+        m_generator_type = GeneratorType::UNKNOWN;
+    }
 
     if(m_generator_type == GeneratorType::USER) {
         f_generate_control_allocation_from_user();
@@ -140,19 +119,58 @@ void AlphaControlROS::f_read_pid_gains() {
 
 }
 
+void AlphaControlROS::f_generate_thrusters() {
+    // Read all the configuration file to get all the listed thrusters
+    std::vector<std::string> thruster_id_list;
+    m_pnh.param<decltype(thruster_id_list)>(CONF_THRUSTER_IDS, thruster_id_list, decltype(thruster_id_list)());
+
+
+    // create thruster objects
+    for(const auto& id : thruster_id_list) {
+        ThrusterROS::Ptr t = std::make_shared<ThrusterROS>();
+        t->set_thruster_id(std::string(id));
+        m_thrusters.emplace_back(t);
+    }
+
+    // initialize thrust setpoint publishers
+    for(const auto& t : m_thrusters) {
+
+        // read topic id config for thruster
+        std::string topic_id;
+        m_pnh.param<std::string>(CONF_THRUSTER_TOPICS"/" + t->get_thruster_id(),
+                                 topic_id,
+                                 "control/thruster/" + t->get_thruster_id() + "/setpoint");
+        t->set_topic_id(topic_id);
+
+
+        // read polynomials for thruster
+        std::vector<double> poly;
+        m_pnh.param<std::vector<double>>(CONF_THRUSTER_POLY "/" + t->get_thruster_id(), poly, std::vector<double>());
+        t->get_poly_solver()->set_coeff(poly);
+
+    }
+
+}
+
 void AlphaControlROS::initialize() {
 
     m_alpha_control->set_controlled_freedoms(std::vector<int>{
-        STATE_U_INDEX,
+        // STATE_U_INDEX,
         STATE_PITCH_INDEX,
         STATE_YAW_INDEX
     });
+
+    f_generate_thrusters();
 
     f_generate_control_allocation_matrix();
 
     f_read_pid_gains();
 
-    std::for_each(m_thrusters.begin(), m_thrusters.end(), [](const ThrusterROS::Ptr& t){t->initialize();});
+    std::for_each(m_thrusters.begin(),m_thrusters.end(),
+            [](const ThrusterROS::Ptr& t){
+                t->initialize();
+            }
+    );
 
     m_control_rate = std::make_shared<ros::Rate>(20);
 
@@ -220,7 +238,6 @@ void AlphaControlROS::f_generate_control_allocation_from_tf() {
 bool AlphaControlROS::f_compute_state() {
 
     try {
-
         // Transform center of gravity to world
         auto cg_world = m_transform_buffer.lookupTransform(
                 m_cg_link_id,
@@ -297,12 +314,12 @@ void AlphaControlROS::f_control_loop() {
             continue;
         }
 
-        auto setpoints = m_alpha_control->calculate_setpoints(
+        auto needed_forces = m_alpha_control->calculate_needed_forces(
                 static_cast<float>(m_control_rate->cycleTime().toSec())
         );
 
         for(int i = 0 ; i < m_thrusters.size() ; i++) {
-            m_thrusters.at(i)->setpoint((float)setpoints(i));
+            m_thrusters.at(i)->request_force((float)needed_forces(i));
         }
 
     }

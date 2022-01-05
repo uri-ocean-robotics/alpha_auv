@@ -16,6 +16,8 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
 )
 
+find_package(GSL REQUIRED)
+
 find_package(Eigen3 REQUIRED)
 add_definitions(${EIGEN_DEFINITIONS})
 
@@ -157,6 +159,7 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_ros_node
   src/alpha_control_ros_node.cpp
+  src/alpha_control/polynomial_solver.cpp
   src/alpha_control/mimo_pid.cpp
   src/alpha_control/thruster_ros.cpp
   src/alpha_control/alpha_control.cpp
@@ -176,6 +179,7 @@ add_dependencies(${PROJECT_NAME}_ros_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_ros_node
   osqp-cpp
+  gsl
   ${catkin_LIBRARIES}
 )
 

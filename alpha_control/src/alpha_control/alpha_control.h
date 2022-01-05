@@ -34,6 +34,8 @@ private:
 
     std::vector<int> m_controlled_freedoms;
 
+    Eigen::ArrayXf f_error_function(Eigen::ArrayXf desired, Eigen::ArrayXf current);
+
 public:
     /** @brief Alpha Control default constructor
      *
@@ -93,7 +95,7 @@ public:
      */
     void set_desired_state(const decltype(m_desired_state) &desired_state);
 
-    Eigen::VectorXf calculate_setpoints(float dt);
+    Eigen::VectorXf calculate_needed_forces(float dt);
 
     void set_controlled_freedoms(decltype(m_controlled_freedoms) f);
 

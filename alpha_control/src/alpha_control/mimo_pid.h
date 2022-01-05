@@ -6,6 +6,8 @@
 #include "Eigen/Dense"
 #include "memory"
 #include "deque"
+#include "functional"
+
 
 class MimoPID {
 private:
@@ -50,6 +52,8 @@ private:
 
     //! @brief Integral queue
     std::deque<Eigen::ArrayXf> m_integral_queue;
+
+    std::function<Eigen::ArrayXf(Eigen::ArrayXf desired, Eigen::ArrayXf current)> m_error_function;
 
 public:
 
@@ -138,6 +142,14 @@ public:
      */
     void set_min(const decltype(m_min) &gain);
 
+    //! @brief Default getter for error function
+    auto get_error_function() ->  decltype(m_error_function);
+
+    /*! @brief Default setter for error function
+     *
+     * @param func
+     */
+    void set_error_function(const decltype(m_error_function) &func);
 };
 
 

@@ -1,6 +1,7 @@
 #include "mimo_pid.h"
+#include "exception.hpp"
 
-MimoPID::MimoPID() {
+MimoPID::MimoPID() : m_error_function(nullptr) {
 
 }
 
@@ -10,7 +11,11 @@ Eigen::ArrayXf MimoPID::calculate(const Eigen::ArrayXf &desired, const Eigen::Ar
 
 Eigen::ArrayXf MimoPID::calculate(const Eigen::ArrayXf& desired, const Eigen::ArrayXf& current, double dt) {
 
-    Eigen::ArrayXf error = desired - current;
+    if(m_error_function == nullptr) {
+        throw control_exception("error function is not defined for MIMO pid.");
+    }
+
+    Eigen::ArrayXf error = m_error_function(desired, current);
 
     // Logging errors in a certain timeframe
     m_integral_queue.emplace_back(error * dt);
@@ -96,4 +101,12 @@ auto MimoPID::get_min() -> decltype(m_max) {
 
 void MimoPID::set_min(const decltype(m_min) &gain) {
     m_min= gain;
+}
+
+auto MimoPID::get_error_function() -> decltype(m_error_function) {
+    return m_error_function;
+}
+
+void MimoPID::set_error_function(const decltype(m_error_function) &func) {
+    m_error_function = func;
 }

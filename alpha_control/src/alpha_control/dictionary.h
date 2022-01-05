@@ -35,4 +35,9 @@ static const char * const STATES[] = {
         STATE_W,
 };
 
+
+#define CONF_THRUSTER_POLY "thruster_polynomials"
+#define CONF_THRUSTER_TOPICS "thruster_topics"
+#define CONF_THRUSTER_IDS "thruster_ids"
+
 #endif //ALPHA_CONTROL_DICTIONARY_H

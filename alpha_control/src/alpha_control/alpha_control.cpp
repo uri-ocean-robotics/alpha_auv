@@ -1,9 +1,13 @@
 #include "alpha_control.h"
 #include "ros/ros.h"
+#include "dictionary.h"
+#include "exception.hpp"
 
 AlphaControl::AlphaControl() {
 
     m_pid = std::make_shared<MimoPID>();
+
+    m_pid->set_error_function(std::bind(&AlphaControl::f_error_function, this, std::placeholders::_1, std::placeholders::_2));
 
 }
 
@@ -39,14 +43,14 @@ void AlphaControl::set_desired_state(const decltype(m_desired_state) &desired_st
     m_desired_state = desired_state;
 }
 
-Eigen::VectorXf AlphaControl::calculate_setpoints(float dt) {
+Eigen::VectorXf AlphaControl::calculate_needed_forces(float dt) {
 
     Eigen::VectorXf u;
     f_calculate_pid(u, dt);
 
     Eigen::VectorXf t;
     if(f_optimize_thrust(t, u)) {
-        std::cout << t.transpose() << std::endl;
+        return t;
     } else {
         ROS_WARN_STREAM("Optimum solution can not be found");
     }
@@ -152,4 +156,23 @@ bool AlphaControl::f_optimize_thrust(Eigen::VectorXf &t, Eigen::VectorXf u) {
 
 void AlphaControl::set_controlled_freedoms(decltype(m_controlled_freedoms) f) {
     m_controlled_freedoms = f;
+}
+
+Eigen::ArrayXf AlphaControl::f_error_function(Eigen::ArrayXf desired, Eigen::ArrayXf current) {
+
+    if(desired.size() != current.size()) {
+        throw control_exception("desired and current state sizes are different");
+    }
+
+    Eigen::ArrayXf error = desired - current;
+
+    for(const auto& i : std::vector<int>{
+        STATE_ROLL_INDEX,
+        STATE_PITCH_INDEX,
+        STATE_YAW_INDEX
+    }) {
+        error(i) = atan2(sin(desired(i) - current(i)), cos(desired(i) - current(i)));
+    }
+
+    return error;
 }

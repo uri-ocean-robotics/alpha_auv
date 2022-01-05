@@ -6,6 +6,7 @@
 #include "ros/ros.h"
 #include "std_msgs/Float32.h"
 #include "Eigen/Dense"
+#include "polynomial_solver.h"
 
 /** @brief Thruster class for managing data
  *
@@ -35,6 +36,9 @@ private:
 
     //! @brief Thrust publisher
     ros::Publisher m_thrust_publisher;
+
+    //! @brief Polynomial solver
+    PolynomialSolver::Ptr m_poly_solver;
 
 public:
 
@@ -104,13 +108,17 @@ public:
      */
     void set_contribution_vector(const decltype(m_contribution_vector )& contribution_vector);
 
+    auto get_poly_solver() -> decltype(m_poly_solver);
+
+    void set_poly_solver(decltype(m_poly_solver) solver);
+
 
     //! @brief Generic typedef for shared pointer
     typedef std::shared_ptr<ThrusterROS> Ptr;
 
-
     void setpoint(float point);
 
+    bool request_force(float N);
 };
 
 

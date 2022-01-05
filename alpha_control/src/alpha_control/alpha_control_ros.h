@@ -128,6 +128,8 @@ private:
     void f_read_pid_gains();
 
 
+    void f_generate_thrusters();
+
     /** @brief computes state of the system
      *
      */
