@@ -6,10 +6,13 @@
 #include "thread"
 #include "ros/ros.h"
 #include "tf2_ros/transform_listener.h"
+#include "tf2/LinearMath/Matrix3x3.h"
 #include "std_msgs/Float32.h"
 #include "tf2_eigen/tf2_eigen.h"
 #include "nav_msgs/Odometry.h"
 #include "alpha_control/ControlState.h"
+#include "dynamic_reconfigure/server.h"
+#include "alpha_control/PIDConfig.h"
 
 #include "alpha_control.h"
 
@@ -58,7 +61,7 @@ private:
      *  Control allocation matrix is generated from individual
      *  configurations of the thrusters.
      */
-    Eigen::MatrixXf m_control_allocation_matrix;
+    Eigen::MatrixXd m_control_allocation_matrix;
 
     //! @brief Control allocation matrix generator type
     GeneratorType m_generator_type;
@@ -82,10 +85,10 @@ private:
     AlphaControl::Ptr m_alpha_control;
 
     //! @brief System state
-    Eigen::VectorXf m_system_state;
+    Eigen::VectorXd m_system_state;
 
     //! @brief Desired state
-    Eigen::VectorXf m_desired_state;
+    Eigen::VectorXd m_desired_state;
 
     //! @brief control rate
     std::shared_ptr<ros::Rate> m_control_rate;
@@ -98,6 +101,9 @@ private:
 
     //! @brief Desired state subscriber
     ros::Subscriber m_desired_state_subscriber;
+
+    //! @brief Publishes error in the state
+    ros::Publisher m_error_state_publisher;
 
     //! @brief Holder for latest odometry msg
     nav_msgs::Odometry m_odometry_msg;
@@ -127,7 +133,9 @@ private:
      */
     void f_read_pid_gains();
 
-
+    /** @brief Generate thrusters
+     *
+     */
     void f_generate_thrusters();
 
     /** @brief computes state of the system
@@ -147,11 +155,19 @@ private:
      */
     void f_odometry_cb(const nav_msgs::Odometry::ConstPtr& msg);
 
+    /** @brief Trivial desired state callback
+     *
+     * @param msg
+     */
     void f_desired_state_cb(const alpha_control::ControlState::ConstPtr& msg);
 
 
     //! @brief Controller worker
     std::thread m_controller_worker;
+
+    dynamic_reconfigure::Server<alpha_control::PIDConfig> m_dynconf_pid_server;
+
+    void f_dynconf_pid_cb(alpha_control::PIDConfig &config, uint32_t level);
 
 public:
 
@@ -169,7 +185,6 @@ public:
 
     //! @brief Generic typedef for shared pointer
     typedef std::shared_ptr<AlphaControlROS> Ptr;
-
 
 
 };

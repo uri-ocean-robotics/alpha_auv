@@ -54,6 +54,7 @@
   <depend>std_msgs</depend>
   <depend>tf2_ros</depend>
   <depend>libgsl</depend>
+  <depend>dynamic_reconfigure</depend>
   <exec_depend>message_runtime</exec_depend>
   <build_depend>message_generation</build_depend>
   <doc_depend>doxygen</doc_depend>

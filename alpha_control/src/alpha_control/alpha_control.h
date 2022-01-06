@@ -8,7 +8,6 @@
 #include "mimo_pid.h"
 #include "osqp++.h"
 
-#define THRUST_LIMIT_NEWTON 40
 
 /** @brief AlphaControl Class
  *
@@ -17,24 +16,29 @@ class AlphaControl {
 private:
 
     //! @brief Control allocation matrix
-    Eigen::MatrixXf m_control_allocation_matrix;
+    Eigen::MatrixXd m_control_allocation_matrix;
 
     //! @brief MIMO PID Controller
     MimoPID::Ptr m_pid;
 
     //! @brief System State
-    Eigen::VectorXf m_system_state;
+    Eigen::VectorXd m_system_state;
 
     //! @brief Desired State
-    Eigen::VectorXf m_desired_state;
+    Eigen::VectorXd m_desired_state;
 
-    void f_calculate_pid(Eigen::VectorXf &u, double dt);
+    //! @brief Error State
+    Eigen::VectorXd m_error_state;
 
-    bool f_optimize_thrust(Eigen::VectorXf &t, Eigen::VectorXf u);
+    bool f_calculate_pid(Eigen::VectorXd &u, double dt);
+
+    bool f_optimize_thrust(Eigen::VectorXd &t, Eigen::VectorXd u);
 
     std::vector<int> m_controlled_freedoms;
 
-    Eigen::ArrayXf f_error_function(Eigen::ArrayXf desired, Eigen::ArrayXf current);
+    Eigen::ArrayXd f_error_function(Eigen::ArrayXd desired, Eigen::ArrayXd current);
+
+
 
 public:
     /** @brief Alpha Control default constructor
@@ -95,9 +99,11 @@ public:
      */
     void set_desired_state(const decltype(m_desired_state) &desired_state);
 
-    Eigen::VectorXf calculate_needed_forces(float dt);
+    bool calculate_needed_forces(Eigen::VectorXd &t, float dt);
 
     void set_controlled_freedoms(decltype(m_controlled_freedoms) f);
+
+    auto get_state_error() -> decltype(m_error_state);
 
 };
 

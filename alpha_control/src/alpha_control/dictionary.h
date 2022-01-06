@@ -1,5 +1,5 @@
-#ifndef ALPHA_CONTROL_DICTIONARY_HPP
-#define ALPHA_CONTROL_DICTIONARY_HPP
+#ifndef ALPHA_CONTROL_DICTIONARY_H
+#define ALPHA_CONTROL_DICTIONARY_H
 
 #include "vector"
 #include "string"
@@ -26,7 +26,7 @@
 
 #define STATE_VECTOR_SIZE 9
 
-static const std::vector<std::string> STATES{
+static const char * const STATES[] = {
         STATE_X,
         STATE_Y,
         STATE_Z,
@@ -42,5 +42,15 @@ static const std::vector<std::string> STATES{
 #define CONF_THRUST_COMMAND_TOPICS "thruster_command_topics"
 #define CONF_THRUSTER_FORCE_TOPICS "thruster_force_topics"
 #define CONF_THRUSTER_IDS "thruster_ids"
+#define CONF_GENERATOR_TYPE "generator_type"
+#define CONF_TF_PREFIX "tf_prefix"
+#define CONF_CG_LINK "cg_link"
+#define CONF_WORLD_LINK "world_link"
+#define CONF_ODOMETRY_SOURCE "odometry_source"
+#define CONF_PID "pid"
+#define CONF_CONTROL_ALLOCATION_MATRIX "control_allocation_matrix"
+#define CONF_CONTROL_TF "control_tf"
 
-#endif //ALPHA_CONTROL_DICTIONARY_HPP
+#define THRUST_LIMIT_NEWTON 20
+
+#endif //ALPHA_CONTROL_DICTIONARY_H

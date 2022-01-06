@@ -1,50 +1,49 @@
 #include "mimo_pid.h"
 #include "exception.hpp"
 
-MimoPID::MimoPID() : m_error_function(nullptr) {
+MimoPID::MimoPID() : m_error_function(nullptr) , m_dt_i(10){
 
 }
 
-Eigen::ArrayXf MimoPID::calculate(const Eigen::ArrayXf &desired, const Eigen::ArrayXf &current) {
-    return calculate(desired, current, m_dt);
-}
-
-Eigen::ArrayXf MimoPID::calculate(const Eigen::ArrayXf& desired, const Eigen::ArrayXf& current, double dt) {
+bool MimoPID::calculate(Eigen::VectorXd& u, const Eigen::ArrayXd& desired, const Eigen::ArrayXd& current, double dt) {
 
     if(m_error_function == nullptr) {
         throw control_exception("error function is not defined for MIMO pid.");
     }
 
-    Eigen::ArrayXf error = m_error_function(desired, current);
+    Eigen::ArrayXd error = m_error_function(desired, current);
 
     // Logging errors in a certain timeframe
     m_integral_queue.emplace_back(error * dt);
-    if(m_integral_queue.size() > (int)ceil(dt / m_dt_i)) {
+    if(m_integral_queue.size() > (int)ceil(m_dt_i / dt)) {
         m_integral_queue.pop_front();
     }
 
     // Proportional term
-    Eigen::ArrayXf p = m_kp * error;
+    Eigen::ArrayXd p = m_kp * error;
 
     // Integration term
-    Eigen::ArrayXf i = Eigen::ArrayXf::Zero(desired.size());
+    Eigen::ArrayXd i = Eigen::ArrayXd::Zero(desired.size());
 
     for(auto& it : m_integral_queue) {
         i += it;
     }
 
-    i = (i > m_max).select(m_max, i);
-    i = (i < m_min).select(m_min, i);
+    i = (i > m_i_max).select(m_i_max, i);
+    i = (i < m_i_min).select(m_i_min, i);
 
     // Derivation term
     if(!m_pe.data()) {
-        m_pe = Eigen::VectorXf::Zero(error.size());
+        m_pe = Eigen::VectorXd::Zero(error.size());
+        return false;
     }
-    Eigen::ArrayXf d = (error - m_pe) / dt;
+    Eigen::ArrayXd d = (error - m_pe) / dt;
 
     m_pe = error;
 
-    return p + i + d;
+    u = p + i + d;
+
+    return true;
 }
 
 auto MimoPID::get_kp() -> decltype(m_kp) {
@@ -87,20 +86,20 @@ void MimoPID::set_dt_i(const decltype(m_dt_i) &gain) {
     m_dt_i = gain;
 }
 
-auto MimoPID::get_max() -> decltype(m_max) {
-    return m_max;
+auto MimoPID::get_i_max() -> decltype(m_i_max) {
+    return m_i_max;
 }
 
-void MimoPID::set_max(const decltype(m_max) &gain) {
-    m_max= gain;
+void MimoPID::set_i_max(const decltype(m_i_max) &gain) {
+    m_i_max= gain;
 }
 
-auto MimoPID::get_min() -> decltype(m_max) {
-    return m_min;
+auto MimoPID::get_i_min() -> decltype(m_i_max) {
+    return m_i_min;
 }
 
-void MimoPID::set_min(const decltype(m_min) &gain) {
-    m_min= gain;
+void MimoPID::set_i_min(const decltype(m_i_min) &gain) {
+    m_i_min= gain;
 }
 
 auto MimoPID::get_error_function() -> decltype(m_error_function) {

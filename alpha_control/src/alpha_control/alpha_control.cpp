@@ -5,6 +5,8 @@
 
 AlphaControl::AlphaControl() {
 
+    m_error_state = Eigen::VectorXd(STATE_VECTOR_SIZE);
+
     m_pid = std::make_shared<MimoPID>();
 
     m_pid->set_error_function(std::bind(&AlphaControl::f_error_function, this, std::placeholders::_1, std::placeholders::_2));
@@ -43,32 +45,34 @@ void AlphaControl::set_desired_state(const decltype(m_desired_state) &desired_st
     m_desired_state = desired_state;
 }
 
-Eigen::VectorXf AlphaControl::calculate_needed_forces(float dt) {
+bool AlphaControl::calculate_needed_forces(Eigen::VectorXd &t, float dt) {
 
-    Eigen::VectorXf u;
-    f_calculate_pid(u, dt);
 
-    Eigen::VectorXf t;
+    Eigen::VectorXd u;
+    if(!f_calculate_pid(u, dt)){
+        return false;
+    }
+
     if(f_optimize_thrust(t, u)) {
-        return t;
+        return true;
     } else {
         ROS_WARN_STREAM("Optimum solution can not be found");
     }
 
-    return Eigen::VectorXf::Zero(m_control_allocation_matrix.cols());
+    return false;
 }
 
-void AlphaControl::f_calculate_pid(Eigen::VectorXf &u, double dt) {
-    u = m_pid->calculate(m_desired_state, m_system_state, dt);
+bool AlphaControl::f_calculate_pid(Eigen::VectorXd &u, double dt) {
+    return m_pid->calculate(u, m_desired_state, m_system_state, dt);
 }
 
-bool AlphaControl::f_optimize_thrust(Eigen::VectorXf &t, Eigen::VectorXf u) {
+bool AlphaControl::f_optimize_thrust(Eigen::VectorXd &t, Eigen::VectorXd u) {
 
     // Control allocation matrix
-    Eigen::MatrixXf T(m_controlled_freedoms.size(), m_control_allocation_matrix.cols());
+    Eigen::MatrixXd T(m_controlled_freedoms.size(), m_control_allocation_matrix.cols());
 
     // Control matrix
-    Eigen::VectorXf U(m_controlled_freedoms.size());
+    Eigen::VectorXd U(m_controlled_freedoms.size());
 
     for(int i = 0 ; i < m_controlled_freedoms.size() ; i++) {
         T.row(i) = m_control_allocation_matrix.row(m_controlled_freedoms.at(i));
@@ -76,14 +80,14 @@ bool AlphaControl::f_optimize_thrust(Eigen::VectorXf &t, Eigen::VectorXf u) {
     }
 
     // Q -> objective matrix
-    Eigen::MatrixXf Q = 2 * T.transpose() * T;
+    Eigen::MatrixXd Q = 2 * T.transpose() * T;
     // c -> objective vector
-    Eigen::VectorXd c = (-(T.transpose() * U).transpose() - (U.transpose() * T)).transpose().cast<double>();
+    Eigen::VectorXd c = (-(T.transpose() * U).transpose() - (U.transpose() * T)).transpose();
 
     std::vector<Eigen::Triplet<double>> Q_triplets;
     for(int i = 0 ; i < Q.rows() ; i++) {
         for(int j = 0 ; j < Q.cols() ; j++) {
-            Q_triplets.emplace_back(Eigen::Triplet<double>{i, j, static_cast<double>(Q(i,j))});
+            Q_triplets.emplace_back(Eigen::Triplet<double>{i, j, Q(i,j)});
         }
     }
 
@@ -114,7 +118,7 @@ bool AlphaControl::f_optimize_thrust(Eigen::VectorXf &t, Eigen::VectorXf u) {
 
     switch (exitCode) {
         case osqp::OsqpExitCode::kOptimal:
-            t = solver.primal_solution().cast<float>();
+            t = solver.primal_solution();
             return true;
             break;
         case osqp::OsqpExitCode::kPrimalInfeasible:
@@ -158,21 +162,36 @@ void AlphaControl::set_controlled_freedoms(decltype(m_controlled_freedoms) f) {
     m_controlled_freedoms = f;
 }
 
-Eigen::ArrayXf AlphaControl::f_error_function(Eigen::ArrayXf desired, Eigen::ArrayXf current) {
+auto AlphaControl::get_state_error() -> decltype(this->m_error_state) {
+    return m_error_state;
+}
+
+Eigen::ArrayXd AlphaControl::f_error_function(Eigen::ArrayXd desired, Eigen::ArrayXd current) {
 
     if(desired.size() != current.size()) {
         throw control_exception("desired and current state sizes are different");
     }
 
-    Eigen::ArrayXf error = desired - current;
+    Eigen::ArrayXd error = desired - current;
 
     for(const auto& i : std::vector<int>{
         STATE_ROLL_INDEX,
         STATE_PITCH_INDEX,
         STATE_YAW_INDEX
     }) {
-        error(i) = atan2(sin(desired(i) - current(i)), cos(desired(i) - current(i)));
+
+        // todo: wrap2pi implementation
+
+        auto d = (fmod(desired(i) + M_PI, 2*M_PI) - M_PI);
+        auto c = (fmod(current(i) + M_PI, 2*M_PI) - M_PI);
+
+        auto t = d - c;
+        double diff = (fmod(t + M_PI, 2*M_PI) - M_PI);
+        error(i) = diff;
+        // error(i) = diff < -M_PI ? diff + 2*M_PI : diff;
     }
+
+    m_error_state = error;
 
     return error;
 }

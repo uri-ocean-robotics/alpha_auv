@@ -4,7 +4,7 @@
 #define ALPHA_CONTROL_THRUSTER_ROS_H
 
 #include "ros/ros.h"
-#include "std_msgs/Float32.h"
+#include "std_msgs/Float64.h"
 #include "Eigen/Dense"
 #include "polynomial_solver.h"
 
@@ -18,10 +18,13 @@ private:
     ros::NodeHandle m_nh;
 
     //! @brief Thruster ID
-    std::string m_thruster_id;
+    std::string m_id;
 
-    //! @brief Thruster topic ID
-    std::string m_topic_id;
+    //! @brief Thrust command topic ID
+    std::string m_thrust_command_topic_id;
+
+    //! @brief Thruster force topic id
+    std::string m_thrust_force_topic_id;
 
     //! @brief thruster link id
     std::string m_link_id;
@@ -32,10 +35,13 @@ private:
      * Each element in the vector describes contribution on
      * vehicle motion of the thruster in each degree of freedom
      */
-    Eigen::VectorXf m_contribution_vector;
+    Eigen::VectorXd m_contribution_vector;
 
     //! @brief Thrust publisher
     ros::Publisher m_thrust_publisher;
+
+    //! @brief Thrust force publisher
+    ros::Publisher m_force_publisher;
 
     //! @brief Polynomial solver
     PolynomialSolver::Ptr m_poly_solver;
@@ -50,26 +56,40 @@ public:
      * This constructor should be used in normal operation.
      * Initializes Thruster ID, Topic ID and contribution vector
      *
-     * @param thruster_id
+     * @param id
      * @param topic_id
      * @param contribution_vector
      */
-    ThrusterROS(std::string thruster_id, std::string topic_id, Eigen::VectorXf contribution_vector);
+    ThrusterROS(std::string id, std::string topic_id, Eigen::VectorXd contribution_vector);
 
-
+    /** @brief Initializes publishers and subscribers
+     *
+     */
     void initialize();
 
     /** @brief Trivial getter for topic id
      *
-     * @return #ThrusterROS::m_topic_id
+     * @return #ThrusterROS::m_thrust_command_topic_id
      */
-    auto get_topic_id() -> decltype(m_topic_id);
+    auto get_thrust_command_topic_id() -> decltype(m_thrust_command_topic_id);
 
     /** @brief Default Setter for topic id
      *
      * @param topic_id
      */
-    void set_topic_id(const decltype(m_topic_id) &topic_id);
+    void set_thrust_command_topic_id(const decltype(m_thrust_command_topic_id) &topic_id);
+
+    /** @brief Trivial getter for force topic id
+     *
+     * @return #ThrusterROS::m_thrust_force_topic_id
+     */
+    auto get_thrust_force_topic_id() -> decltype(m_thrust_force_topic_id);
+
+    /** @brief Default Setter force for topic id
+     *
+     * @param topic_id
+     */
+    void set_thrust_force_topic_id(const decltype(m_thrust_force_topic_id) &topic_id);
 
     /** @brief Trivial getter for link id
      *
@@ -86,15 +106,15 @@ public:
 
     /** @brief Trivial getter for thruster id
      *
-     * @return #ThrusterROS::m_thruster_id
+     * @return #ThrusterROS::m_id
      */
-    auto get_thruster_id() -> decltype(m_thruster_id);
+    auto get_id() -> decltype(m_id);
 
     /** @brief Trivial Setter for topic id
      *
      * @param thruster_id
      */
-    void set_thruster_id(const decltype(m_thruster_id)& thruster_id);
+    void set_id(const decltype(m_id)& thruster_id);
 
     /** @brief Trivial getter for contribution vector
      *
@@ -108,17 +128,38 @@ public:
      */
     void set_contribution_vector(const decltype(m_contribution_vector )& contribution_vector);
 
+    /** @brief Trivial getter for polynomial solver
+     *
+     * @return #ThrusterROS::m_poly_solver
+     */
     auto get_poly_solver() -> decltype(m_poly_solver);
 
+    /** @brief Trivial setter for polynomial solver
+     *
+     * @param solver
+     */
     void set_poly_solver(decltype(m_poly_solver) solver);
-
 
     //! @brief Generic typedef for shared pointer
     typedef std::shared_ptr<ThrusterROS> Ptr;
 
-    void setpoint(float point);
+    /** @brief Publish thruster command
+     *
+     * Thuster command should be between -1 and 1
+     *
+     * @param cmd
+     */
+    void command(float cmd);
 
-    bool request_force(float N);
+    /** @brief Request force from thruster
+     *
+     * This method gets input \p N as Newton and applies it to a polynomial solver
+     * that is defined with #PolynomialSolver::m_coeff.
+     *
+     * @param N force as newton
+     * @return true if polynomial is solved, false if polynomial isn't solved.
+     */
+    bool request_force(double N);
 };
 
 

@@ -29,31 +29,31 @@ private:
      *
      * This variable holds the maximum value of a gain
      */
-    Eigen::ArrayXf m_max;
+    Eigen::ArrayXd m_i_max;
 
     /**
      * @brief Minimum value
      *
      * This variable holds the minimum value of a gain
      */
-    Eigen::ArrayXf m_min;
+    Eigen::ArrayXd m_i_min;
 
     //! @brief Proportional gain
-    Eigen::ArrayXf m_kp;
+    Eigen::ArrayXd m_kp;
 
     //! @brief Derivation gain
-    Eigen::ArrayXf m_kd;
+    Eigen::ArrayXd m_kd;
 
     //! @brief Integration gain
-    Eigen::ArrayXf m_ki;
+    Eigen::ArrayXd m_ki;
 
     //! @brief Error from the previous iteration
-    Eigen::ArrayXf m_pe;
+    Eigen::ArrayXd m_pe;
 
     //! @brief Integral queue
-    std::deque<Eigen::ArrayXf> m_integral_queue;
+    std::deque<Eigen::ArrayXd> m_integral_queue;
 
-    std::function<Eigen::ArrayXf(Eigen::ArrayXf desired, Eigen::ArrayXf current)> m_error_function;
+    std::function<Eigen::ArrayXd(Eigen::ArrayXd desired, Eigen::ArrayXd current)> m_error_function;
 
 public:
 
@@ -61,20 +61,13 @@ public:
 
     /** @brief Calculates PID gain with given desired and current state
      *
-     * @param desired   A vector defines the desired state of the system
-     * @param current   A vector defines the current state of the system
-     * @return          A vector with control gains
-     */
-    Eigen::ArrayXf calculate(const Eigen::ArrayXf& desired, const Eigen::ArrayXf& current);
-
-    /** @brief Calculates PID gain with given desired and current state
-     *
+     * @param u         Resulting control output
      * @param desired   A vector defines the desired state of the system
      * @param current   A vector defines the current state of the system
      * @param dt        Time difference between readings
-     * @return          A vector with control gains
+     * @return          true if its not the first run
      */
-    Eigen::ArrayXf calculate(const Eigen::ArrayXf& desired, const Eigen::ArrayXf& current, double dt);
+    bool calculate(Eigen::VectorXd& u, const Eigen::ArrayXd& desired, const Eigen::ArrayXd& current, double dt);
 
     //! @brief Generic shared pointer
     typedef std::shared_ptr<MimoPID> Ptr;
@@ -125,22 +118,22 @@ public:
     void set_dt_i(const decltype(m_dt_i) &gain);
 
     //! @brief Default getter for max
-    auto get_max() ->  decltype(m_max);
+    auto get_i_max() ->  decltype(m_i_max);
 
     /*! @brief Default setter for max
      *
      * @param gain
      */
-    void set_max(const decltype(m_max) &gain);
+    void set_i_max(const decltype(m_i_max) &gain);
 
     //! @brief Default getter for min
-    auto get_min() ->  decltype(m_min);
+    auto get_i_min() ->  decltype(m_i_min);
 
     /*! @brief Default setter for min
      *
      * @param gain
      */
-    void set_min(const decltype(m_min) &gain);
+    void set_i_min(const decltype(m_i_min) &gain);
 
     //! @brief Default getter for error function
     auto get_error_function() ->  decltype(m_error_function);
