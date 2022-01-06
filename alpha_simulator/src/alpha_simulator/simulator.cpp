@@ -25,7 +25,6 @@ void Simulator::iterate(control_commands_t cmd) {
         g_mass.variable_buoyancy = g_mass.buoyancy;
     }
 
-
     g_inertia.Ixx =
             0.5 * g_mass.hull_m * std::pow(g_vehicle_dimensions.r, 2)
             + g_mass.stationary_battery_m *
@@ -124,14 +123,14 @@ void Simulator::iterate(control_commands_t cmd) {
     g_vehicle_state_ned.yaw = g_vehicle_state_ned.yaw + m_dt * g_vehicle_state_ned.yaw_dot;
 
     // todo: use wrapTo2Pi like function if doesn't work
-    // g_vehicle_state_ned.pitch = std::atan2(std::cos(g_vehicle_state_ned.pitch), std::sin(g_vehicle_state_ned.pitch));
-    // g_vehicle_state_ned.yaw = std::atan2(std::cos(g_vehicle_state_ned.yaw), std::sin(g_vehicle_state_ned.yaw));
+     g_vehicle_state_ned.pitch = std::atan2(std::sin(g_vehicle_state_ned.pitch), std::cos(g_vehicle_state_ned.pitch));
+     g_vehicle_state_ned.yaw = std::atan2(std::sin(g_vehicle_state_ned.yaw), std::cos(g_vehicle_state_ned.yaw));
 
     // g_vehicle_state_ned.pitch = wrapTo2Pi(g_vehicle_state_ned.pitch);
     // g_vehicle_state_ned.yaw = wrapTo2Pi(g_vehicle_state_ned.yaw);
 
-    g_vehicle_state_ned.pitch = remainder(g_vehicle_state_ned.pitch, 2 * M_PI);
-    g_vehicle_state_ned.yaw = remainder(g_vehicle_state_ned.yaw, 2 * M_PI);
+    // g_vehicle_state_ned.pitch = remainder(g_vehicle_state_ned.pitch, 2 * M_PI);
+    // g_vehicle_state_ned.yaw = remainder(g_vehicle_state_ned.yaw, 2 * M_PI);
 
     Eigen::Matrix3d rbe = rotz(g_vehicle_state_ned.yaw) * roty(g_vehicle_state_ned.pitch);
 
@@ -172,7 +171,11 @@ Simulator::Simulator() : m_nh() , m_pnh("~") {
 
     m_diagnostic_publisher = m_nh.advertise<diagnostic_msgs::DiagnosticArray>("diagnostics", 1000);
 
-    m_cmd_subscriber = m_nh.subscribe("controller/cmd_vel", 100, &Simulator::cmd_callback, this);
+    // m_cmd_subscriber = m_nh.subscribe("control/cmd_vel", 100, &Simulator::cmd_callback, this);
+
+    m_main_thruster_setpoint = m_nh.subscribe("control/thruster/main", 100, &Simulator::main_thruster_cb, this);
+    m_horizontal_thruster_setpoint = m_nh.subscribe("control/thruster/horizontal", 100, &Simulator::horizontal_thruster_cb, this);
+    m_vertical_thruster_setpoint = m_nh.subscribe("control/thruster/vertical", 100, &Simulator::vertical_thruster_cb, this);
 
     m_loop_thread = std::thread(std::bind(&Simulator::loop, this));
 
@@ -205,6 +208,17 @@ void Simulator::cmd_callback(const geometry_msgs::Vector3Stamped::ConstPtr &msg)
     g_controls.thruster_z = (msg->vector.z * 500.0) + 1500.0;
 }
 
+void Simulator::main_thruster_cb(const std_msgs::Float64::ConstPtr& msg) {
+    g_controls.thruster_x = (msg->data * 500) + 1500;
+}
+
+void Simulator::horizontal_thruster_cb(const std_msgs::Float64::ConstPtr& msg) {
+    g_controls.thruster_y = (msg->data * 500) + 1500;
+}
+
+void Simulator::vertical_thruster_cb(const std_msgs::Float64::ConstPtr& msg) {
+    g_controls.thruster_z = (msg->data * 500) + 1500;
+}
 
 void Simulator::publish_odometry() {
 

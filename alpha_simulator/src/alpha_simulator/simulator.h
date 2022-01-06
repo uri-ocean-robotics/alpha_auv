@@ -7,6 +7,7 @@
 #include "nav_msgs/Odometry.h"
 #include "alpha_msgs/ThrustSignal.h"
 #include "geometry_msgs/Vector3Stamped.h"
+#include "std_msgs/Float64.h"
 #include "chrono"
 #include "thread"
 
@@ -27,6 +28,12 @@ private:
 
     void cmd_callback(const geometry_msgs::Vector3Stamped::ConstPtr& msg);
 
+    void main_thruster_cb(const std_msgs::Float64::ConstPtr& msg);
+
+    void horizontal_thruster_cb(const std_msgs::Float64::ConstPtr& msg);
+
+    void vertical_thruster_cb(const std_msgs::Float64::ConstPtr& msg);
+
     ros::NodeHandle m_nh;
 
     ros::NodeHandle m_pnh;
@@ -36,6 +43,12 @@ private:
     ros::Publisher m_diagnostic_publisher;
 
     ros::Subscriber m_cmd_subscriber;
+
+    ros::Subscriber m_main_thruster_setpoint;
+
+    ros::Subscriber m_horizontal_thruster_setpoint;
+
+    ros::Subscriber m_vertical_thruster_setpoint;
 
     std::thread m_loop_thread;
 

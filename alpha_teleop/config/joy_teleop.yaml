@@ -1,8 +1,8 @@
 vel:
   type: topic
   message_type: geometry_msgs/Vector3Stamped
-  topic_name: controller/cmd_vel
-  # deadman_buttons: [4]
+  topic_name: control/cmd_vel
+  deadman_buttons: [4]
 
   axis_mappings:
     -
@@ -18,5 +18,41 @@ vel:
     -
       axis: 4
       target: vector.z
+      scale: 1
+      offset: 0
+
+horizontal:
+  type: topic
+  message_type: std_msgs/Float64
+  topic_name: control/thruster/horizontal
+  deadman_buttons: [4]
+  axis_mappings:
+    -
+      axis: 3
+      target: data
+      scale: 1
+      offset: 0
+
+vertical:
+  type: topic
+  message_type: std_msgs/Float64
+  topic_name: control/thruster/vertical
+  deadman_buttons: [4]
+  axis_mappings:
+    -
+      axis: 4
+      target: data
+      scale: 1
+      offset: 0
+
+main:
+  type: topic
+  message_type: std_msgs/Float64
+  topic_name: control/thruster/main
+  deadman_buttons: [4]
+  axis_mappings:
+    -
+      axis: 1
+      target: data
       scale: 1
       offset: 0

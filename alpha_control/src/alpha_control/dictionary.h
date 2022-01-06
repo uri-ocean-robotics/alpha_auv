@@ -1,5 +1,8 @@
-#ifndef ALPHA_CONTROL_DICTIONARY_H
-#define ALPHA_CONTROL_DICTIONARY_H
+#ifndef ALPHA_CONTROL_DICTIONARY_HPP
+#define ALPHA_CONTROL_DICTIONARY_HPP
+
+#include "vector"
+#include "string"
 
 #define STATE_X             "x"
 #define STATE_Y             "y"
@@ -23,7 +26,7 @@
 
 #define STATE_VECTOR_SIZE 9
 
-static const char * const STATES[] = {
+static const std::vector<std::string> STATES{
         STATE_X,
         STATE_Y,
         STATE_Z,
@@ -35,9 +38,9 @@ static const char * const STATES[] = {
         STATE_W,
 };
 
-
 #define CONF_THRUSTER_POLY "thruster_polynomials"
-#define CONF_THRUSTER_TOPICS "thruster_topics"
+#define CONF_THRUST_COMMAND_TOPICS "thruster_command_topics"
+#define CONF_THRUSTER_FORCE_TOPICS "thruster_force_topics"
 #define CONF_THRUSTER_IDS "thruster_ids"
 
-#endif //ALPHA_CONTROL_DICTIONARY_H
+#endif //ALPHA_CONTROL_DICTIONARY_HPP

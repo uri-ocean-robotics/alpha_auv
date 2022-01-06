@@ -10,6 +10,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>joy_teleop</depend>
+  <depend>joy</depend>
 
   <export>
 
