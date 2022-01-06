@@ -187,8 +187,7 @@ Eigen::ArrayXd AlphaControl::f_error_function(Eigen::ArrayXd desired, Eigen::Arr
 
         auto t = d - c;
         double diff = (fmod(t + M_PI, 2*M_PI) - M_PI);
-        error(i) = diff;
-        // error(i) = diff < -M_PI ? diff + 2*M_PI : diff;
+        error(i) = diff < -M_PI ? diff + 2*M_PI : diff;
     }
 
     m_error_state = error;

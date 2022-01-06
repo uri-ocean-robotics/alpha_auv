@@ -53,6 +53,8 @@ private:
     //! @brief Integral queue
     std::deque<Eigen::ArrayXd> m_integral_queue;
 
+    Eigen::ArrayXd m_i;
+
     std::function<Eigen::ArrayXd(Eigen::ArrayXd desired, Eigen::ArrayXd current)> m_error_function;
 
 public:

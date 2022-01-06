@@ -1,7 +1,8 @@
+#include <iostream>
 #include "mimo_pid.h"
 #include "exception.hpp"
 
-MimoPID::MimoPID() : m_error_function(nullptr) , m_dt_i(10){
+MimoPID::MimoPID() : m_error_function(nullptr) , m_dt_i(10000){
 
 }
 
@@ -13,35 +14,29 @@ bool MimoPID::calculate(Eigen::VectorXd& u, const Eigen::ArrayXd& desired, const
 
     Eigen::ArrayXd error = m_error_function(desired, current);
 
-    // Logging errors in a certain timeframe
-    m_integral_queue.emplace_back(error * dt);
-    if(m_integral_queue.size() > (int)ceil(m_dt_i / dt)) {
-        m_integral_queue.pop_front();
+    if(m_i.size() == 0) {
+        m_i.resize(error.size());
     }
 
     // Proportional term
     Eigen::ArrayXd p = m_kp * error;
 
-    // Integration term
-    Eigen::ArrayXd i = Eigen::ArrayXd::Zero(desired.size());
+    m_i += m_ki * (error * dt);
 
-    for(auto& it : m_integral_queue) {
-        i += it;
-    }
-
-    i = (i > m_i_max).select(m_i_max, i);
-    i = (i < m_i_min).select(m_i_min, i);
+    m_i = (m_i > m_i_max).select(m_i_max, m_i);
+    m_i = (m_i < m_i_min).select(m_i_min, m_i);
 
     // Derivation term
     if(!m_pe.data()) {
         m_pe = Eigen::VectorXd::Zero(error.size());
         return false;
     }
-    Eigen::ArrayXd d = (error - m_pe) / dt;
+
+    Eigen::ArrayXd d = m_kd * ((error - m_pe) / dt);
 
     m_pe = error;
 
-    u = p + i + d;
+    u = p + m_i + d;
 
     return true;
 }
