@@ -32,3 +32,8 @@ To run the teleop node
 ```bash
 roslaunch alpha_teleop simple_teleop.launch
 ```
+
+To run controller node
+```bash
+roslaunch alpha_control alpha_control.launch
+```
