@@ -159,7 +159,7 @@ void Simulator::iterate(control_commands_t cmd) {
 
 }
 
-Simulator::Simulator() : m_nh() , m_pnh("~") {
+Simulator::Simulator() : m_nh() , m_pnh("~"), xsens_sim_obj(xsens_sim::no_noise) {
 
     m_dt = 0.01; //seconds
 
@@ -167,7 +167,14 @@ Simulator::Simulator() : m_nh() , m_pnh("~") {
 
     m_pnh.param<std::string>("tf_prefix", m_tf_prefix, "");
 
-    m_odom_publisher = m_nh.advertise<nav_msgs::Odometry>("dynamics/odometry", 1000);
+    m_odom_publisher = m_nh.advertise<nav_msgs::Odometry>("dynamics/odometry_sim", 1000);
+
+    //TEMP_BEGIN
+
+    m_imu_sim_publisher = m_nh.advertise<sensor_msgs::Imu>("imu/data", 1000);
+
+    //TEMP_END
+
 
     m_diagnostic_publisher = m_nh.advertise<diagnostic_msgs::DiagnosticArray>("diagnostics", 1000);
 
@@ -183,8 +190,8 @@ Simulator::Simulator() : m_nh() , m_pnh("~") {
         while(ros::ok()) {
             auto now = std::chrono::system_clock::now();
 
-            publish_odometry();
-
+            publish_sim_odometry();
+            publish_imu_sim();
             std::this_thread::sleep_until(now + std::chrono::milliseconds(10));
         }
     });
@@ -220,7 +227,16 @@ void Simulator::vertical_thruster_cb(const std_msgs::Float64::ConstPtr& msg) {
     g_controls.thruster_z = (msg->data * 500) + 1500;
 }
 
-void Simulator::publish_odometry() {
+void Simulator::publish_state() {
+    //publish x,y,z,r,p,y,u,v,w, from the vehicle
+};
+
+void Simulator::publish_imu_sim() {
+    ////publish vector accelerations, angular velocities, and headings, from the imu sim
+    m_odom_publisher.publish(this->xsens_sim_obj.get_msg(ros::Time::now(), g_vehicle_state_ned));
+};
+
+void Simulator::publish_sim_odometry() {
 
     nav_msgs::Odometry msg;
 

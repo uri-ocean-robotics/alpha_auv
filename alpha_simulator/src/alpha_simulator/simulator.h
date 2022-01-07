@@ -11,6 +11,14 @@
 #include "chrono"
 #include "thread"
 
+//for imu sim
+//http://wiki.ros.org/xsens_mti_driver 
+#include "sensor_msgs/Imu.h"
+#include "geometry_msgs/Vector3Stamped.h"
+#include "geometry_msgs/QuaternionStamped.h"
+#include "sensor_msgs/TimeReference.h"
+#include "xsens_sim.hpp"
+
 class Simulator {
 private:
 
@@ -22,7 +30,11 @@ private:
 
     void loop();
 
-    void publish_odometry();
+    void publish_state();
+
+    void publish_imu_sim();
+
+    void publish_sim_odometry();
 
     void publish_diagnostics();
 
@@ -39,6 +51,14 @@ private:
     ros::NodeHandle m_pnh;
 
     ros::Publisher m_odom_publisher;
+
+    //TEMP_BEGIN
+    
+    ros::Publisher m_imu_sim_publisher;
+
+    xsens_sim xsens_sim_obj;
+
+    //TEMP_END
 
     ros::Publisher m_diagnostic_publisher;
 
