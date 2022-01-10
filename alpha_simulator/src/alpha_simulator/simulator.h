@@ -12,25 +12,20 @@
 #include "thread"
 
 //for imu sim
-//http://wiki.ros.org/xsens_mti_driver 
 #include "sensor_msgs/Imu.h"
-#include "geometry_msgs/Vector3Stamped.h"
-#include "geometry_msgs/QuaternionStamped.h"
-#include "sensor_msgs/TimeReference.h"
 #include "imu_sim.hxx"
 
 class Simulator {
 private:
 
     double m_simulated_depth;
+    uint16_t imu_noise_type = 0;
 
     double m_dt; // seconds
 
     void iterate(control_commands_t cmd);
 
     void loop();
-
-    void publish_state();
 
     void publish_imu_sim();
 
@@ -56,7 +51,7 @@ private:
     
     ros::Publisher m_imu_sim_publisher;
 
-    xsens_sim xsens_sim_obj;
+    imu_sim xsens_sim_obj;
 
     //TEMP_END
 

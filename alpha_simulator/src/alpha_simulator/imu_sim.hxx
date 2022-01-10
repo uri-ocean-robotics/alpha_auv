@@ -34,13 +34,14 @@
 
 #define e(num) pow(10.0,num)
 
-class xsens_sim {
+class imu_sim {
     public:
         //used in constructor to set what type of noise strategy we are applying to the simulation
         static const uint16_t no_noise = 0;
         static const uint16_t gaussian_noise = 1;
 
     private:
+
         uint16_t noise_type = 0; //used as an index for the array of function pointers (fastest)
 
         //Gaussian noise implementation
@@ -53,20 +54,9 @@ class xsens_sim {
         tf2::Quaternion quat;
 
         //array of function pointers of noise applicators
-        using msg_fn = sensor_msgs::Imu (xsens_sim::*)(const ros::Time &time_now, const vehicle_state_t &vehicle_state);
+        using msg_fn = sensor_msgs::Imu (imu_sim::*)(const ros::Time &time_now, const vehicle_state_t &vehicle_state);
         msg_fn noise_applicators[10];
 
-        //TODO: Will use historical values for alternative noise strategies. These terms will change.
-        double x_history[10];
-        double y_history[10];
-        double z_history[10];
-
-        double x_dot_history[10];
-        double y_dot_history[10];
-        double z_dot_history[10];
-
-        uint64_t ticks_since_conception = 0;
-        
         //Individual noise application methods
         sensor_msgs::Imu add_no_noise(const ros::Time &time_now, const vehicle_state_t &vehicle_state) {
             
@@ -80,19 +70,21 @@ class xsens_sim {
             msg.orientation.y = this->quat.y();
             msg.orientation.z = this->quat.z();
 
-            msg.angular_velocity.x = vehicle_state.u;
-            msg.angular_velocity.y = vehicle_state.v;
-            msg.angular_velocity.z = vehicle_state.w;
+            msg.angular_velocity.x = vehicle_state.p;
+            msg.angular_velocity.y = vehicle_state.q;
+            msg.angular_velocity.z = vehicle_state.r;
 
             msg.linear_acceleration.x = vehicle_state.u_dot;
             msg.linear_acceleration.y = vehicle_state.v_dot;
             msg.linear_acceleration.z = vehicle_state.w_dot;
 
+            //todo: determine how covariance is to be implemented and if its needed here
             for(int i : {0,1,2,3,4,5,6,7,8}) {
                 msg.orientation_covariance[i] = -1.0;
                 msg.angular_velocity_covariance[i] = -1.0;
                 msg.linear_acceleration_covariance[i] = -1.0;
             }
+            return msg;
         }
 
         sensor_msgs::Imu  add_gaussian_noise(const ros::Time &time_now, const vehicle_state_t &vehicle_state) {
@@ -109,28 +101,29 @@ class xsens_sim {
             msg.orientation.y = this->quat.y();
             msg.orientation.z = this->quat.z();
 
-            msg.angular_velocity.x = vehicle_state.u+this->xsens_angvel_dist(generator);
-            msg.angular_velocity.y = vehicle_state.v+this->xsens_angvel_dist(generator);;
-            msg.angular_velocity.z = vehicle_state.w+this->xsens_angvel_dist(generator);;
+            msg.angular_velocity.x = vehicle_state.p+this->xsens_angvel_dist(generator);
+            msg.angular_velocity.y = vehicle_state.q+this->xsens_angvel_dist(generator);;
+            msg.angular_velocity.z = vehicle_state.r+this->xsens_angvel_dist(generator);;
 
             msg.linear_acceleration.x = vehicle_state.u_dot+this->xsens_lin_dist(generator);;
             msg.linear_acceleration.y = vehicle_state.v_dot+this->xsens_lin_dist(generator);
             msg.linear_acceleration.z = vehicle_state.w_dot+this->xsens_lin_dist(generator);
 
+            //todo: determine how covariance is to be implemented and if its needed here
             for(int i : {0,1,2,3,4,5,6,7,8}) {
                 msg.orientation_covariance[i] = -1.0;
                 msg.angular_velocity_covariance[i] = -1.0;
                 msg.linear_acceleration_covariance[i] = -1.0;
             }
+            return msg;
         }
-
         
     public:
         
-        xsens_sim(uint16_t _noise_type) {
+        imu_sim(uint16_t _noise_type) {
             this->noise_type = _noise_type;
-            this->noise_applicators[0] = &xsens_sim::add_no_noise;
-            this->noise_applicators[1] = &xsens_sim::add_gaussian_noise;
+            this->noise_applicators[0] = &imu_sim::add_no_noise;
+            this->noise_applicators[1] = &imu_sim::add_gaussian_noise;
 
             //Noise strategy. Currently only no noise, and gaussian noise are included. 
             if(this->noise_type == no_noise) {
@@ -139,11 +132,11 @@ class xsens_sim {
                 ROS_DEBUG("XSENS Simulator adding gaussian noise..");
                 //TODO: Add values from datasheet
                 double xsens_lin_acc_mean = 0;
-                double xsens_lin_acc_std = 60*e(-6.0)*pow(40.0,2.0); //60 micro-g/sqrt(Hz), saying the sensor will be ran at 40 Hz
+                double xsens_lin_acc_std = 60*e(-6.0)*pow(100.0,2.0); //from datasheet: 60 micro-g/sqrt(Hz), saying the sensor will be ran at 40 Hz
                 double xsens_angvel_mean = 0;
-                double xsens_angvel_std = 7*e(-3)*pow(40.0,2.0); //0.007 deg/sec/sqrt(Hz)
+                double xsens_angvel_std = 7*0.0174533*e(-3)*pow(100.0,2.0); //from datasheet: 0.007 deg/sec/sqrt(Hz)
                 double xsens_orientation_mean = 0;
-                double xsens_orientation_std = 0.5; //Roll, pitch = 0.2 deg RMS, Yaw/heading = 0.8 deg RMS
+                double xsens_orientation_std = 0.5*0.0174533; //from datasheet: Roll, pitch = 0.2 deg RMS, Yaw/heading = 0.8 deg RMS
                                 
                 this->xsens_lin_dist =  std::normal_distribution<double>(xsens_lin_acc_mean, xsens_lin_acc_std);
                 this->xsens_angvel_dist =  std::normal_distribution<double>(xsens_angvel_mean, xsens_angvel_std);
@@ -155,18 +148,16 @@ class xsens_sim {
             }
         };
 
-        ~xsens_sim() {
+        ~imu_sim() {
             //death by free
         };
 
-
         //Interface to main simulator (currently)
+        
         sensor_msgs::Imu get_msg(ros::Time time_now, vehicle_state_t vehicle_state) {
 
             sensor_msgs::Imu msg = (this->*noise_applicators[this->noise_type])(time_now, vehicle_state);
             
-            ticks_since_conception+=1;
-
             return msg;
         }
 };
