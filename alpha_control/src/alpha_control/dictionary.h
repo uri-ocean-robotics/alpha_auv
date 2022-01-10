@@ -82,7 +82,8 @@ static const char * const STATES[] = {
         STATE_YAW,
         STATE_U,
         STATE_V,
-        STATE_W
+        STATE_W,
+        nullptr
 };
 
 static const char * const CONF_PID_GAINS[] = {
@@ -90,7 +91,8 @@ static const char * const CONF_PID_GAINS[] = {
         CONF_PID_I,
         CONF_PID_D,
         CONF_PID_I_MAX,
-        CONF_PID_I_MIN
+        CONF_PID_I_MIN,
+        nullptr
 };
 
 
