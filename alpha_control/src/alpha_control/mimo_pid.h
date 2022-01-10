@@ -4,10 +4,10 @@
 #define ALPHA_CONTROL_MIMO_PID_H
 
 #include "Eigen/Dense"
-#include "memory"
 #include "deque"
 #include "functional"
-
+#include "boost/shared_ptr.hpp"
+#include "boost/function.hpp"
 
 class MimoPID {
 private:
@@ -72,7 +72,7 @@ public:
     bool calculate(Eigen::VectorXd& u, const Eigen::ArrayXd& desired, const Eigen::ArrayXd& current, double dt);
 
     //! @brief Generic shared pointer
-    typedef std::shared_ptr<MimoPID> Ptr;
+    typedef boost::shared_ptr<MimoPID> Ptr;
 
     //! @brief Default getter for proportional gain
     auto get_kp() -> decltype(m_kp);

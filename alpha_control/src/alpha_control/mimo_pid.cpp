@@ -1,4 +1,3 @@
-#include <iostream>
 #include "mimo_pid.h"
 #include "exception.hpp"
 
