@@ -32,6 +32,8 @@
 #include <random>
 #include "ros/console.h"
 
+#define e(num) pow(10.0,num)
+
 class xsens_sim {
     public:
         //used in constructor to set what type of noise strategy we are applying to the simulation
@@ -137,11 +139,11 @@ class xsens_sim {
                 ROS_DEBUG("XSENS Simulator adding gaussian noise..");
                 //TODO: Add values from datasheet
                 double xsens_lin_acc_mean = 0;
-                double xsens_lin_acc_std = 1;
+                double xsens_lin_acc_std = 60*e(-6.0)*pow(40.0,2.0); //60 micro-g/sqrt(Hz), saying the sensor will be ran at 40 Hz
                 double xsens_angvel_mean = 0;
-                double xsens_angvel_std = 1;
+                double xsens_angvel_std = 7*e(-3)*pow(40.0,2.0); //0.007 deg/sec/sqrt(Hz)
                 double xsens_orientation_mean = 0;
-                double xsens_orientation_std = 1;
+                double xsens_orientation_std = 0.5; //Roll, pitch = 0.2 deg RMS, Yaw/heading = 0.8 deg RMS
                                 
                 this->xsens_lin_dist =  std::normal_distribution<double>(xsens_lin_acc_mean, xsens_lin_acc_std);
                 this->xsens_angvel_dist =  std::normal_distribution<double>(xsens_angvel_mean, xsens_angvel_std);

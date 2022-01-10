@@ -167,7 +167,7 @@ Simulator::Simulator() : m_nh() , m_pnh("~"), xsens_sim_obj(xsens_sim::no_noise)
 
     m_pnh.param<std::string>("tf_prefix", m_tf_prefix, "");
 
-    m_odom_publisher = m_nh.advertise<nav_msgs::Odometry>("dynamics/odometry_sim", 1000);
+    m_odom_publisher = m_nh.advertise<nav_msgs::Odometry>("dynamics/odometry", 1000);
 
     //TEMP_BEGIN
 
@@ -190,7 +190,7 @@ Simulator::Simulator() : m_nh() , m_pnh("~"), xsens_sim_obj(xsens_sim::no_noise)
         while(ros::ok()) {
             auto now = std::chrono::system_clock::now();
 
-            publish_sim_odometry();
+            publish_odometry();
             publish_imu_sim();
             std::this_thread::sleep_until(now + std::chrono::milliseconds(10));
         }
@@ -236,7 +236,7 @@ void Simulator::publish_imu_sim() {
     m_odom_publisher.publish(this->xsens_sim_obj.get_msg(ros::Time::now(), g_vehicle_state_ned));
 };
 
-void Simulator::publish_sim_odometry() {
+void Simulator::publish_odometry() {
 
     nav_msgs::Odometry msg;
 

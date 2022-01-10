@@ -17,7 +17,7 @@
 #include "geometry_msgs/Vector3Stamped.h"
 #include "geometry_msgs/QuaternionStamped.h"
 #include "sensor_msgs/TimeReference.h"
-#include "xsens_sim.hpp"
+#include "imu_sim.hxx"
 
 class Simulator {
 private:
@@ -34,7 +34,7 @@ private:
 
     void publish_imu_sim();
 
-    void publish_sim_odometry();
+    void publish_odometry();
 
     void publish_diagnostics();
 
