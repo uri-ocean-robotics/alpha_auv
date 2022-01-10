@@ -161,11 +161,8 @@ void AlphaControlROS::f_read_pid_gains() {
 
     for(int i = 0 ; STATES[i] != nullptr ; i ++) {
         for(int j = 0 ; CONF_PID_GAINS[j] != nullptr ; j++) {
-            m_pnh.param<double>(
-                    std::string() + CONF_PID "/" + STATES[i] + "/" + CONF_PID_GAINS[j],
-                    gain_matrix(i,j),
-                    CONF_PID_DEFAULT_ANY
-            );
+            std::string p = CONF_PID "/" + std::string(STATES[i]) + "/" + std::string(CONF_PID_GAINS[j]);
+            m_pnh.param<double>(p,gain_matrix(i,j),CONF_PID_DEFAULT_ANY);
         }
     }
 
@@ -360,7 +357,6 @@ bool AlphaControlROS::f_compute_state() {
             m_control_allocation_matrix(STATE_Z_INDEX, i) = xyz(2);
 
         }
-
 
         m_system_state(STATE_X_INDEX) = cg_world.transform.translation.x;
         m_system_state(STATE_Y_INDEX) = cg_world.transform.translation.y;
