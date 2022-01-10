@@ -1,0 +1,13 @@
+##
+# PID gains for each degree of freedom
+##
+pid:
+  x:      {p: 0.1, i: 0.05, d: 0.1, i_max: 10, i_min: -10}
+  y:      {p: 0.1, i: 0.05, d: 0.1, i_max: 10, i_min: -10}
+  z:      {p: 0.1, i: 0.05, d: 0.1, i_max: 10, i_min: -10}
+  roll:   {p: 0, i: 0, d: 0, i_max: 10, i_min: -10}
+  pitch:  {p: 1, i: 0, d: 0, i_max: 10, i_min: -10}
+  yaw:    {p: 6.0, i: 0, d: 1.0, i_max: 20, i_min: -20}
+  u:      {p: 200, i: 0, d: 0, i_max: 10, i_min: -10}
+  v:      {p: 5, i: 4, d: 1, i_max: 10, i_min: -10}
+  w:      {p: 5, i: 4, d: 1, i_max: 10, i_min: -10}

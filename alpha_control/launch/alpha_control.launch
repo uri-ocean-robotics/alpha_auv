@@ -4,7 +4,11 @@
     <arg name="robot_name" default="alpha"/>
 
     <node pkg="alpha_control" type="alpha_control_ros_node" name="alpha_control" output="screen">
-        <rosparam command="load" file="$(find alpha_control)/config/control.yaml"/>
+        <rosparam command="load" file="$(find alpha_control)/config/allocation_auto.yaml"/>
+        <rosparam command="load" file="$(find alpha_control)/config/mappings.yaml"/>
+        <rosparam command="load" file="$(find alpha_control)/config/modes.yaml"/>
+        <rosparam command="load" file="$(find alpha_control)/config/pid.yaml"/>
+        <rosparam command="load" file="$(find alpha_control)/config/thrusters.yaml"/>
     </node>
 
 </launch>

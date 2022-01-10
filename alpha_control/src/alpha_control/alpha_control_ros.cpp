@@ -1,10 +1,10 @@
 #include "alpha_control_ros.h"
 #include "exception.hpp"
+#include "tf2_eigen/tf2_eigen.h"
 
 #include "cmath"
 #include "dictionary.h"
 
-std::mutex g_odom_lock;
 
 
 AlphaControlROS::AlphaControlROS()
@@ -20,35 +20,85 @@ AlphaControlROS::AlphaControlROS()
 
     // Read tf prefix
     std::string tf_prefix;
-    m_pnh.param<std::string>(CONF_TF_PREFIX, tf_prefix, "");
-    m_tf_prefix = tf_prefix.empty() ? "" : tf_prefix + "/";
+    m_pnh.param<std::string>(
+            CONF_TF_PREFIX,
+            tf_prefix,
+            CONF_TF_PREFIX_DEFAULT
+    );
+    m_tf_prefix = tf_prefix.empty() ? CONF_TF_PREFIX_DEFAULT : tf_prefix + "/";
 
     // Read cg link
     std::string cg_link_id;
-    m_pnh.param<std::string>(CONF_CG_LINK,
-                             cg_link_id,
-                             "cg_link");
+    m_pnh.param<std::string>(
+            CONF_CG_LINK,
+            cg_link_id,
+            CONF_CG_LINK_DEFAULT
+    );
     m_cg_link_id = m_tf_prefix + cg_link_id;
 
     // Read world link
-    m_pnh.param<std::string>(CONF_WORLD_LINK, m_world_link_id, "world");
+    m_pnh.param<std::string>(
+            CONF_WORLD_LINK,
+            m_world_link_id,
+            CONF_WORLD_LINK_DEFAULT
+    );
 
     std::string odometry_topic;
-    m_pnh.param<std::string>(CONF_ODOMETRY_SOURCE, odometry_topic, "odometry");
+    m_pnh.param<std::string>(
+            CONF_ODOMETRY_SOURCE,
+            odometry_topic,
+            CONF_ODOMETRY_SOURCE_DEFAULT
+    );
 
-    m_odometry_subscriber = m_nh.subscribe(odometry_topic, 100, &AlphaControlROS::f_odometry_cb, this);
+    m_odometry_subscriber = m_nh.subscribe(
+            odometry_topic,
+            100,
+            &AlphaControlROS::f_cb_msg_odometry,
+            this
+    );
 
-    m_desired_state_subscriber = m_nh.subscribe("control/state/desired", 100, &AlphaControlROS::f_desired_state_cb, this);
+    m_desired_state_subscriber = m_nh.subscribe(
+            TOPIC_CONTROL_STATE_DESIRED,
+            100,
+            &AlphaControlROS::f_cb_srv_desired_state,
+            this
+    );
 
-    m_current_state_publisher = m_nh.advertise<alpha_control::ControlState>("control/state/current", 100);
+    m_current_state_publisher = m_nh.advertise<alpha_control::ControlState>(
+            TOPIC_CONTROL_STATE_CURRENT,
+            100
+    );
 
-    m_error_state_publisher = m_nh.advertise<alpha_control::ControlState>("control/state/error", 100);
+    m_error_state_publisher = m_nh.advertise<alpha_control::ControlState>(
+            TOPIC_CONTROL_STATE_ERROR,
+            100
+    );
+
+    m_get_control_modes_server = m_nh.advertiseService<alpha_control::GetControlModes::Request, alpha_control::GetControlModes::Response>(
+            SERVICE_GET_CONTROL_RULES,
+            boost::bind(
+                    &AlphaControlROS::f_cb_srv_get_control_modes,
+                    this,
+                    boost::placeholders::_1,
+                    boost::placeholders::_2
+            )
+    );
+
+    m_set_control_point_server = m_nh.advertiseService<alpha_control::SetControlPoint::Request, alpha_control::SetControlPoint::Response>(
+            SERVICE_SET_CONTROL_POINT,
+            boost::bind(
+                    &AlphaControlROS::f_cb_srv_set_control_point,
+                    this,
+                    boost::placeholders::_1,
+                    boost::placeholders::_2
+            )
+    );
 
 
-
+    m_dynconf_pid_server = boost::make_shared<dynamic_reconfigure::Server<alpha_control::PIDConfig>>(m_config_lock);
 
     // initialize alpha control object
-    m_alpha_control = std::make_shared<AlphaControl>();
+    m_alpha_control = boost::make_shared<AlphaControl>();
 
 }
 
@@ -56,12 +106,15 @@ void AlphaControlROS::f_generate_control_allocation_matrix() {
 
     // Read generator type
     std::string generator_type;
-    m_pnh.param<std::string>(CONF_GENERATOR_TYPE, generator_type,
-                             CONTROL_ALLOCATION_MATRIX_GENERATOR_TYPE_TF);
+    m_pnh.param<std::string>(
+            CONF_GENERATOR_TYPE,
+            generator_type,
+            CONF_GENERATOR_TYPE_OPT_TF
+    );
 
-    if(generator_type == CONTROL_ALLOCATION_MATRIX_GENERATOR_TYPE_TF) {
+    if(generator_type == CONF_GENERATOR_TYPE_OPT_TF) {
         m_generator_type = GeneratorType::TF;
-    } else if (generator_type == CONTROL_ALLOCATION_MATRIX_GENERATOR_TYPE_USER) {
+    } else if (generator_type == CONF_GENERATOR_TYPE_OPT_USER) {
         m_generator_type = GeneratorType::USER;
     } else {
         m_generator_type = GeneratorType::UNKNOWN;
@@ -104,36 +157,39 @@ void AlphaControlROS::f_generate_control_allocation_matrix() {
 
 void AlphaControlROS::f_read_pid_gains() {
 
-    // This is just a fancy way of reading ros params
-    // todo: create a globally accessible list and access it through that instancve.
-    std::vector<std::string> axis{"x","y","z","roll","pitch","yaw","u","v","w"};
-    std::vector<std::string> gains{"p","i","d", "i_max", "i_min"};
+    Eigen::MatrixXd gain_matrix(STATE_VECTOR_SIZE, CONF_PID_GAINS_SIZE);
 
-    Eigen::MatrixXd gain_matrix(axis.size(), axis.size());
-
-    for(int i = 0 ; i < axis.size() ; i++) {
-        for(int j = 0 ; j < gains.size() ; j++) {
-            m_pnh.param<double>(CONF_PID "/" + axis.at(i) + "/" + gains.at(j), gain_matrix(i,j),0);
+    for(int i = 0 ; STATES[i] != nullptr ; i ++) {
+        for(int j = 0 ; CONF_PID_GAINS[j] != nullptr ; j++) {
+            m_pnh.param<double>(
+                    std::string() + CONF_PID "/" + STATES[i] + "/" + CONF_PID_GAINS[j],
+                    gain_matrix(i,j),
+                    CONF_PID_DEFAULT_ANY
+            );
         }
     }
 
-    m_alpha_control->get_pid()->set_kp(gain_matrix.col(0));
-    m_alpha_control->get_pid()->set_ki(gain_matrix.col(1));
-    m_alpha_control->get_pid()->set_kd(gain_matrix.col(2));
-    m_alpha_control->get_pid()->set_i_max(gain_matrix.col(3));
-    m_alpha_control->get_pid()->set_i_min(gain_matrix.col(4));
+    m_alpha_control->get_pid()->set_kp(gain_matrix.col(CONF_PID_P_INDEX));
+    m_alpha_control->get_pid()->set_ki(gain_matrix.col(CONF_PID_I_INDEX));
+    m_alpha_control->get_pid()->set_kd(gain_matrix.col(CONF_PID_D_INDEX));
+    m_alpha_control->get_pid()->set_i_max(gain_matrix.col(CONF_PID_I_MAX_INDEX));
+    m_alpha_control->get_pid()->set_i_min(gain_matrix.col(CONF_PID_I_MIN_INDEX));
 
 }
 
 void AlphaControlROS::f_generate_thrusters() {
     // Read all the configuration file to get all the listed thrusters
     std::vector<std::string> thruster_id_list;
-    m_pnh.param<decltype(thruster_id_list)>(CONF_THRUSTER_IDS, thruster_id_list, decltype(thruster_id_list)());
+    m_pnh.param<decltype(thruster_id_list)>(
+            CONF_THRUSTER_IDS,
+            thruster_id_list,
+            decltype(thruster_id_list)()
+    );
 
 
     // create thruster objects
     for(const auto& id : thruster_id_list) {
-        ThrusterROS::Ptr t = std::make_shared<ThrusterROS>();
+        ThrusterROS::Ptr t = boost::make_shared<ThrusterROS>();
         t->set_id(std::string(id));
         m_thrusters.emplace_back(t);
     }
@@ -143,21 +199,28 @@ void AlphaControlROS::f_generate_thrusters() {
 
         // read topic id config for thruster
         std::string thrust_command_topic_id;
-        m_pnh.param<std::string>(CONF_THRUST_COMMAND_TOPICS"/" + t->get_id(),
-                                 thrust_command_topic_id,
-                                 "control/thruster/" + t->get_id() + "/command");
+        m_pnh.param<std::string>(
+                CONF_THRUST_COMMAND_TOPICS"/" + t->get_id(),
+                thrust_command_topic_id,
+                "control/thruster/" + t->get_id() + "/command");
         t->set_thrust_command_topic_id(thrust_command_topic_id);
 
         // read topic id config for thruster
         std::string thrust_force_topic_id;
-        m_pnh.param<std::string>(CONF_THRUSTER_FORCE_TOPICS "/" + t->get_id(),
-                                 thrust_force_topic_id,
-                                 "control/thruster/" + t->get_id() + "/force");
+        m_pnh.param<std::string>(
+                CONF_THRUSTER_FORCE_TOPICS "/" + t->get_id(),
+                thrust_force_topic_id,
+                "control/thruster/" + t->get_id() + "/force"
+        );
         t->set_thrust_force_topic_id(thrust_force_topic_id);
 
         // read polynomials for thruster
         std::vector<double> poly;
-        m_pnh.param<std::vector<double>>(CONF_THRUSTER_POLY "/" + t->get_id(), poly, std::vector<double>());
+        m_pnh.param<std::vector<double>>(
+                CONF_THRUSTER_POLY "/" + t->get_id(),
+                poly,
+                std::vector<double>()
+        );
         t->get_poly_solver()->set_coeff(poly);
 
     }
@@ -167,10 +230,12 @@ void AlphaControlROS::f_generate_thrusters() {
 void AlphaControlROS::initialize() {
 
     m_alpha_control->set_controlled_freedoms(std::vector<int>{
-       STATE_U_INDEX,
-       STATE_PITCH_INDEX,
-       STATE_YAW_INDEX
+        STATE_X_INDEX,
+        STATE_Y_INDEX,
+        STATE_Z_INDEX
     });
+
+    f_read_control_modes();
 
     f_generate_thrusters();
 
@@ -184,14 +249,25 @@ void AlphaControlROS::initialize() {
             }
     );
 
-    m_control_rate = std::make_shared<ros::Rate>(10);
+    m_control_rate = boost::make_shared<ros::Rate>(10);
 
     m_alpha_control->set_desired_state(m_desired_state);
     m_alpha_control->set_system_state(m_system_state);
 
-    m_controller_worker = std::thread([this] { f_control_loop(); });
+    m_controller_worker = boost::thread([this] { f_control_loop(); });
 
-    m_dynconf_pid_server.setCallback(std::bind(&AlphaControlROS::f_dynconf_pid_cb, this, std::placeholders::_1, std::placeholders::_2));
+    m_controller_worker.detach();
+
+    f_amend_dynconf();
+
+    m_dynconf_pid_server->setCallback(
+            boost::bind(
+                    &AlphaControlROS::f_cb_dynconf_pid,
+                    this,
+                    boost::placeholders::_1,
+                    boost::placeholders::_2
+            )
+    );
 
 }
 
@@ -267,6 +343,29 @@ bool AlphaControlROS::f_compute_state() {
         double roll, pitch, yaw;
         tf2::Matrix3x3(quat).getRPY(roll, pitch, yaw);
 
+        auto tf_eigen = tf2::transformToEigen(cg_world);
+
+        // for each thruster compute contribution in earth frame
+        for(int i = 0 ; i < m_control_allocation_matrix.cols() ; i++){
+            Eigen::Vector3d uvw;
+            uvw <<
+                    m_control_allocation_matrix(STATE_U_INDEX, i),
+                    m_control_allocation_matrix(STATE_V_INDEX, i),
+                    m_control_allocation_matrix(STATE_W_INDEX, i);
+
+            Eigen::Vector3d xyz = tf_eigen.rotation() * uvw;
+
+            m_control_allocation_matrix(STATE_X_INDEX, i) = xyz(0);
+            m_control_allocation_matrix(STATE_Y_INDEX, i) = xyz(1);
+            m_control_allocation_matrix(STATE_Z_INDEX, i) = xyz(2);
+
+        }
+
+
+        m_system_state(STATE_X_INDEX) = cg_world.transform.translation.x;
+        m_system_state(STATE_Y_INDEX) = cg_world.transform.translation.y;
+        m_system_state(STATE_Z_INDEX) = cg_world.transform.translation.z;
+
         m_system_state(STATE_ROLL_INDEX) = roll;
         m_system_state(STATE_PITCH_INDEX) = pitch;
         m_system_state(STATE_YAW_INDEX) = yaw;
@@ -281,7 +380,7 @@ bool AlphaControlROS::f_compute_state() {
 
     // Transform from odom to world
     try{
-        const std::lock_guard<std::mutex> lock(g_odom_lock);
+        boost::recursive_mutex::scoped_lock lock(m_odom_lock);
 
         auto cg_odom = m_transform_buffer.lookupTransform(
                 m_cg_link_id,
@@ -311,14 +410,21 @@ bool AlphaControlROS::f_compute_state() {
         return false;
     }
 
+    m_alpha_control->update_control_allocation_matrix(m_control_allocation_matrix);
+
+
     alpha_control::ControlState s;
 
-    s.roll = m_system_state(STATE_ROLL_INDEX);
-    s.pitch = m_system_state(STATE_PITCH_INDEX);
-    s.yaw = m_system_state(STATE_YAW_INDEX);
-    s.u = m_system_state(STATE_U_INDEX);
-    s.v = m_system_state(STATE_V_INDEX);
-    s.w = m_system_state(STATE_W_INDEX);
+    s.control_mode = m_control_mode;
+    s.position.x = m_system_state(STATE_X_INDEX);
+    s.position.y = m_system_state(STATE_Y_INDEX);
+    s.position.z = m_system_state(STATE_Z_INDEX);
+    s.orientation.x = m_system_state(STATE_ROLL_INDEX);
+    s.orientation.y = m_system_state(STATE_PITCH_INDEX);
+    s.orientation.z = m_system_state(STATE_YAW_INDEX);
+    s.velocity.x = m_system_state(STATE_U_INDEX);
+    s.velocity.y = m_system_state(STATE_V_INDEX);
+    s.velocity.z = m_system_state(STATE_W_INDEX);
 
     m_alpha_control->set_system_state(m_system_state);
 
@@ -328,12 +434,15 @@ bool AlphaControlROS::f_compute_state() {
 
     Eigen::VectorXd error_state = m_alpha_control->get_state_error();
 
-    e.roll = error_state(STATE_ROLL_INDEX);
-    e.pitch = error_state(STATE_PITCH_INDEX);
-    e.yaw = error_state(STATE_YAW_INDEX);
-    e.u = error_state(STATE_U_INDEX);
-    e.v = error_state(STATE_V_INDEX);
-    e.w = error_state(STATE_W_INDEX);
+    e.position.x = error_state(STATE_X_INDEX);
+    e.position.y = error_state(STATE_Y_INDEX);
+    e.position.z = error_state(STATE_Z_INDEX);
+    e.orientation.x = error_state(STATE_ROLL_INDEX);
+    e.orientation.y = error_state(STATE_PITCH_INDEX);
+    e.orientation.z = error_state(STATE_YAW_INDEX);
+    e.velocity.x = error_state(STATE_U_INDEX);
+    e.velocity.y = error_state(STATE_V_INDEX);
+    e.velocity.z = error_state(STATE_W_INDEX);
 
     m_error_state_publisher.publish(e);
 
@@ -346,12 +455,11 @@ void AlphaControlROS::f_control_loop() {
 
     double pt = ros::Time::now().toSec();
 
-
     while(ros::ok()) {
-
 
         m_control_rate->sleep();
 
+        // Compute state
         if(not f_compute_state()) {
             continue;
         }
@@ -374,26 +482,16 @@ void AlphaControlROS::f_control_loop() {
 
 }
 
-void AlphaControlROS::f_odometry_cb(const nav_msgs::Odometry::ConstPtr &msg) {
-    const std::lock_guard<std::mutex> lock(g_odom_lock);
+void AlphaControlROS::f_cb_msg_odometry(const nav_msgs::Odometry::ConstPtr &msg) {
+    boost::recursive_mutex::scoped_lock lock(m_odom_lock);
     m_odometry_msg = *msg;
 }
 
-void AlphaControlROS::f_desired_state_cb(const alpha_control::ControlState::ConstPtr &msg) {
-    m_desired_state_msg = *msg;
-
-    m_desired_state(STATE_ROLL_INDEX) = msg->roll;
-    m_desired_state(STATE_PITCH_INDEX) = msg->pitch;
-    m_desired_state(STATE_YAW_INDEX) = msg->yaw;
-    m_desired_state(STATE_U_INDEX) = msg->u;
-    m_desired_state(STATE_V_INDEX) = msg->v;
-    m_desired_state(STATE_W_INDEX) = msg->w;
-
-    m_alpha_control->set_desired_state(m_desired_state);
-
+void AlphaControlROS::f_cb_srv_desired_state(const alpha_control::ControlState::ConstPtr &msg) {
+    f_amend_desired_state(*msg);
 }
 
-void AlphaControlROS::f_dynconf_pid_cb(alpha_control::PIDConfig &config, uint32_t level) {
+void AlphaControlROS::f_cb_dynconf_pid(alpha_control::PIDConfig &config, uint32_t level) {
 
     Eigen::VectorXd p(STATE_VECTOR_SIZE);
     Eigen::VectorXd i(STATE_VECTOR_SIZE);
@@ -439,4 +537,164 @@ void AlphaControlROS::f_dynconf_pid_cb(alpha_control::PIDConfig &config, uint32_
 
 }
 
+void AlphaControlROS::f_amend_dynconf() {
 
+    boost::recursive_mutex::scoped_lock lock(m_config_lock);
+
+    auto pid = m_alpha_control->get_pid();
+
+
+    alpha_control::PIDConfig conf;
+
+    conf.x_p = pid->get_kp()(STATE_X_INDEX);
+    conf.y_p = pid->get_kp()(STATE_Y_INDEX);
+    conf.z_p = pid->get_kp()(STATE_Z_INDEX);
+    conf.roll_p = pid->get_kp()(STATE_ROLL_INDEX);
+    conf.pitch_p = pid->get_kp()(STATE_PITCH_INDEX);
+    conf.yaw_p = pid->get_kp()(STATE_YAW_INDEX);
+    conf.u_p = pid->get_kp()(STATE_U_INDEX);
+    conf.v_p = pid->get_kp()(STATE_V_INDEX);
+    conf.w_p = pid->get_kp()(STATE_W_INDEX);
+
+    conf.x_i = pid->get_ki()(STATE_X_INDEX);
+    conf.y_i = pid->get_ki()(STATE_Y_INDEX);
+    conf.z_i = pid->get_ki()(STATE_Z_INDEX);
+    conf.roll_i = pid->get_ki()(STATE_ROLL_INDEX);
+    conf.pitch_i = pid->get_ki()(STATE_PITCH_INDEX);
+    conf.yaw_i = pid->get_ki()(STATE_YAW_INDEX);
+    conf.u_i = pid->get_ki()(STATE_U_INDEX);
+    conf.v_i = pid->get_ki()(STATE_V_INDEX);
+    conf.w_i = pid->get_ki()(STATE_W_INDEX);
+
+    conf.x_d = pid->get_kd()(STATE_X_INDEX);
+    conf.y_d = pid->get_kd()(STATE_Y_INDEX);
+    conf.z_d = pid->get_kd()(STATE_Z_INDEX);
+    conf.roll_d = pid->get_kd()(STATE_ROLL_INDEX);
+    conf.pitch_d = pid->get_kd()(STATE_PITCH_INDEX);
+    conf.yaw_d = pid->get_kd()(STATE_YAW_INDEX);
+    conf.u_d = pid->get_kd()(STATE_U_INDEX);
+    conf.v_d = pid->get_kd()(STATE_V_INDEX);
+    conf.w_d = pid->get_kd()(STATE_W_INDEX);
+
+
+    m_dynconf_pid_server->updateConfig(conf);
+
+}
+
+void AlphaControlROS::f_read_control_modes() {
+
+    // Read all the modes from parameter server
+    m_pnh.param<std::vector<std::string>>(
+            CONF_CONTROL_MODES,
+            m_control_modes,
+            decltype(m_control_modes)()
+    );
+
+    // throw an exception if no modes provided
+    if(m_control_modes.empty()) {
+        throw control_ros_exception("no control modes provided. controller is clueless about what to control.");
+    }
+
+    // Loop through all the modes and break them down
+    for(const auto& mode : m_control_modes) {
+        std::vector<std::string> rules;
+        m_pnh.param<std::vector<std::string>>(
+                CONF_CONTROL_RULES "/" + mode,
+                rules,
+                decltype(rules)()
+        );
+
+        alpha_control::ControlMode m;
+
+        m.name = mode;
+
+        for(const auto& dof : rules) {
+            for(int si = 0 ; STATES[si] != nullptr ; si++) {
+                if(dof == STATES[si]) {
+                    m_control_rules[mode].emplace_back(si);
+                    m.dofs.emplace_back(dof);
+                }
+            }
+        }
+
+        m_control_modes_msg.modes.emplace_back(m);
+    }
+
+
+
+    m_control_mode = m_control_modes.front();
+
+    m_alpha_control->update_freedoms(m_control_rules[m_control_mode]);
+
+
+}
+
+bool AlphaControlROS::f_cb_srv_get_control_modes(alpha_control::GetControlModes::Request &req,
+                                                 alpha_control::GetControlModes::Response &resp) {
+
+    if(!m_control_modes.empty()) {
+        resp.modes = m_control_modes_msg.modes;
+        return true;
+    } else {
+        return false;
+    }
+
+}
+
+bool AlphaControlROS::f_cb_srv_set_control_point(alpha_control::SetControlPoint::Request req,
+                                                 alpha_control::SetControlPoint::Response resp) {
+    return f_amend_desired_state(req.setpoint);
+}
+
+bool AlphaControlROS::f_amend_control_mode(std::string mode) {
+    if(!mode.empty()) {
+        if(mode == m_control_mode) {
+            // nothing should change. Operation valid
+            return true;
+        }
+
+        if (m_control_rules.find(mode) == m_control_rules.end()) {
+            std::string modes;
+            for (const auto &i: m_control_modes) {
+                modes += " " + i;
+            }
+            ROS_WARN_STREAM(
+                    "Requested mode [" << mode << "] doesn't exist. Available modes: " << modes);
+
+            // mode doesn't exist. Operation invalid
+            return false;
+        }
+
+        m_control_mode = mode;
+        m_alpha_control->update_freedoms(m_control_rules[m_control_mode]);
+        // mode is not empty. mode is in the modes list. operation is valid.
+        return true;
+    } else {
+
+        // its empty, operation valid.
+        return true;
+    }
+}
+
+bool AlphaControlROS::f_amend_desired_state(const alpha_control::ControlState &state) {
+
+    if(!f_amend_control_mode(state.control_mode)) {
+        return false;
+    }
+
+    m_desired_state(STATE_X_INDEX) = state.position.x;
+    m_desired_state(STATE_Y_INDEX) = state.position.y;
+    m_desired_state(STATE_Z_INDEX) = state.position.z;
+    m_desired_state(STATE_ROLL_INDEX) = state.orientation.x;
+    m_desired_state(STATE_PITCH_INDEX) = state.orientation.y;
+    m_desired_state(STATE_YAW_INDEX) = state.orientation.z;
+    m_desired_state(STATE_U_INDEX) = state.velocity.x;
+    m_desired_state(STATE_V_INDEX) = state.velocity.y;
+    m_desired_state(STATE_W_INDEX) = state.velocity.z;
+
+    m_alpha_control->update_desired_state(m_desired_state);
+
+    m_desired_state_msg = state;
+
+    return true;
+}

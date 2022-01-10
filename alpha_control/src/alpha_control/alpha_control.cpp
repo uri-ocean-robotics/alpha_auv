@@ -7,9 +7,16 @@ AlphaControl::AlphaControl() {
 
     m_error_state = Eigen::VectorXd(STATE_VECTOR_SIZE);
 
-    m_pid = std::make_shared<MimoPID>();
+    m_pid = boost::make_shared<MimoPID>();
 
-    m_pid->set_error_function(std::bind(&AlphaControl::f_error_function, this, std::placeholders::_1, std::placeholders::_2));
+    m_pid->set_error_function(
+            boost::bind(
+                    &AlphaControl::f_error_function,
+                    this,
+                    boost::placeholders::_1,
+                    boost::placeholders::_2
+            )
+    );
 
 }
 
@@ -45,7 +52,7 @@ void AlphaControl::set_desired_state(const decltype(m_desired_state) &desired_st
     m_desired_state = desired_state;
 }
 
-bool AlphaControl::calculate_needed_forces(Eigen::VectorXd &t, float dt) {
+bool AlphaControl::calculate_needed_forces(Eigen::VectorXd &f, float dt) {
 
 
     Eigen::VectorXd u;
@@ -53,7 +60,7 @@ bool AlphaControl::calculate_needed_forces(Eigen::VectorXd &t, float dt) {
         return false;
     }
 
-    if(f_optimize_thrust(t, u)) {
+    if(f_optimize_thrust(f, u)) {
         return true;
     } else {
         ROS_WARN_STREAM("Optimum solution can not be found");
@@ -74,9 +81,13 @@ bool AlphaControl::f_optimize_thrust(Eigen::VectorXd &t, Eigen::VectorXd u) {
     // Control matrix
     Eigen::VectorXd U(m_controlled_freedoms.size());
 
-    for(int i = 0 ; i < m_controlled_freedoms.size() ; i++) {
-        T.row(i) = m_control_allocation_matrix.row(m_controlled_freedoms.at(i));
-        U(i) = u(m_controlled_freedoms.at(i));
+    {
+        boost::recursive_mutex::scoped_lock lock_a(m_allocation_matrix_lock);
+        boost::recursive_mutex::scoped_lock lock_b(m_controlled_freedoms_lock);
+        for (int i = 0; i < m_controlled_freedoms.size(); i++) {
+            T.row(i) = m_control_allocation_matrix.row(m_controlled_freedoms.at(i));
+            U(i) = u(m_controlled_freedoms.at(i));
+        }
     }
 
     // Q -> objective matrix
@@ -167,6 +178,7 @@ auto AlphaControl::get_state_error() -> decltype(this->m_error_state) {
 }
 
 Eigen::ArrayXd AlphaControl::f_error_function(Eigen::ArrayXd desired, Eigen::ArrayXd current) {
+    boost::recursive_mutex::scoped_lock lock(m_desired_state_lock);
 
     if(desired.size() != current.size()) {
         throw control_exception("desired and current state sizes are different");
@@ -193,4 +205,20 @@ Eigen::ArrayXd AlphaControl::f_error_function(Eigen::ArrayXd desired, Eigen::Arr
     m_error_state = error;
 
     return error;
+}
+
+void AlphaControl::update_control_allocation_matrix(const decltype(m_control_allocation_matrix) &m) {
+    boost::recursive_mutex::scoped_lock lock(m_allocation_matrix_lock);
+    m_control_allocation_matrix = m;
+}
+
+void AlphaControl::update_freedoms(std::vector<int> freedoms) {
+    boost::recursive_mutex::scoped_lock lock(m_controlled_freedoms_lock);
+    m_controlled_freedoms = std::move(freedoms);
+
+}
+
+void AlphaControl::update_desired_state(const decltype(m_desired_state) &desired_state) {
+    boost::recursive_mutex::scoped_lock lock(m_desired_state_lock);
+    m_desired_state = desired_state;
 }

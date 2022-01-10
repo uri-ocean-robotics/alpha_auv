@@ -8,6 +8,8 @@
 #include "Eigen/Dense"
 #include "polynomial_solver.h"
 
+#include "boost/shared_ptr.hpp"
+
 /** @brief Thruster class for managing data
  *
  */
@@ -141,7 +143,7 @@ public:
     void set_poly_solver(decltype(m_poly_solver) solver);
 
     //! @brief Generic typedef for shared pointer
-    typedef std::shared_ptr<ThrusterROS> Ptr;
+    typedef boost::shared_ptr<ThrusterROS> Ptr;
 
     /** @brief Publish thruster command
      *

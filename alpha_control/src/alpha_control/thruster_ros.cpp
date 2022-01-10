@@ -3,7 +3,7 @@
 #include "dictionary.h"
 
 ThrusterROS::ThrusterROS() {
-    m_poly_solver = std::make_shared<PolynomialSolver>();
+    m_poly_solver = boost::make_shared<PolynomialSolver>();
 }
 
 ThrusterROS::ThrusterROS(std::string id, std::string topic_id, Eigen::VectorXd contribution_vector) :
@@ -14,7 +14,7 @@ ThrusterROS::ThrusterROS(std::string id, std::string topic_id, Eigen::VectorXd c
 
     m_thrust_publisher = m_nh.advertise<std_msgs::Float64>(m_thrust_command_topic_id, 10);
 
-    m_poly_solver = std::make_shared<PolynomialSolver>();
+    m_poly_solver = boost::make_shared<PolynomialSolver>();
 }
 
 auto ThrusterROS::get_thrust_command_topic_id() -> decltype(m_thrust_command_topic_id) {

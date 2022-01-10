@@ -4,7 +4,11 @@
     <arg name="robot_name" default="alpha"/>
     <arg name="node_name" default="alpha_control_node"/>
 
-
-    <rosparam command="load" ns="alpha_control_node" file="$(find alpha_control)/config/control.yaml"/>
+    <rosparam command="load" ns="alpha_control_node" file="$(find alpha_control)/config/allocation_auto.yaml"/>
+    <rosparam command="load" ns="alpha_control_node" file="$(find alpha_control)/config/allocation_manual.yaml"/>
+    <rosparam command="load" ns="alpha_control_node" file="$(find alpha_control)/config/mappings.yaml"/>
+    <rosparam command="load" ns="alpha_control_node" file="$(find alpha_control)/config/modes.yaml"/>
+    <rosparam command="load" ns="alpha_control_node" file="$(find alpha_control)/config/pid.yaml"/>
+    <rosparam command="load" ns="alpha_control_node" file="$(find alpha_control)/config/thrusters.yaml"/>
 
 </launch>

@@ -1,9 +1,4 @@
-float64 x
-float64 y
-float64 z
-float64 roll
-float64 pitch
-float64 yaw
-float64 u
-float64 v
-float64 w
+string control_mode
+geometry_msgs/Vector3 position
+geometry_msgs/Vector3 orientation
+geometry_msgs/Vector3 velocity
