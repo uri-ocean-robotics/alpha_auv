@@ -5,7 +5,6 @@
 
 Pull repository
 ```bash
-cd `echo $ROS_PACKAGE_PATH | awk -F: '{ print $1 }'`
 git clone https://github.com/GSO-soslab/alpha_auv
 cd alpha_auv
 git submodule update --init --recursive
@@ -19,7 +18,6 @@ sudo apt install python3-pip
 
 Install dependencies
 ```bash
-cd `echo $ROS_PACKAGE_PATH | awk -F: '{ print $1 }'`
 rosdep install --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} -y
 ```
 
@@ -33,4 +31,9 @@ roslaunch alpha_bringup bringup_simulation.launch
 To run the teleop node
 ```bash
 roslaunch alpha_teleop simple_teleop.launch
+```
+
+To run controller node
+```bash
+roslaunch alpha_control alpha_control.launch
 ```
