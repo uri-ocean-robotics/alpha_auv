@@ -7,7 +7,11 @@
 #include "nav_msgs/Odometry.h"
 #include "alpha_msgs/ThrustSignal.h"
 #include "geometry_msgs/Vector3Stamped.h"
+#include "geometry_msgs/PoseStamped.h"
+#include "geometry_msgs/TwistStamped.h"
+#include "geometry_msgs/WrenchStamped.h"
 #include "std_msgs/Float64.h"
+#include "rosgraph_msgs/Clock.h"
 #include "chrono"
 #include "thread"
 
@@ -21,6 +25,8 @@ private:
     double m_simulated_depth;
     uint16_t imu_noise_type = 0;
 
+    double m_ts; // simulated time stamp
+
     double m_dt; // seconds
 
     void iterate(control_commands_t cmd);
@@ -31,9 +37,13 @@ private:
 
     void publish_odometry();
 
-    void publish_diagnostics();
+    void publish_velocity();
 
-    void cmd_callback(const geometry_msgs::Vector3Stamped::ConstPtr& msg);
+    void publish_pose();
+
+    void publish_acceleration();
+
+    void publish_clock();
 
     void main_thruster_cb(const std_msgs::Float64::ConstPtr& msg);
 
@@ -47,23 +57,19 @@ private:
 
     ros::Publisher m_odom_publisher;
 
-    //TEMP_BEGIN
-    
-    ros::Publisher m_imu_sim_publisher;
-
-    imu_sim xsens_sim_obj;
-
-    //TEMP_END
-
-    ros::Publisher m_diagnostic_publisher;
-
-    ros::Subscriber m_cmd_subscriber;
-
     ros::Subscriber m_main_thruster_setpoint;
 
     ros::Subscriber m_horizontal_thruster_setpoint;
 
     ros::Subscriber m_vertical_thruster_setpoint;
+
+    ros::Publisher m_acceleration_publisher;
+
+    ros::Publisher m_velocity_publisher;
+
+    ros::Publisher m_pose_publisher;
+
+    ros::Publisher m_clock_publisher;
 
     std::thread m_loop_thread;
 
@@ -72,6 +78,7 @@ private:
     std::thread m_10hz_thread;
 
     std::string m_tf_prefix;
+
 
 public:
     Simulator();

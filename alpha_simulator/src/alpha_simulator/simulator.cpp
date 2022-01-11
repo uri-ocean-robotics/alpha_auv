@@ -159,61 +159,58 @@ void Simulator::iterate(control_commands_t cmd) {
 
 }
 
-Simulator::Simulator() : m_nh() , m_pnh("~"), xsens_sim_obj(imu_sim::gaussian_noise) {
+Simulator::Simulator() : m_nh() , m_pnh("~"){
+
+    m_ts = 0;
 
     m_dt = 0.01; //seconds
-
-    m_simulated_depth = 50;
 
     m_pnh.param<std::string>("tf_prefix", m_tf_prefix, "");
     
     m_odom_publisher = m_nh.advertise<nav_msgs::Odometry>("dynamics/odometry", 1000);
 
-    //TEMP_BEGIN
+    m_pose_publisher = m_nh.advertise<geometry_msgs::PoseStamped>("dynamics/pose", 100);
 
-    m_imu_sim_publisher = m_nh.advertise<sensor_msgs::Imu>("imu/data", 1000);
+    m_acceleration_publisher = m_nh.advertise<geometry_msgs::TwistStamped>("dynamics/acceleration", 100);
 
-    //TEMP_END
+    m_velocity_publisher = m_nh.advertise<geometry_msgs::TwistStamped>("dynamics/velocity",100);
 
-
-    m_diagnostic_publisher = m_nh.advertise<diagnostic_msgs::DiagnosticArray>("diagnostics", 1000);
-
-    // m_cmd_subscriber = m_nh.subscribe("control/cmd_vel", 100, &Simulator::cmd_callback, this);
+    m_clock_publisher = m_nh.advertise<rosgraph_msgs::Clock>("/clock", 100);
 
     m_main_thruster_setpoint = m_nh.subscribe("control/thruster/main", 100, &Simulator::main_thruster_cb, this);
     m_horizontal_thruster_setpoint = m_nh.subscribe("control/thruster/horizontal", 100, &Simulator::horizontal_thruster_cb, this);
     m_vertical_thruster_setpoint = m_nh.subscribe("control/thruster/vertical", 100, &Simulator::vertical_thruster_cb, this);
 
-    m_loop_thread = std::thread(std::bind(&Simulator::loop, this));
+    m_loop_thread = std::thread([this]() {
+        this->loop();
+    });
+    m_loop_thread.detach();
+
 
     m_100hz_thread = std::thread([this](){
+        ros::Rate r(100);
         while(ros::ok()) {
             auto now = std::chrono::system_clock::now();
 
+
             publish_odometry();
-            
-            publish_imu_sim();
-            std::this_thread::sleep_until(now + std::chrono::milliseconds(10));
+            publish_pose();
+            publish_velocity();
+            publish_acceleration();
+            r.sleep();
         }
     });
     m_100hz_thread.detach();
 
     m_10hz_thread = std::thread([this](){
+        ros::Rate r(10);
         while(ros::ok()) {
             auto now = std::chrono::system_clock::now();
 
-            publish_diagnostics();
-
-            std::this_thread::sleep_until(now + std::chrono::milliseconds(100));
+            r.sleep();
         }
     });
     m_10hz_thread.detach();
-}
-
-void Simulator::cmd_callback(const geometry_msgs::Vector3Stamped::ConstPtr &msg) {
-    g_controls.thruster_x = (msg->vector.x * 500.0) + 1500.0;
-    g_controls.thruster_y = (msg->vector.y * 500.0) + 1500.0;
-    g_controls.thruster_z = (msg->vector.z * 500.0) + 1500.0;
 }
 
 void Simulator::main_thruster_cb(const std_msgs::Float64::ConstPtr& msg) {
@@ -227,11 +224,6 @@ void Simulator::horizontal_thruster_cb(const std_msgs::Float64::ConstPtr& msg) {
 void Simulator::vertical_thruster_cb(const std_msgs::Float64::ConstPtr& msg) {
     g_controls.thruster_z = (msg->data * 500) + 1500;
 }
-
-void Simulator::publish_imu_sim() {
-    ////publish vector accelerations, angular velocities, and headings, from the imu sim
-    m_imu_sim_publisher.publish(this->xsens_sim_obj.get_msg(ros::Time::now(), g_vehicle_state_ned));
-};
 
 void Simulator::publish_odometry() {
 
@@ -283,26 +275,6 @@ void Simulator::publish_odometry() {
 
 }
 
-void Simulator::publish_diagnostics() {
-    diagnostic_msgs::DiagnosticArray m;
-
-    m.header.stamp = ros::Time::now();
-    diagnostic_msgs::DiagnosticStatus d;
-
-    d.name = "thrusters";
-    d.message = "Ok";
-    d.hardware_id = "dynamics";
-
-    diagnostic_msgs::KeyValue k;
-    k.value = "true";
-    k.key = "enabled";
-
-    d.values.push_back(k);
-
-    m.status.push_back(d);
-
-    m_diagnostic_publisher.publish(m);
-}
 
 void Simulator::loop() {
     while (ros::ok()) {
@@ -314,5 +286,68 @@ void Simulator::loop() {
         if ((after - now) > std::chrono::duration<double>(m_dt + m_dt * 0.1)) {
             ROS_WARN("can not keep up with simulation rate %.3f, dt: %.5f", m_dt, std::chrono::duration<double>(after-now).count());
         }
+
+        publish_clock();
     }
+}
+
+void Simulator::publish_acceleration() {
+
+    geometry_msgs::TwistStamped msg;
+
+    msg.header.stamp = ros::Time::now();
+    msg.header.frame_id = m_tf_prefix.empty() ? "base_link" : m_tf_prefix + "/base_link";
+
+    msg.twist.linear.x = g_vehicle_state_ned.u_dot;
+    msg.twist.linear.y = g_vehicle_state_ned.v_dot;
+    msg.twist.linear.z = g_vehicle_state_ned.w_dot;
+
+    msg.twist.angular.x = 0;
+    msg.twist.angular.y = g_vehicle_state_ned.pitch_dot;
+    msg.twist.angular.z = g_vehicle_state_ned.yaw_dot;
+
+    m_acceleration_publisher.publish(msg);
+
+}
+
+void Simulator::publish_velocity() {
+    geometry_msgs::TwistStamped msg;
+
+    msg.header.stamp = ros::Time::now();
+    msg.header.frame_id = m_tf_prefix.empty() ? "base_link" : m_tf_prefix + "/base_link";
+
+    msg.twist.linear.x = g_vehicle_state_ned.u;
+    msg.twist.linear.y = g_vehicle_state_ned.v;
+    msg.twist.linear.z = g_vehicle_state_ned.w;
+
+    msg.twist.angular.x = 0;
+    msg.twist.angular.y = g_vehicle_state_ned.pitch;
+    msg.twist.angular.z = g_vehicle_state_ned.yaw;
+
+    m_velocity_publisher.publish(msg);
+}
+
+void Simulator::publish_pose() {
+    geometry_msgs::PoseStamped msg;
+    msg.header.frame_id = m_tf_prefix.empty() ? "base_link" : m_tf_prefix + "/base_link";
+
+    msg.header.stamp = ros::Time::now();
+    tf2::Quaternion quat;
+    quat.setRPY(g_vehicle_state_ned.roll, g_vehicle_state_ned.pitch, g_vehicle_state_ned.yaw);
+    msg.pose.orientation.w = quat.w();
+    msg.pose.orientation.x = quat.x();
+    msg.pose.orientation.y = quat.y();
+    msg.pose.orientation.z = quat.z();
+    msg.pose.position.x = g_world_state_ned.point.x();
+    msg.pose.position.y = g_world_state_ned.point.y();
+    msg.pose.position.z = g_world_state_ned.point.z();
+
+    m_pose_publisher.publish(msg);
+}
+
+void Simulator::publish_clock() {
+    rosgraph_msgs::Clock c;
+    c.clock.fromSec(m_ts);
+    m_clock_publisher.publish(c);
+    m_ts += m_dt;
 }
