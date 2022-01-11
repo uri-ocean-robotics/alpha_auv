@@ -246,7 +246,7 @@ void AlphaControlROS::initialize() {
             }
     );
 
-    m_control_rate = boost::make_shared<ros::Rate>(10);
+    m_controller_frequency = 10;
 
     m_alpha_control->set_desired_state(m_desired_state);
     m_alpha_control->set_system_state(m_system_state);
@@ -448,12 +448,15 @@ bool AlphaControlROS::f_compute_state() {
 
 void AlphaControlROS::f_control_loop() {
 
-
     double pt = ros::Time::now().toSec();
 
-    while(ros::ok()) {
+    auto r = ros::Rate(m_controller_frequency);
 
-        m_control_rate->sleep();
+    while(ros::ok()) {
+        // If we can not sleep properly, continue. This can happen using simulated time.
+        if(!r.sleep()) {
+            continue;
+        }
 
         // Compute state
         if(not f_compute_state()) {
@@ -463,19 +466,13 @@ void AlphaControlROS::f_control_loop() {
         Eigen::VectorXd needed_forces;
 
         double dt = ros::Time::now().toSec() - pt;
-
-        if(!m_alpha_control->calculate_needed_forces(needed_forces, dt)) {
-            continue;
+        if(m_alpha_control->calculate_needed_forces(needed_forces, dt)) {
+            for(int i = 0 ; i < m_thrusters.size() ; i++) {
+                m_thrusters.at(i)->request_force(needed_forces(i));
+            }
         }
-
-        for(int i = 0 ; i < m_thrusters.size() ; i++) {
-            m_thrusters.at(i)->request_force(needed_forces(i));
-        }
-
         pt = ros::Time::now().toSec();
-
     }
-
 }
 
 void AlphaControlROS::f_cb_msg_odometry(const nav_msgs::Odometry::ConstPtr &msg) {
