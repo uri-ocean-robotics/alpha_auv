@@ -10,6 +10,7 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   nav_msgs
+  rosgraph_msgs
   roscpp
   std_msgs
   eigen_conversions
