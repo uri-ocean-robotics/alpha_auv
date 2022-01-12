@@ -67,7 +67,7 @@ void Simulator::iterate(control_commands_t cmd) {
     */
     g_inertia.ZG = 1 * INCH_TO_METER;
 
-    g_thruster.MT = -g_thruster.XT * g_inertia.ZG + g_thruster.ZT * (20 * INCH_TO_METER - g_inertia.XG);
+    g_thruster.MT = -g_thruster.XT * g_inertia.ZG - g_thruster.ZT * (20 * INCH_TO_METER - g_inertia.XG);
     g_thruster.NT = g_thruster.YT * (20 * INCH_TO_METER + g_inertia.XG);
 
     g_vehicle_state_ned.u_dot = 1.0 / (g_mass.weight / GRAVITY + g_hydro.added_mass[0]) *
@@ -231,7 +231,7 @@ void Simulator::horizontal_thruster_cb(const std_msgs::Float64::ConstPtr& msg) {
 }
 
 void Simulator::vertical_thruster_cb(const std_msgs::Float64::ConstPtr& msg) {
-    g_controls.thruster_z = (msg->data * 500) + 1500;
+    g_controls.thruster_z = (-msg->data * 500) + 1500;
 }
 
 void Simulator::publish_odometry() {
