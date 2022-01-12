@@ -1,6 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <launch>
-    <node pkg="alpha_sensor_sim" name="simulated_imu_node" type="simulated_imu_node">
-        <rosparam command="load" file="$(find alpha_sensor_simulation)/config/imu.yaml"/>
+
+    <arg name="robot_name" default="alpha"/>
+
+    <node pkg="alpha_sensor_sim" type="imu_sim_node" name="imu_sim" output="screen">
+        <rosparam command="load" file="$(find alpha_sensor_sim)/config/imu.yaml"/>
     </node>
+
 </launch>

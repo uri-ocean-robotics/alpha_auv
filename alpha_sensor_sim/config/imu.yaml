@@ -1,0 +1,29 @@
+# imu.yaml parameter server
+# Provide an AHRS/IMU profile to select one of many
+
+# Example configuration
+# xsens_mti_630: {
+#  imu_lin_acc_mean: Average noise (micrograms), (should be 0)
+#  imu_lin_acc_std: Average noise density (micrograms/sqrt(Hz)),
+#  imu_angvel_mean: Average angular velocity mean (degrees/s), (should be 0)
+#  imu_angvel_std: Average angular velocity noise density (milli-degrees/(s*sqrt(Hz))),
+#  imu_orientation_mean: Average angle (degrees), (should be 0)
+#  imu_orientation_std: Average angle standard deviation (degrees)
+#  }
+# These units are converted to the ROS standard units internally. 
+# The units above are standard for IMU/AHRS datasheets.
+
+imu_profile: xsens_mti_630
+imu_frequency: 100
+
+#Available noise types: {'NO_NOISE', 'GAUSSIAN_NOISE'}
+imu_noise_type: GAUSSIAN_NOISE
+
+xsens_mti_630: {
+  imu_lin_acc_mean: 0, 
+  imu_lin_acc_std: 60,
+  imu_angvel_mean: 0,
+  imu_angvel_std: 7,
+  imu_orientation_mean: 0,
+  imu_orientation_std: 0.5
+  }

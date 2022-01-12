@@ -140,6 +140,7 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
  add_executable(imu_sim_node
    src/imu_sim_node.cpp
+   src/imu_sim/imu_sim.cpp
    )
  #add_executable(dvl_sim_node
  #  src/dvl_sim_node.cpp)
