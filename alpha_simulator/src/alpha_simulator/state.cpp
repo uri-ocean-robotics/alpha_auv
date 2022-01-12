@@ -59,7 +59,7 @@ mass_t::mass_t() {
 }
 
 hydrodynamic_t::hydrodynamic_t() {
-    mass = 15;
+    mass = 25;
     r = 5 * INCH_TO_METER;
     L = 55 * INCH_TO_METER;
 

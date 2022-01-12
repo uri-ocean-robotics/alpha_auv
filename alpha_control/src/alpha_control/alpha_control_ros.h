@@ -90,8 +90,8 @@ private:
     //! @brief Desired state
     Eigen::VectorXd m_desired_state;
 
-    //! @brief control rate
-    boost::shared_ptr<ros::Rate> m_control_rate;
+    //! @brief Controller frequency
+    double m_controller_frequency;
 
     //! @brief Get control modes ros service server
     ros::ServiceServer m_get_control_modes_server;

@@ -67,7 +67,7 @@ void Simulator::iterate(control_commands_t cmd) {
     */
     g_inertia.ZG = 1 * INCH_TO_METER;
 
-    g_thruster.MT = -g_thruster.XT * g_inertia.ZG + g_thruster.ZT * (20 * INCH_TO_METER - g_inertia.XG);
+    g_thruster.MT = -g_thruster.XT * g_inertia.ZG - g_thruster.ZT * (20 * INCH_TO_METER - g_inertia.XG);
     g_thruster.NT = g_thruster.YT * (20 * INCH_TO_METER + g_inertia.XG);
 
     g_vehicle_state_ned.u_dot = 1.0 / (g_mass.weight / GRAVITY + g_hydro.added_mass[0]) *
@@ -163,7 +163,7 @@ Simulator::Simulator() : m_nh() , m_pnh("~"){
 
     m_ts = 0;
 
-    m_dt = 0.01; //seconds
+    m_dt = 0.001; //seconds
 
     m_pnh.param<std::string>("tf_prefix", m_tf_prefix, "");
     
@@ -186,6 +186,16 @@ Simulator::Simulator() : m_nh() , m_pnh("~"){
     });
     m_loop_thread.detach();
 
+    m_50hz_thread = std::thread([this](){
+        ros::Rate r(50);
+        while(ros::ok()) {
+            auto now = std::chrono::system_clock::now();
+
+            publish_odometry();
+            r.sleep();
+        }
+    });
+    m_50hz_thread.detach();
 
     m_100hz_thread = std::thread([this](){
         ros::Rate r(100);
@@ -193,7 +203,6 @@ Simulator::Simulator() : m_nh() , m_pnh("~"){
             auto now = std::chrono::system_clock::now();
 
 
-            publish_odometry();
             publish_pose();
             publish_velocity();
             publish_acceleration();
@@ -222,7 +231,7 @@ void Simulator::horizontal_thruster_cb(const std_msgs::Float64::ConstPtr& msg) {
 }
 
 void Simulator::vertical_thruster_cb(const std_msgs::Float64::ConstPtr& msg) {
-    g_controls.thruster_z = (msg->data * 500) + 1500;
+    g_controls.thruster_z = (-msg->data * 500) + 1500;
 }
 
 void Simulator::publish_odometry() {
@@ -279,15 +288,20 @@ void Simulator::publish_odometry() {
 void Simulator::loop() {
     while (ros::ok()) {
         auto now = std::chrono::system_clock::now();
+
+        publish_clock();
+
         iterate(g_controls);
+
 
         std::this_thread::sleep_until(now + std::chrono::duration<double>(m_dt));
         auto after = std::chrono::system_clock::now();
         if ((after - now) > std::chrono::duration<double>(m_dt + m_dt * 0.1)) {
-            ROS_WARN("can not keep up with simulation rate %.3f, dt: %.5f", m_dt, std::chrono::duration<double>(after-now).count());
+            // give user some cycle time
+            std::this_thread::sleep_for(std::chrono::duration<double>(m_dt));
+            // ROS_WARN("can not keep up with simulation rate %.3f, dt: %.5f", m_dt, std::chrono::duration<double>(after-now).count());
         }
 
-        publish_clock();
     }
 }
 
@@ -347,7 +361,7 @@ void Simulator::publish_pose() {
 
 void Simulator::publish_clock() {
     rosgraph_msgs::Clock c;
-    c.clock.fromSec(m_ts);
+    c.clock.fromNSec(m_ts);
     m_clock_publisher.publish(c);
-    m_ts += m_dt;
+    m_ts += (uint64_t)(m_dt * 1e9);
 }

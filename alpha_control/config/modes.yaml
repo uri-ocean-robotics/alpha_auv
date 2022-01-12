@@ -33,3 +33,5 @@ control_rules:
     - x
     - y
     - z
+    - pitch
+    - yaw

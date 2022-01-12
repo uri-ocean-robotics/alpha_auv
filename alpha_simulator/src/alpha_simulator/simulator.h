@@ -21,7 +21,7 @@ private:
     double m_simulated_depth;
     uint16_t imu_noise_type = 0;
 
-    double m_ts; // simulated time stamp
+    uint64_t m_ts; // simulated time stamp
 
     double m_dt; // seconds
 
@@ -67,7 +67,10 @@ private:
 
     std::thread m_loop_thread;
 
+
     std::thread m_100hz_thread;
+
+    std::thread m_50hz_thread;
 
     std::thread m_10hz_thread;
 
