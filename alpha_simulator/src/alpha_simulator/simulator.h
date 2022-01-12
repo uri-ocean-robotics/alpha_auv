@@ -15,10 +15,6 @@
 #include "chrono"
 #include "thread"
 
-//for imu sim
-#include "sensor_msgs/Imu.h"
-#include "imu_sim.hxx"
-
 class Simulator {
 private:
 
@@ -32,8 +28,6 @@ private:
     void iterate(control_commands_t cmd);
 
     void loop();
-
-    void publish_imu_sim();
 
     void publish_odometry();
 

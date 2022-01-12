@@ -321,8 +321,8 @@ void Simulator::publish_velocity() {
     msg.twist.linear.z = g_vehicle_state_ned.w;
 
     msg.twist.angular.x = 0;
-    msg.twist.angular.y = g_vehicle_state_ned.pitch;
-    msg.twist.angular.z = g_vehicle_state_ned.yaw;
+    msg.twist.angular.y = g_vehicle_state_ned.pitch_dot;
+    msg.twist.angular.z = g_vehicle_state_ned.yaw_dot;
 
     m_velocity_publisher.publish(msg);
 }
