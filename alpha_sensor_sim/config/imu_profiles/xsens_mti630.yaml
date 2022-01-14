@@ -19,11 +19,9 @@ imu_frequency: 100
 #Available noise types: {'NO_NOISE', 'GAUSSIAN_NOISE'}
 imu_noise_type: GAUSSIAN_NOISE
 
-xsens_mti_630: {
-  imu_lin_acc_mean: 0, 
-  imu_lin_acc_std: 60,
-  imu_angvel_mean: 0,
-  imu_angvel_std: 7,
-  imu_orientation_mean: 0,
-  imu_orientation_std: 0.5
-  }
+imu_lin_acc_mean: 0
+imu_lin_acc_std: 60
+imu_angvel_mean: 0
+imu_angvel_std: 7
+imu_orientation_mean: 0
+imu_orientation_std: 0.5
