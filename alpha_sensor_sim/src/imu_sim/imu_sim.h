@@ -42,39 +42,39 @@
 #include "message_filters/subscriber.h"
 #include "message_filters/time_synchronizer.h"
 #include "boost/bind.hpp"
-
-namespace mf = message_filters;
-
+#include <chrono>
 #include <random>
 #include "ros/console.h"
 
-typedef struct vehicle_state_t {
-    vehicle_state_t();
-    double u;
-    double v;
-    double w;
-    double p;
-    double q;
-    double r;
-    double u_dot;
-    double v_dot;
-    double w_dot;
-    double p_dot;
-    double q_dot;
-    double r_dot;
+
+namespace mf = message_filters;
+
+typedef struct imu_state {
+    imu_state();
+    std::string frame_id;
+    ros::Time recent_time;
+
+    //orientation
     double roll;
     double pitch;
     double yaw;
-    double roll_dot;
-    double pitch_dot;
-    double yaw_dot;
     double x_quat; 
     double y_quat;
     double w_quat;
     double z_quat;
-} vehicle_state_t;
 
-class imu_sim {
+    //angular velocity
+    double p;
+    double q;
+    double r;
+
+    //linear acceleration
+    double u_dot;
+    double v_dot;
+    double w_dot;
+} imu_state;
+
+class ImuSim {
     private:
         struct conversions {
             static constexpr double inches_to_meters = 0.0254;
@@ -86,14 +86,15 @@ class imu_sim {
 
         const std::string no_noise = "NO_NOISE";
         const std::string gaussian_noise = "GAUSSIAN_NOISE";
-        const int freq = 100;
+        u_int32_t m_loop_rate;
 
         std::string m_imu_profile = "NOT_SELECTED";
         std::string m_noise_type = "NOT_SELECTED";
-        vehicle_state_t m_vehicle_state;
+        imu_state m_imu_state;
 
         //ROS handles
-        ros::NodeHandle node_handle;
+        ros::NodeHandle m_node_handle;
+        ros::NodeHandle m_pnode_handle;
 
         ////associated topic names
         const std::string m_imu_pubto_topic_data = "imu/data";
@@ -113,11 +114,10 @@ class imu_sim {
         
         ////ROS types and utilities
         ros::Time m_recent_time;
-        ros::Rate m_rate;
         tf2::Quaternion m_quat;
 
         ////subscriber callback
-        void extract_dynamics_state(const geometry_msgs::PoseStamped::ConstPtr &pose, 
+        void f_extract_dynamics_state(const geometry_msgs::PoseStamped::ConstPtr &pose, 
                                     const geometry_msgs::TwistStamped::ConstPtr &vel, 
                                     const geometry_msgs::TwistStamped::ConstPtr &accel);
 
@@ -125,13 +125,14 @@ class imu_sim {
         sensor_msgs::Imu f_get_msg();
 
         //Gaussian noise implementation
-        std::default_random_engine m_generator;
+        //std::default_random_engine m_generator;
+        std::mt19937_64 m_generator;
         std::normal_distribution<double> m_imu_lin_accel_distribution;
         std::normal_distribution<double> m_imu_angvel_distribution;
         std::normal_distribution<double> m_imu_orientation_distribution;        
 
         //the function that ends up applying noise
-        using msg_fn = sensor_msgs::Imu (imu_sim::*)();
+        using msg_fn = sensor_msgs::Imu (ImuSim::*)();
 
         msg_fn f_noise_applicator;
 
@@ -142,9 +143,11 @@ class imu_sim {
         
         void f_load_ros_params();
     public:
-        imu_sim();
+        ImuSim();
 
-        ~imu_sim();
+        ~ImuSim();
         
         void step();
+
+        void run();
 };
