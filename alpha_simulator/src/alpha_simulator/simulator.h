@@ -19,6 +19,7 @@ class Simulator {
 private:
 
     double m_simulated_depth;
+    uint16_t imu_noise_type = 0;
 
     uint64_t m_ts; // simulated time stamp
 

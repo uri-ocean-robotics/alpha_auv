@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<launch>
+    <node pkg="alpha_sensor_sim" name="simulated_dvl_node" type="simulated_dvl_node">
+        <rosparam command="load" file="$(find alpha_sensor_simulation)/config/dvl.yaml"/>
+    </node>
+</launch>
