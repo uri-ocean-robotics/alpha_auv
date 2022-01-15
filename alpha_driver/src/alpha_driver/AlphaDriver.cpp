@@ -4,36 +4,36 @@
 
 
 AlphaDriver::AlphaDriver() :
-    io_(),
-    serial_port_(io_)
+        m_io(),
+        m_serial_port(m_io)
 {
 
 }
 
 AlphaDriver::AlphaDriver(std::string port, int baud) :
-    io_(),
-    serial_port_(io_),
-    port_(port),
-    baud_(baud),
-    active_(true)
+        m_io(),
+        m_serial_port(m_io),
+        m_port(port),
+        m_baud(baud),
+        m_active(true)
 {
 
-   serial_port_.open(port);
-   serial_port_.set_option(boost::asio::serial_port_base::baud_rate(baud));
+   m_serial_port.open(port);
+   m_serial_port.set_option(boost::asio::serial_port_base::baud_rate(baud));
 
-   serial_read_th_ = boost::thread(boost::bind(&AlphaDriver::serialReadLoop, this));
+    m_serial_read_th = boost::thread(boost::bind(&AlphaDriver::f_serial_read_loop, this));
 }
 
 void AlphaDriver::initialize() {
 
 }
 
-std::string AlphaDriver::serialReadLine() {
+std::string AlphaDriver::f_serial_read_line() {
     char buf[BUFSIZ];
     memset(buf, 0, BUFSIZ);
     char c;
     for(int i = 0 ; i < BUFSIZ; i++) {
-        boost::asio::read(serial_port_, boost::asio::buffer(&c, 1));
+        boost::asio::read(m_serial_port, boost::asio::buffer(&c, 1));
         switch (c) {
             case '\r':
                 break;
@@ -46,28 +46,26 @@ std::string AlphaDriver::serialReadLine() {
     return std::string(buf);
 }
 
-void AlphaDriver::serialReadLoop() {
-    while (active_) {
-        auto line = serialReadLine();
-        if(serial_callback_) {
-            serial_callback_(line);
+void AlphaDriver::f_serial_read_loop() {
+    while (m_active) {
+        auto line = f_serial_read_line();
+        if(m_serial_callback) {
+            m_serial_callback(line);
         }
     }
 }
 
-bool AlphaDriver::serialSendLine(std::string msg) {
+bool AlphaDriver::f_serial_send_line(std::string msg) {
     msg += "\r\n";
-    return boost::asio::write(serial_port_, boost::asio::buffer(msg.c_str(), msg.size())) == msg.size();
+    return boost::asio::write(m_serial_port, boost::asio::buffer(msg.c_str(), msg.size())) == msg.size();
 }
 
-void AlphaDriver::sendRaw(std::string nmea) {
-    serialSendLine(nmea);
+void AlphaDriver::send_raw(std::string nmea) {
+    f_serial_send_line(nmea);
 }
 
-void AlphaDriver::cmdPwm(double x, double y, double z) {
-    NMEA thrust_msg;
+void AlphaDriver::cmd_pwm(double pwm, uint8_t channel) {
+    NMEA pwm_msg;
 
-    thrust_msg.construct("%s,%.5f,%.5f,%.5f", NMEA_THRUST_PWM_CMD, x, y, z);
-
-    serialSendLine(std::string(thrust_msg.get_raw()));
+    pwm_msg.construct("%s,%d,%.5f", NMEA_PWM_CMD, pwm, channel);
 }

@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+  <rosparam command="load" ns="alpha_driver" file="$(find alpha_driver)/config/driver.yaml"/>
+</launch>

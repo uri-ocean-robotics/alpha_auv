@@ -1,0 +1,14 @@
+port: /dev/pico
+
+thrusters:
+  main:
+    pwm_channel: 1
+    topic: control/thruster/main
+
+  horizontal:
+    pwm_channel: 2
+    topic: control/thruster/horizontal
+
+  vertical:
+    pwm_channel: 3
+    topic: control/thruster/vertical

@@ -5,6 +5,7 @@
 #include "boost/asio.hpp"
 #include "boost/thread.hpp"
 
+#define NMEA_PWM_CMD "PWMC2"
 #define NMEA_THRUST_PWM_CMD "PWMC"
 #define NMEA_THRUST_PWM_REPORT "PWMR"
 #define NMEA_BAROMETER_REPORT "BARR"
@@ -13,23 +14,25 @@
 class AlphaDriver{
 protected:
 
-    boost::asio::io_service io_;
-    boost::asio::serial_port serial_port_;
+    boost::asio::io_service m_io;
 
-    boost::thread serial_read_th_;
+    boost::asio::serial_port m_serial_port;
 
-    std::string port_;
-    int baud_;
+    boost::thread m_serial_read_th;
 
-    bool active_;
+    std::string m_port;
 
-    boost::function <void(std::string)> serial_callback_;
+    int m_baud;
 
-    void serialReadLoop();
+    bool m_active;
 
-    bool serialSendLine(std::string msg);
+    boost::function <void(std::string)> m_serial_callback;
 
-    std::string serialReadLine();
+    void f_serial_read_loop();
+
+    bool f_serial_send_line(std::string msg);
+
+    std::string f_serial_read_line();
     
 public:
     AlphaDriver();
@@ -38,19 +41,18 @@ public:
 
     void initialize();
 
-    void sendRaw(std::string nmea);
+    void send_raw(std::string nmea);
 
-    void setPort(decltype(port_) val) { port_ = val;}
-    auto getPort() -> decltype(port_) {return port_; }
+    void set_port(decltype(m_port) val) { m_port = val;}
+    auto get_port() -> decltype(m_port) {return m_port; }
 
-    void setBaud(decltype(baud_) val) { baud_ = val;}
-    auto getBaud() -> decltype(baud_) {return baud_;}
+    void set_baud(decltype(m_baud) val) { m_baud = val;}
+    auto get_baud() -> decltype(m_baud) {return m_baud;}
 
-    void setSerialCallback(decltype(serial_callback_) c) {serial_callback_  = c;}
-    auto getSerialCallback() -> decltype(serial_callback_) {return serial_callback_;}
+    void set_serial_callback(decltype(m_serial_callback) c) { m_serial_callback  = c;}
+    auto get_serial_callback() -> decltype(m_serial_callback) {return m_serial_callback;}
 
-    void cmdPwm(double x, double y, double z);
-
+    void cmd_pwm(double pwm, uint8_t channel);
 };
 
 
