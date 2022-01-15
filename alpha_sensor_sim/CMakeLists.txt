@@ -18,6 +18,9 @@ find_package(catkin REQUIRED COMPONENTS
     message_filters
     )
 
+
+find_package(Eigen3 REQUIRED)
+add_definitions(${EIGEN_DEFINITIONS})
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -122,7 +125,8 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
 # include
- ${catkin_INCLUDE_DIRS}
+  ${catkin_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIR}
 )
 
 ## Declare a C++ library

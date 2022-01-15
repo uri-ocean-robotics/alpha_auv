@@ -13,240 +13,321 @@
     Licence: 
      - MIT License
 
-    Compilation:
-     - catkin_make
-    
-    System:
-     - Ubuntu 20.04 on x86 architecture
-    
     Circa:
      - Spring 2022
 
     Description: 
-     - Part of the alpha_sensor_sim package in ROS Noetic. Listens to simulator
+     - Part of the alpha_sensor_sim package. Listens to simulator
       topics and adds noise to the data which represents ideal conditions. Different 
       profiles are loaded per the AHRS/IMU's datasheet that is used. 
 */
 
 #include "imu_sim.h"
 
-#define IMU_RAND_SEED std::chrono::system_clock::now().time_since_epoch().count()
+void ImuSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &pose,
+                                   const geometry_msgs::TwistStamped::ConstPtr &vel,
+                                   const geometry_msgs::TwistStamped::ConstPtr &accel) {
 
-namespace mf = message_filters;
-
-imu_state::imu_state() {
-    frame_id = "";
-    recent_time;
-    p = -1;
-    q = -1;
-    r = -1;
-    u_dot = -1;
-    v_dot = -1;
-    w_dot = -1;
-    roll = -1;
-    pitch = -1;
-    yaw = -1;
-    x_quat = -1; 
-    y_quat = -1;
-    w_quat = -1;
-    z_quat = -1;
-};
-
-////subscriber callback
-void ImuSim::f_extract_dynamics_state(const geometry_msgs::PoseStamped::ConstPtr &pose, 
-                            const geometry_msgs::TwistStamped::ConstPtr &vel, 
-                            const geometry_msgs::TwistStamped::ConstPtr &accel) {
-    //extract only relevant information from those topics, keep them in the standard vehicle state struct
-    this->m_imu_state.frame_id = pose->header.frame_id;
-    this->m_imu_state.recent_time = pose->header.stamp;
-    this->m_imu_state.x_quat = pose->pose.orientation.x;
-    this->m_imu_state.y_quat = pose->pose.orientation.y;
-    this->m_imu_state.z_quat = pose->pose.orientation.z;
-    this->m_imu_state.w_quat = pose->pose.orientation.w;
-    double roll, pitch, yaw;
-    tf2::fromMsg(pose->pose.orientation, this->m_quat);
-    tf2::Matrix3x3(this->m_quat).getRPY(roll, pitch, yaw);
-    this->m_imu_state.roll = roll;
-    this->m_imu_state.pitch = pitch;
-    this->m_imu_state.yaw = yaw;
-
-    this->m_imu_state.p = vel->twist.angular.x;
-    this->m_imu_state.q = vel->twist.angular.y;
-    this->m_imu_state.r = vel->twist.angular.z;
-
-    this->m_imu_state.u_dot = accel->twist.linear.x;
-    this->m_imu_state.v_dot = accel->twist.linear.y;
-    this->m_imu_state.w_dot = accel->twist.linear.z;
-};
-
-
-sensor_msgs::Imu ImuSim::f_get_msg() {
-    return (this->*f_noise_applicator)();
-};
-
-sensor_msgs::Imu ImuSim::f_add_no_noise() {
-    
     sensor_msgs::Imu msg;
 
-    msg.header.stamp = this->m_imu_state.recent_time;
-    msg.header.frame_id = this->m_imu_state.frame_id;
+    msg.header.stamp = pose->header.stamp;
+    msg.header.frame_id = m_tf_prefix.empty() ? m_link_name : m_tf_prefix + "/" + m_link_name;
+    msg.orientation = pose->pose.orientation;
+    msg.angular_velocity = vel->twist.angular;
+    msg.linear_acceleration = accel->twist.linear;
 
-    msg.orientation.w = this->m_imu_state.w_quat;
-    msg.orientation.x = this->m_imu_state.x_quat;
-    msg.orientation.y = this->m_imu_state.y_quat;
-    msg.orientation.z = this->m_imu_state.z_quat;
 
-    msg.angular_velocity.x = this->m_imu_state.p;
-    msg.angular_velocity.y = this->m_imu_state.q;
-    msg.angular_velocity.z = this->m_imu_state.r;
+    msg.linear_acceleration_covariance = m_linear_acceleration_covariance;
 
-    msg.linear_acceleration.x = this->m_imu_state.u_dot;
-    msg.linear_acceleration.y = this->m_imu_state.v_dot;
-    msg.linear_acceleration.z = this->m_imu_state.w_dot;
+    for(const auto& i : m_noise_profiles) {
+        switch (i) {
+            case NoiseType::Gaussian :
+                f_apply_noise_density(msg);
+                break;
 
-    //todo: determine how covariance is to be implemented and if its needed here
-    for(int i : {0,1,2,3,4,5,6,7,8}) {
-        msg.orientation_covariance[i] = -1.0;
-        msg.angular_velocity_covariance[i] = -1.0;
-        msg.linear_acceleration_covariance[i] = -1.0;
+            case NoiseType::RandomWalk:
+                f_apply_random_walk(msg);
+                break;
+
+            case NoiseType::AxisMisalignment:
+                f_apply_axis_misalignment(msg);
+                break;
+            case NoiseType::ConstantBias:
+                f_apply_constant_bias(msg);
+                break;
+            case NoiseType::None:
+                break;
+        }
     }
-    return msg;
+
+    if(m_noise_type == NoiseType::Gaussian) {
+        f_apply_noise_density(msg);
+    }
+
+    m_imu_sim_data_publisher.publish(msg);
+
 }
 
-sensor_msgs::Imu ImuSim::f_add_gaussian_noise() {
-    sensor_msgs::Imu msg;
+void ImuSim::f_generate_parameters() {
 
-    msg.header.stamp = this->m_imu_state.recent_time;
-    msg.header.frame_id = this->m_imu_state.frame_id;
+    // get imu profile
+    m_pnh.param<std::string>(ImuSimDict::CONF_PROFILE, m_imu_profile, "");
 
-    this->m_quat.setRPY(this->m_imu_state.roll+this->m_imu_orientation_distribution(m_generator), 
-                        this->m_imu_state.pitch+this->m_imu_orientation_distribution(m_generator),
-                        this->m_imu_state.yaw+this->m_imu_orientation_distribution(m_generator));
+    // get imu link name
+    m_pnh.param<std::string>(ImuSimDict::CONF_LINK_NAME, m_link_name, "imu_link");
 
-    msg.orientation.w = this->m_quat.w();
-    msg.orientation.x = this->m_quat.x();
-    msg.orientation.y = this->m_quat.y();
-    msg.orientation.z = this->m_quat.z();
+    //get node frequency
+    m_pnh.param<double>(ImuSimDict::CONF_FREQUENCY, m_rate, 100);
 
-    msg.angular_velocity.x = this->m_imu_state.p+this->m_imu_angvel_distribution(m_generator);
-    msg.angular_velocity.y = this->m_imu_state.q+this->m_imu_angvel_distribution(m_generator);
-    msg.angular_velocity.z = this->m_imu_state.r+this->m_imu_angvel_distribution(m_generator);
+    m_pnh.param<std::string>(ImuSimDict::CONF_TF_PREFIX, m_tf_prefix, "");
 
-    msg.linear_acceleration.x = this->m_imu_state.u_dot+this->m_imu_lin_accel_distribution(m_generator);
-    msg.linear_acceleration.y = this->m_imu_state.v_dot+this->m_imu_lin_accel_distribution(m_generator);
-    msg.linear_acceleration.z = this->m_imu_state.w_dot+this->m_imu_lin_accel_distribution(m_generator);
+    double misalignment_x;
+    m_pnh.param<double>(
+            std::string() + ImuSimDict::CONF_AXIS_MISALIGNMENT + "/" + ImuSimDict::CONF_X,
+            misalignment_x,
+            0
+    );
 
-    //todo: determine how covariance is to be implemented and if its needed here
-    for(int i : {0,1,2,3,4,5,6,7,8}) {
-        msg.orientation_covariance[i] = -1.0;
-        msg.angular_velocity_covariance[i] = -1.0;
-        msg.linear_acceleration_covariance[i] = -1.0;
-    }
-    return msg;
-}
-        
-void ImuSim::f_load_ros_params() {
+    double misalignment_y;
+    m_pnh.param<double>(
+            std::string() + ImuSimDict::CONF_AXIS_MISALIGNMENT + "/" + ImuSimDict::CONF_Y,
+            misalignment_y,
+            0
+    );
 
-    //get imu profile
-    std::string profile;
-    m_pnode_handle.param<std::string>("imu_profile", profile, "NO_PROFILE");
-    this->m_imu_profile = profile;
+    double misalignment_z;
+    m_pnh.param<double>(
+            std::string() + ImuSimDict::CONF_AXIS_MISALIGNMENT + "/" + ImuSimDict::CONF_Z,
+            misalignment_z,
+            0
+    );
+    m_axis_misalignment = Eigen::AngleAxisd(misalignment_x, Eigen::Vector3d::UnitX())
+                          * Eigen::AngleAxisd(misalignment_y, Eigen::Vector3d::UnitY())
+                          * Eigen::AngleAxisd(misalignment_z, Eigen::Vector3d::UnitZ());
 
     //get noise type
     std::string noise_type;
-    m_pnode_handle.param<std::string>("imu_noise_type", noise_type, "NO_TYPE");
-    this->m_noise_type = noise_type;
-
-    //get node frequency
-    int loop_rate_temp;
-    m_pnode_handle.param<int>("imu_frequency", loop_rate_temp, 100);
-    this->m_loop_rate = loop_rate_temp;
+    m_pnh.param<std::string>(ImuSimDict::CONF_NOISE_TYPE, noise_type, "");
+    if(noise_type == ImuSimDict::CONF_NOISE_TYPE_GAUSSIAN_NOISE) {
+        m_noise_type = NoiseType::Gaussian;
+    } else if (noise_type == ImuSimDict::CONF_NOISE_TYPE_NO_NOISE) {
+        m_noise_type = NoiseType::None;
+    }
 
     //declare temporary local variables
-    double imu_lin_acc_mean;
-    double imu_lin_acc_std;
-    double imu_angvel_mean;
-    double imu_angvel_std;
-    double imu_orientation_mean;
-    double imu_orientation_std;
+    double linear_acceleration_mean;
+    double linear_acceleration_std;
+    double angular_velocity_mean;
+    double angular_velocity_std;
+    double orientation_mean;
+    double orientation_std;
 
     //get and set imu profile parameters
-    m_pnode_handle.param<double>("imu_lin_acc_mean", imu_lin_acc_mean, -100);
-    m_pnode_handle.param<double>("imu_lin_acc_std", imu_lin_acc_std, -100);
-    m_pnode_handle.param<double>("imu_angvel_mean", imu_angvel_mean, -100);
-    m_pnode_handle.param<double>("imu_angvel_std", imu_angvel_std, -100);
-    m_pnode_handle.param<double>("imu_orientation_mean", imu_orientation_mean, -100);
-    m_pnode_handle.param<double>("imu_orientation_std", imu_orientation_std, -100);
+    m_pnh.param<double>(ImuSimDict::CONF_LINEAR_ACCELERATION_MEAN, linear_acceleration_mean, 0);
+    m_pnh.param<double>(ImuSimDict::CONF_LINEAR_ACCELERATION_STD, linear_acceleration_std, 0);
+    m_pnh.param<double>(ImuSimDict::CONF_ANGULAR_VELOCITY_MEAN, angular_velocity_mean, 0);
+    m_pnh.param<double>(ImuSimDict::CONF_ANGULAR_VELOCITY_STD, angular_velocity_std, 0);
+    m_pnh.param<double>(ImuSimDict::CONF_ORIENTATION_MEAN, orientation_mean, 0);
+    m_pnh.param<double>(ImuSimDict::CONF_ORIENTATION_STD, orientation_std, 0);
 
     //convert to expected units in ROS per the description in the imu.yaml file
-    double sqrt_freq = sqrt(static_cast<double>(this->m_loop_rate));
+    double sqrt_freq = sqrt(m_rate);
 
-    imu_lin_acc_mean *= conversions::grams_to_meters_over_secsec;
-    imu_lin_acc_std *= conversions::grams_to_meters_over_secsec*conversions::micro*sqrt_freq;
-    imu_angvel_mean *= conversions::degs_to_rads;
-    imu_angvel_std *= conversions::degs_to_rads*conversions::milli*sqrt_freq;
-    imu_orientation_mean *= conversions::degs_to_rads;
-    imu_orientation_std *= conversions::degs_to_rads;
+    linear_acceleration_mean *= conversions::grams_to_meters_over_secsec;
+    linear_acceleration_std *= conversions::grams_to_meters_over_secsec * conversions::micro * sqrt_freq;
+    angular_velocity_mean *= conversions::degs_to_rads;
+    angular_velocity_std *= conversions::degs_to_rads * conversions::milli * sqrt_freq;
+    orientation_mean *= conversions::degs_to_rads;
+    orientation_std *= conversions::degs_to_rads;
     
     //assign distribution types
-    this->m_imu_lin_accel_distribution =  std::normal_distribution<double>(imu_lin_acc_mean, imu_lin_acc_std);
-    this->m_imu_angvel_distribution =  std::normal_distribution<double>(imu_angvel_mean, imu_angvel_std);
-    this->m_imu_orientation_distribution =  std::normal_distribution<double>(imu_orientation_mean, imu_orientation_std);
-}
-   
-void ImuSim::step() {
-    m_imu_sim_data_publisher.publish(this->f_get_msg());
+    m_linear_acceleration_noise =  std::normal_distribution<double>(
+            linear_acceleration_mean,
+            linear_acceleration_std);
+    m_angular_velocity_noise =  std::normal_distribution<double>(
+            angular_velocity_mean,
+            angular_velocity_std);
+    m_orientation_noise =  std::normal_distribution<double>(
+            orientation_mean,
+            orientation_std);
+
+    f_compute_covariance_matrix(
+            std::vector<double>(3, linear_acceleration_std),
+            m_linear_acceleration_covariance);
+
+    f_compute_covariance_matrix(
+            std::vector<double>(3, angular_velocity_std),
+                    m_angular_velocity_covariance);
+
+    f_compute_covariance_matrix(
+            std::vector<double>(3, orientation_std),
+                    m_orientation_covariance);
+
 }
 
 void ImuSim::run() {
-    
-    ROS_INFO("imu_sim msg: \nIMU Simulator starting:\n\t - Profile: %s \n\t - Noise type: %s", 
-        this->m_imu_profile.c_str(), 
-        this->m_noise_type.c_str());
-
-    ros::Rate loop_tool(m_loop_rate);
-
+    ros::Rate rate(m_rate);
     while(ros::ok()) {
-        this->step();
         ros::spinOnce();
-        loop_tool.sleep();
+        rate.sleep();
     }
 }
 
-ImuSim::ImuSim(): m_node_handle(),
-            m_pnode_handle("~"),
-            m_imu_state(),
-            m_generator(IMU_RAND_SEED),
-            m_dynamics_pose_subscriber(m_node_handle, m_dynamics_listo_pose_topic, 5),
-            m_dynamics_velocity_subscriber(m_node_handle, m_dynamics_listo_velocity_topic, 5),
-            m_dynamics_acceleration_subscriber(m_node_handle, m_dynamics_listo_acceleration_topic, 5),
-            m_state_subscriber(this->m_dynamics_pose_subscriber, 
-                                this->m_dynamics_velocity_subscriber,
-                                this->m_dynamics_acceleration_subscriber, 10)
+ImuSim::ImuSim(): m_nh(),
+                  m_pnh("~")
 {
 
-    this->m_imu_sim_data_publisher = this->m_node_handle.advertise<sensor_msgs::Imu>("imu/data", 1000);
-    
-    this->m_state_subscriber.registerCallback(boost::bind(&ImuSim::f_extract_dynamics_state, this, _1, _2, _3));
+    f_generate_parameters();
 
-    this->f_load_ros_params();
+    m_generator = std::mt19937_64(std::random_device{}());
 
-    if(this->m_noise_type == no_noise) {
-        this->f_noise_applicator = &ImuSim::f_add_no_noise;
-    } else if(this->m_noise_type == gaussian_noise) {
-        this->f_noise_applicator = &ImuSim::f_add_gaussian_noise;
-    } else {
-        ROS_INFO("imu_sim msg: \nFAILED TO INCLUDE NOISE STRATEGY FOR IMU SIMULATOR");
-        ROS_INFO("imu_sim msg: \nIMU SIMULATOR SHUTTING DOWN");
-        ROS_INFO("imu_sim msg: \nFAILED WITH:\n\t - Profile: %s \n\t - Noise type: %s,\n\t - Hz: %i",
-        this->m_imu_profile.c_str(), 
-        this->m_noise_type.c_str(),
-        this->m_loop_rate);
-        exit(1);
-    }
-};
+    m_pose_subscriber.subscribe(m_nh, m_topic_pose, 1);
 
-ImuSim::~ImuSim() {
-    ROS_INFO("IMU_SIM FORMALLY DESTRUCTED");
-    //death by free
-};
+    m_velocity_subscriber.subscribe(m_nh, m_topic_velocity, 1);
+
+    m_acceleration_subscriber.subscribe(m_nh, m_topic_acceleration, 1);
+
+    m_state_subscriber = std::make_shared<StateSynchronizer>(
+            m_pose_subscriber,
+            m_velocity_subscriber,
+            m_acceleration_subscriber,
+            1
+    );
+
+    m_state_subscriber->registerCallback(
+            std::bind(
+                    &ImuSim::f_cb_simulation_state,
+                    this,
+                    std::placeholders::_1,
+                    std::placeholders::_2,
+                    std::placeholders::_3
+            )
+    );
+
+    m_imu_sim_data_publisher = m_nh.advertise<sensor_msgs::Imu>(m_topic_imu, 1000);
+}
+
+void ImuSim::f_apply_noise_density(sensor_msgs::Imu &msg) {
+
+    // Orientation
+    tf2::Quaternion noise_offset;
+    noise_offset.setRPY(
+            m_orientation_noise(m_generator),
+            m_orientation_noise(m_generator),
+            m_orientation_noise(m_generator)
+    );
+
+    tf2::Quaternion orientation{
+            msg.orientation.x,
+            msg.orientation.y,
+            msg.orientation.z,
+            msg.orientation.w
+    };
+
+    auto noisy_orientation = orientation * noise_offset;
+    msg.orientation.x = noisy_orientation.x();
+    msg.orientation.y = noisy_orientation.y();
+    msg.orientation.z = noisy_orientation.z();
+    msg.orientation.w = noisy_orientation.w();
+
+    // Linear Acceleration
+    msg.linear_acceleration.x += m_linear_acceleration_noise(m_generator);
+    msg.linear_acceleration.y += m_linear_acceleration_noise(m_generator);
+    msg.linear_acceleration.z += m_linear_acceleration_noise(m_generator);
+
+
+    // Angular Velocity
+    msg.angular_velocity.x += m_angular_velocity_noise(m_generator);
+    msg.angular_velocity.y += m_angular_velocity_noise(m_generator);
+    msg.angular_velocity.z += m_angular_velocity_noise(m_generator);
+
+}
+
+void ImuSim::f_apply_constant_bias(sensor_msgs::Imu &msg) {
+    // todo: decide how to compute it
+}
+
+void ImuSim::f_apply_axis_misalignment(sensor_msgs::Imu &msg) {
+
+    Eigen::Quaterniond orientation;
+    Eigen::Vector3d linear_acceleration;
+    Eigen::Vector3d angular_velocity;
+
+    f_msg_to_eigen(msg, orientation, linear_acceleration, angular_velocity);
+
+
+    auto mo = orientation * m_axis_misalignment;
+    msg.orientation.w = mo.w();
+    msg.orientation.x = mo.x();
+    msg.orientation.y = mo.y();
+    msg.orientation.z = mo.z();
+
+    linear_acceleration = m_axis_misalignment.matrix() * linear_acceleration;
+    msg.linear_acceleration.x = linear_acceleration.x();
+    msg.linear_acceleration.y = linear_acceleration.y();
+    msg.linear_acceleration.z = linear_acceleration.z();
+
+    angular_velocity = m_axis_misalignment.matrix() * angular_velocity;
+
+    msg.angular_velocity.x = angular_velocity.x();
+    msg.angular_velocity.y = angular_velocity.y();
+    msg.angular_velocity.z = angular_velocity.z();
+
+}
+
+void ImuSim::f_apply_bias_instability(sensor_msgs::Imu &msg) {
+    // todo: under construction
+}
+
+void ImuSim::f_apply_random_walk(sensor_msgs::Imu &msg) {
+    // todo: under construction
+}
+
+void ImuSim::f_apply_acceleration_bias(sensor_msgs::Imu &msg) {
+    // todo: under construction
+}
+
+void ImuSim::f_msg_to_eigen(const sensor_msgs::Imu& msg,
+                            Eigen::Quaterniond &orientation,
+                            Eigen::Vector3d &linear_acceleration,
+                            Eigen::Vector3d &angular_velocity)
+{
+
+    // orientation
+    orientation = Eigen::Quaterniond {
+            msg.orientation.w,
+            msg.orientation.x,
+            msg.orientation.y,
+            msg.orientation.z
+    };
+
+    linear_acceleration = Eigen::Vector3d{
+            msg.linear_acceleration.x,
+            msg.linear_acceleration.y,
+            msg.linear_acceleration.z
+    };
+
+    angular_velocity = Eigen::Vector3d{
+            msg.angular_velocity.x,
+            msg.angular_velocity.y,
+            msg.angular_velocity.z
+    };
+
+}
+
+void ImuSim::f_compute_covariance_matrix(const std::vector<double>& stddev, boost::array<double, 9>& covariance_out) {
+
+    std::vector<double> variance;
+    std::transform(
+            stddev.begin(),
+            stddev.end(),
+            variance,
+            [](double x) {
+                return x * x;
+            }
+    );
+
+    covariance_out[0] = variance[0];
+    covariance_out[4] = variance[1];
+    covariance_out[8] = variance[2];
+}

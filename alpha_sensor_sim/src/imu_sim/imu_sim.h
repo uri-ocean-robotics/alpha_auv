@@ -45,109 +45,139 @@
 #include <chrono>
 #include <random>
 #include "ros/console.h"
+#include "Eigen/Dense"
+#include "boost/array.hpp"
 
 
-namespace mf = message_filters;
+#define STATIC_STRING static constexpr const char *
+#define STATIC_DOUBLE static constexpr double
 
-typedef struct imu_state {
-    imu_state();
-    std::string frame_id;
-    ros::Time recent_time;
+namespace conversions {
+    STATIC_DOUBLE inches_to_meters = 0.0254;
+    STATIC_DOUBLE degs_to_rads = 0.0174533;
+    STATIC_DOUBLE grams_to_meters_over_secsec = 9.80665;
+    STATIC_DOUBLE milli = 0.001;
+    STATIC_DOUBLE micro = 0.000001;
+}
 
-    //orientation
-    double roll;
-    double pitch;
-    double yaw;
-    double x_quat; 
-    double y_quat;
-    double w_quat;
-    double z_quat;
-
-    //angular velocity
-    double p;
-    double q;
-    double r;
-
-    //linear acceleration
-    double u_dot;
-    double v_dot;
-    double w_dot;
-} imu_state;
+namespace ImuSimDict {
+    STATIC_STRING CONF_NOISE_TYPE = "noise_type";
+    STATIC_STRING CONF_NOISE_TYPE_NO_NOISE = "none";
+    STATIC_STRING CONF_NOISE_TYPE_GAUSSIAN_NOISE = "gaussian";
+    STATIC_STRING CONF_LINEAR_ACCELERATION_MEAN = "linear_acceleration_mean";
+    STATIC_STRING CONF_LINEAR_ACCELERATION_STD = "linear_acceleration_std";
+    STATIC_STRING CONF_ANGULAR_VELOCITY_MEAN = "angular_velocity_mean";
+    STATIC_STRING CONF_ANGULAR_VELOCITY_STD = "angular_velocity_std";
+    STATIC_STRING CONF_ORIENTATION_MEAN = "orientation_mean";
+    STATIC_STRING CONF_ORIENTATION_STD = "orientation_std";
+    STATIC_STRING CONF_LINK_NAME = "link_name";
+    STATIC_STRING CONF_PROFILE = "profile";
+    STATIC_STRING CONF_FREQUENCY = "frequency";
+    STATIC_STRING CONF_TF_PREFIX = "tf_prefix";
+    STATIC_STRING CONF_AXIS_MISALIGNMENT = "axis_misalignment";
+    STATIC_STRING CONF_CONSTANT_BIAS = "constant_bias";
+    STATIC_STRING CONF_X = "x";
+    STATIC_STRING CONF_Y = "y";
+    STATIC_STRING CONF_Z = "z";
+}
 
 class ImuSim {
-    private:
-        struct conversions {
-            static constexpr double inches_to_meters = 0.0254;
-            static constexpr double degs_to_rads = 0.0174533;
-            static constexpr double grams_to_meters_over_secsec = 9.80665;
-            static constexpr double milli = 0.001;
-            static constexpr double micro = 0.000001;
-        };
-
-        const std::string no_noise = "NO_NOISE";
-        const std::string gaussian_noise = "GAUSSIAN_NOISE";
-        u_int32_t m_loop_rate;
-
-        std::string m_imu_profile = "NOT_SELECTED";
-        std::string m_noise_type = "NOT_SELECTED";
-        imu_state m_imu_state;
-
-        //ROS handles
-        ros::NodeHandle m_node_handle;
-        ros::NodeHandle m_pnode_handle;
-
-        ////associated topic names
-        const std::string m_imu_pubto_topic_data = "imu/data";
-        const std::string m_dynamics_listo_pose_topic = "dynamics/pose";
-        const std::string m_dynamics_listo_velocity_topic = "dynamics/velocity";
-        const std::string m_dynamics_listo_acceleration_topic = "dynamics/acceleration";
-
-        ////publishers
-        ros::Publisher m_imu_sim_data_publisher;
-        
-        ////time syncronized subscribers ROS subscribers. See message_filters and TimeSynchronizers
-        mf::Subscriber<geometry_msgs::PoseStamped> m_dynamics_pose_subscriber;
-        mf::Subscriber<geometry_msgs::TwistStamped> m_dynamics_velocity_subscriber;
-        mf::Subscriber<geometry_msgs::TwistStamped> m_dynamics_acceleration_subscriber;
-        mf::TimeSynchronizer<geometry_msgs::PoseStamped, geometry_msgs::TwistStamped, geometry_msgs::TwistStamped> m_state_subscriber;
-
-        
-        ////ROS types and utilities
-        ros::Time m_recent_time;
-        tf2::Quaternion m_quat;
-
-        ////subscriber callback
-        void f_extract_dynamics_state(const geometry_msgs::PoseStamped::ConstPtr &pose, 
-                                    const geometry_msgs::TwistStamped::ConstPtr &vel, 
-                                    const geometry_msgs::TwistStamped::ConstPtr &accel);
+private:
 
 
-        sensor_msgs::Imu f_get_msg();
+    enum NoiseType : uint8_t {
+        None = 0,
+        Gaussian = 1,
+        RandomWalk = 2,
+        AxisMisalignment = 3,
+        ConstantBias = 4
+    };
 
-        //Gaussian noise implementation
-        //std::default_random_engine m_generator;
-        std::mt19937_64 m_generator;
-        std::normal_distribution<double> m_imu_lin_accel_distribution;
-        std::normal_distribution<double> m_imu_angvel_distribution;
-        std::normal_distribution<double> m_imu_orientation_distribution;        
+    double m_rate;
 
-        //the function that ends up applying noise
-        using msg_fn = sensor_msgs::Imu (ImuSim::*)();
+    std::string m_link_name;
 
-        msg_fn f_noise_applicator;
+    std::string m_tf_prefix;
 
-        //Individual noise application methods
-        sensor_msgs::Imu f_add_no_noise();
+    std::string m_imu_profile;
 
-        sensor_msgs::Imu f_add_gaussian_noise();
-        
-        void f_load_ros_params();
-    public:
-        ImuSim();
+    uint8_t m_noise_type;
 
-        ~ImuSim();
-        
-        void step();
+    ros::NodeHandle m_nh;
 
-        void run();
+    ros::NodeHandle m_pnh;
+
+    ros::Publisher m_imu_sim_data_publisher;
+
+    std::vector<NoiseType> m_noise_profiles;
+
+    static constexpr const char* m_topic_imu = "imu/data";
+
+    static constexpr const char* m_topic_pose = "dynamics/pose";
+
+    static constexpr const char* m_topic_velocity = "dynamics/velocity";
+
+    const std::string m_topic_acceleration = "dynamics/acceleration";
+
+    Eigen::Quaterniond m_axis_misalignment;
+
+    Eigen::Quaterniond m_constant_bias;
+
+    boost::array<double, 9> m_orientation_covariance;
+
+    boost::array<double, 9> m_angular_velocity_covariance;
+
+    boost::array<double, 9> m_linear_acceleration_covariance;
+
+    message_filters::Subscriber<geometry_msgs::PoseStamped> m_pose_subscriber;
+
+    message_filters::Subscriber<geometry_msgs::TwistStamped> m_velocity_subscriber;
+
+    message_filters::Subscriber<geometry_msgs::TwistStamped> m_acceleration_subscriber;
+
+    typedef message_filters::TimeSynchronizer<
+        geometry_msgs::PoseStamped,
+        geometry_msgs::TwistStamped,
+        geometry_msgs::TwistStamped
+    > StateSynchronizer;
+
+    std::shared_ptr<StateSynchronizer> m_state_subscriber;
+
+    void f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &pose,
+                               const geometry_msgs::TwistStamped::ConstPtr &vel,
+                               const geometry_msgs::TwistStamped::ConstPtr &accel);
+
+    std::mt19937_64 m_generator;
+
+    std::normal_distribution<double> m_linear_acceleration_noise;
+
+    std::normal_distribution<double> m_angular_velocity_noise;
+
+    std::normal_distribution<double> m_orientation_noise;
+
+    void f_generate_parameters();
+
+    void f_apply_constant_bias(sensor_msgs::Imu& msg);
+
+    void f_apply_axis_misalignment(sensor_msgs::Imu& msg);
+
+    void f_apply_noise_density(sensor_msgs::Imu& msg);
+
+    void f_apply_bias_instability(sensor_msgs::Imu& msg);
+
+    void f_apply_random_walk(sensor_msgs::Imu& msg);
+
+    void f_apply_acceleration_bias(sensor_msgs::Imu& msg);
+
+    static void f_msg_to_eigen(const sensor_msgs::Imu& msg,
+                               Eigen::Quaterniond &orientation,
+                               Eigen::Vector3d &linear_acceleration,
+                               Eigen::Vector3d &angular_velocity);
+
+    static void f_compute_covariance_matrix(const std::vector<double>& stddev, boost::array<double, 9> &covariance_out);
+
+public:
+    ImuSim();
+
+    void run();
 };
