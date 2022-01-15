@@ -36,19 +36,18 @@ void ImuSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &p
     msg.angular_velocity = vel->twist.angular;
     msg.linear_acceleration = accel->twist.linear;
 
-
+    msg.orientation_covariance = m_orientation_covariance;
     msg.linear_acceleration_covariance = m_linear_acceleration_covariance;
+    msg.angular_velocity_covariance = m_angular_velocity_covariance;
 
     for(const auto& i : m_noise_profiles) {
         switch (i) {
             case NoiseType::Gaussian :
                 f_apply_noise_density(msg);
                 break;
-
             case NoiseType::RandomWalk:
                 f_apply_random_walk(msg);
                 break;
-
             case NoiseType::AxisMisalignment:
                 f_apply_axis_misalignment(msg);
                 break;
@@ -83,21 +82,21 @@ void ImuSim::f_generate_parameters() {
 
     double misalignment_x;
     m_pnh.param<double>(
-            std::string() + ImuSimDict::CONF_AXIS_MISALIGNMENT + "/" + ImuSimDict::CONF_X,
+            std::string() + ImuSimDict::CONF_NOISE_AXIS_MISALIGNMENT + "/" + ImuSimDict::CONF_X,
             misalignment_x,
             0
     );
 
     double misalignment_y;
     m_pnh.param<double>(
-            std::string() + ImuSimDict::CONF_AXIS_MISALIGNMENT + "/" + ImuSimDict::CONF_Y,
+            std::string() + ImuSimDict::CONF_NOISE_AXIS_MISALIGNMENT + "/" + ImuSimDict::CONF_Y,
             misalignment_y,
             0
     );
 
     double misalignment_z;
     m_pnh.param<double>(
-            std::string() + ImuSimDict::CONF_AXIS_MISALIGNMENT + "/" + ImuSimDict::CONF_Z,
+            std::string() + ImuSimDict::CONF_NOISE_AXIS_MISALIGNMENT + "/" + ImuSimDict::CONF_Z,
             misalignment_z,
             0
     );
@@ -108,10 +107,24 @@ void ImuSim::f_generate_parameters() {
     //get noise type
     std::string noise_type;
     m_pnh.param<std::string>(ImuSimDict::CONF_NOISE_TYPE, noise_type, "");
-    if(noise_type == ImuSimDict::CONF_NOISE_TYPE_GAUSSIAN_NOISE) {
+    if(noise_type == ImuSimDict::CONF_NOISE_GAUSSIAN_NOISE) {
         m_noise_type = NoiseType::Gaussian;
-    } else if (noise_type == ImuSimDict::CONF_NOISE_TYPE_NO_NOISE) {
+    } else if (noise_type == ImuSimDict::CONF_NOISE_NO_NOISE) {
         m_noise_type = NoiseType::None;
+    }
+
+    std::vector<std::string> types;
+    m_pnh.param<std::vector<std::string>>(ImuSimDict::CONF_NOISE_TYPES, types, std::vector<std::string>());
+    for(const auto& i : types) {
+        if(i == ImuSimDict::CONF_NOISE_GAUSSIAN_NOISE) {
+            m_noise_types.emplace_back(NoiseType::Gaussian);
+        } else if (i == ImuSimDict::CONF_NOISE_AXIS_MISALIGNMENT) {
+            m_noise_types.emplace_back(NoiseType::AxisMisalignment);
+        } else if (i == ImuSimDict::CONF_NOISE_CONSTANT_BIAS) {
+            m_noise_types.emplace_back(NoiseType::ConstantBias);
+        } else if (i == ImuSimDict::CONF_NOISE_RANDOM_WALK) {
+            m_noise_types.emplace_back(NoiseType::RandomWalk);
+        }
     }
 
     //declare temporary local variables
@@ -165,7 +178,7 @@ void ImuSim::f_generate_parameters() {
 
 }
 
-void ImuSim::run() {
+void ImuSim::run() const {
     ros::Rate rate(m_rate);
     while(ros::ok()) {
         ros::spinOnce();
@@ -179,7 +192,7 @@ ImuSim::ImuSim(): m_nh(),
 
     f_generate_parameters();
 
-    m_generator = std::mt19937_64(std::random_device{}());
+    m_generator = std::make_shared<std::mt19937_64>(std::random_device{}());
 
     m_pose_subscriber.subscribe(m_nh, m_topic_pose, 1);
 
@@ -212,9 +225,9 @@ void ImuSim::f_apply_noise_density(sensor_msgs::Imu &msg) {
     // Orientation
     tf2::Quaternion noise_offset;
     noise_offset.setRPY(
-            m_orientation_noise(m_generator),
-            m_orientation_noise(m_generator),
-            m_orientation_noise(m_generator)
+            m_orientation_noise(*m_generator),
+            m_orientation_noise(*m_generator),
+            m_orientation_noise(*m_generator)
     );
 
     tf2::Quaternion orientation{
@@ -231,15 +244,14 @@ void ImuSim::f_apply_noise_density(sensor_msgs::Imu &msg) {
     msg.orientation.w = noisy_orientation.w();
 
     // Linear Acceleration
-    msg.linear_acceleration.x += m_linear_acceleration_noise(m_generator);
-    msg.linear_acceleration.y += m_linear_acceleration_noise(m_generator);
-    msg.linear_acceleration.z += m_linear_acceleration_noise(m_generator);
-
+    msg.linear_acceleration.x += m_linear_acceleration_noise(*m_generator);
+    msg.linear_acceleration.y += m_linear_acceleration_noise(*m_generator);
+    msg.linear_acceleration.z += m_linear_acceleration_noise(*m_generator);
 
     // Angular Velocity
-    msg.angular_velocity.x += m_angular_velocity_noise(m_generator);
-    msg.angular_velocity.y += m_angular_velocity_noise(m_generator);
-    msg.angular_velocity.z += m_angular_velocity_noise(m_generator);
+    msg.angular_velocity.x += m_angular_velocity_noise(*m_generator);
+    msg.angular_velocity.y += m_angular_velocity_noise(*m_generator);
+    msg.angular_velocity.z += m_angular_velocity_noise(*m_generator);
 
 }
 
@@ -316,6 +328,7 @@ void ImuSim::f_msg_to_eigen(const sensor_msgs::Imu& msg,
 }
 
 void ImuSim::f_compute_covariance_matrix(const std::vector<double>& stddev, boost::array<double, 9>& covariance_out) {
+    covariance_out = {0};
     covariance_out[0] = pow(stddev[0], 2);
     covariance_out[4] = pow(stddev[1], 2);
     covariance_out[8] = pow(stddev[2], 2);

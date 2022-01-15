@@ -62,8 +62,12 @@ namespace conversions {
 
 namespace ImuSimDict {
     STATIC_STRING CONF_NOISE_TYPE = "noise_type";
-    STATIC_STRING CONF_NOISE_TYPE_NO_NOISE = "none";
-    STATIC_STRING CONF_NOISE_TYPE_GAUSSIAN_NOISE = "gaussian";
+    STATIC_STRING CONF_NOISE_TYPES = "noise_types";
+    STATIC_STRING CONF_NOISE_NO_NOISE = "none";
+    STATIC_STRING CONF_NOISE_GAUSSIAN_NOISE = "gaussian";
+    STATIC_STRING CONF_NOISE_AXIS_MISALIGNMENT = "axis_misalignment";
+    STATIC_STRING CONF_NOISE_CONSTANT_BIAS = "constant_bias";
+    STATIC_STRING CONF_NOISE_RANDOM_WALK = "random_walk";
     STATIC_STRING CONF_LINEAR_ACCELERATION_MEAN = "linear_acceleration_mean";
     STATIC_STRING CONF_LINEAR_ACCELERATION_STD = "linear_acceleration_std";
     STATIC_STRING CONF_ANGULAR_VELOCITY_MEAN = "angular_velocity_mean";
@@ -74,8 +78,6 @@ namespace ImuSimDict {
     STATIC_STRING CONF_PROFILE = "profile";
     STATIC_STRING CONF_FREQUENCY = "frequency";
     STATIC_STRING CONF_TF_PREFIX = "tf_prefix";
-    STATIC_STRING CONF_AXIS_MISALIGNMENT = "axis_misalignment";
-    STATIC_STRING CONF_CONSTANT_BIAS = "constant_bias";
     STATIC_STRING CONF_X = "x";
     STATIC_STRING CONF_Y = "y";
     STATIC_STRING CONF_Z = "z";
@@ -94,6 +96,8 @@ private:
     };
 
     double m_rate;
+
+    std::vector<uint8_t> m_noise_types;
 
     std::string m_link_name;
 
@@ -147,7 +151,7 @@ private:
                                const geometry_msgs::TwistStamped::ConstPtr &vel,
                                const geometry_msgs::TwistStamped::ConstPtr &accel);
 
-    std::mt19937_64 m_generator;
+    std::shared_ptr<std::mt19937_64> m_generator;
 
     std::normal_distribution<double> m_linear_acceleration_noise;
 
@@ -179,5 +183,5 @@ private:
 public:
     ImuSim();
 
-    void run();
+    void run() const;
 };

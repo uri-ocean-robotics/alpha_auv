@@ -17,6 +17,9 @@ frequency: 100
 
 noise_type: gaussian
 
+noise_types:
+  - gaussian
+
 tf_prefix: alpha
 
 link_name: imu
