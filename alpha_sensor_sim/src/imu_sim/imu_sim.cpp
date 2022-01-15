@@ -157,11 +157,11 @@ void ImuSim::f_generate_parameters() {
 
     f_compute_covariance_matrix(
             std::vector<double>(3, angular_velocity_std),
-                    m_angular_velocity_covariance);
+            m_angular_velocity_covariance);
 
     f_compute_covariance_matrix(
             std::vector<double>(3, orientation_std),
-                    m_orientation_covariance);
+            m_orientation_covariance);
 
 }
 
@@ -316,18 +316,7 @@ void ImuSim::f_msg_to_eigen(const sensor_msgs::Imu& msg,
 }
 
 void ImuSim::f_compute_covariance_matrix(const std::vector<double>& stddev, boost::array<double, 9>& covariance_out) {
-
-    std::vector<double> variance;
-    std::transform(
-            stddev.begin(),
-            stddev.end(),
-            variance,
-            [](double x) {
-                return x * x;
-            }
-    );
-
-    covariance_out[0] = variance[0];
-    covariance_out[4] = variance[1];
-    covariance_out[8] = variance[2];
+    covariance_out[0] = pow(stddev[0], 2);
+    covariance_out[4] = pow(stddev[1], 2);
+    covariance_out[8] = pow(stddev[2], 2);
 }
