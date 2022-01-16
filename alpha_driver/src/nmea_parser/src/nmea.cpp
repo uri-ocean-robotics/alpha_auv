@@ -1,7 +1,7 @@
 #include "cstdio"
 #include "cstdlib"
 #include "cstring"
-#include "nmea.h"
+#include "../include/nmea/nmea.h"
 
 NMEA::NMEA() :
     _raw(nullptr),

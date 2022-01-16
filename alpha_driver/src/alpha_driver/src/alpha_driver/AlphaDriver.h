@@ -5,11 +5,9 @@
 #include "boost/asio.hpp"
 #include "boost/thread.hpp"
 
-#define NMEA_PWM_CMD "PWMC2"
-#define NMEA_THRUST_PWM_CMD "PWMC"
-#define NMEA_THRUST_PWM_REPORT "PWMR"
-#define NMEA_BAROMETER_REPORT "BARR"
-#define NMEA_MULTIMETER_REPORT "MULR"
+#include "nmea/nmea.h"
+#include "alpha_common/dictionary.h"
+
 
 class AlphaDriver{
 protected:

@@ -1,5 +1,4 @@
 #include "AlphaDriverRos.h"
-#include "nmea.h"
 
 AlphaDriverRos::AlphaDriverRos() : m_nh(""), m_pnh("~")
 {
