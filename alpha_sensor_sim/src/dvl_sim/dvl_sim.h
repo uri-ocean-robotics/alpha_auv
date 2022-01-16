@@ -74,6 +74,25 @@ namespace DvlSimDict {
     STATIC_STRING CONF_Z = "z";
 }
 
+typedef struct vehicle_state_t {
+    vehicle_state_t();
+
+    ////dvl specific
+    double depth;
+    double dist_to_seafloor;
+
+    double dvl_distance;
+    double dvl_vel;
+
+    Eigen::Vector3d orientation;
+
+    //velocities
+    Eigen::Vector3d lin_velocity;
+    
+    Eigen::Vector3d ang_velocity;
+
+} vehicle_state_t;
+
 class DvlSim {
 private:
     enum NoiseType : uint8_t {
@@ -83,28 +102,6 @@ private:
         AxisMisalignment = 3,
         ConstantBias = 4
     };
-
-    typedef struct vehicle_state_t {
-        vehicle_state_t();
-        //pose
-        //double x;
-        //double y;
-        double depth;
-        double dist_to_seafloor;
-
-        double p;
-        double q;
-        double r;
-
-        //velocities
-        double u;
-        double v;
-        double w;
-        
-        double p_dot;
-        double q_dot;
-        double r_dot;
-    } vehicle_state_t;
 
     vehicle_state_t vehicle_state;
 
@@ -161,6 +158,10 @@ private:
     std::normal_distribution<double> m_orientation_noise;
 
     void f_generate_parameters();
+
+    double f_get_dvl_velocity();
+
+    double f_get_dvl_dist();
 
     void f_apply_constant_bias(alpha_sensor_sim::Transducer& msg);
 

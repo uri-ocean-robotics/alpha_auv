@@ -22,9 +22,21 @@
 
 #include "dvl_sim.h"
 
+vehicle_state_t::vehicle_state_t() {
+    depth = 0;
+    dist_to_seafloor = 0;
+    dvl_distance = 0;
+    dvl_vel = 0;
+    orientation = Eigen::Vector3d::Zero();
+    lin_velocity = Eigen::Vector3d::Zero();
+    ang_velocity = Eigen::Vector3d::Zero();
+}
+
 void DvlSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &pose,
                                    const geometry_msgs::TwistStamped::ConstPtr &vel) {
-
+    
+    // pose 
+    //// depth
     vehicle_state.depth = pose->pose.position.z;
     vehicle_state.dist_to_seafloor = m_max_range-vehicle_state.depth;
     
@@ -33,27 +45,32 @@ void DvlSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &p
     tf2::fromMsg(pose->pose.orientation, local_quat);
     tf2::Matrix3x3(local_quat).getRPY(roll, pitch, yaw);
 
-    vehicle_state.p = roll;
-    vehicle_state.q = pitch;
-    vehicle_state.r = yaw;
+    //// orientation
+    vehicle_state.orientation[0] = roll;
+    vehicle_state.orientation[1] = pitch;
+    vehicle_state.orientation[2] = yaw;
 
-    vehicle_state.u = vel->twist.linear.x;
-    vehicle_state.v = vel->twist.linear.y;
-    vehicle_state.w = vel->twist.linear.z;
+    //// velocity
+    vehicle_state.lin_velocity[0] = vel->twist.linear.x;
+    vehicle_state.lin_velocity[1] = vel->twist.linear.y;
+    vehicle_state.lin_velocity[2] = vel->twist.linear.z;
 
-    vehicle_state.p_dot;
-    vehicle_state.q_dot;
-    vehicle_state.r_dot;
-
+    vehicle_state.ang_velocity[0] = vel->twist.angular.x;
+    vehicle_state.ang_velocity[1] = vel->twist.angular.y;
+    vehicle_state.ang_velocity[2] = vel->twist.angular.z;
 
     alpha_sensor_sim::Transducer msg;
 
-    msg.id = 1000;
-    msg.velocity = 1000;
-    msg.distance = 1000;
-    msg.rssi = 1000;
-    msg.nsd = 1000;
-    msg.beam_valid = 1000;
+    vehicle_state.dvl_distance = f_get_dvl_dist();
+
+    vehicle_state.dvl_vel = f_get_dvl_velocity();
+    
+    msg.id = pose->header.seq;
+    msg.velocity = vehicle_state.dvl_vel;
+    msg.distance = vehicle_state.dvl_distance;
+    msg.rssi = -1;
+    msg.nsd = -1;
+    msg.beam_valid = vehicle_state.dvl_distance < m_max_range ? true : false;
 
 
     for(const auto& i : m_noise_profiles) {
@@ -83,6 +100,17 @@ void DvlSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &p
 
 }
 
+double DvlSim::f_get_dvl_dist() {
+    return vehicle_state.dist_to_seafloor/(cos(vehicle_state.orientation[0])*cos(vehicle_state.orientation[1])*cos(vehicle_state.orientation[2]));
+}
+
+double DvlSim::f_get_dvl_velocity() {
+    double velocity_mag = vehicle_state.lin_velocity.norm();
+    double projected_angular_velocity = vehicle_state.dvl_distance*vehicle_state.ang_velocity.norm();
+    double apparent_beam_velocity = velocity_mag+projected_angular_velocity;
+    return apparent_beam_velocity;
+}
+
 void DvlSim::f_generate_parameters() {
 
     // get dvl profile
@@ -91,7 +119,7 @@ void DvlSim::f_generate_parameters() {
     // get dvl link name
     m_pnh.param<std::string>(DvlSimDict::CONF_LINK_NAME, m_link_name, "dvl_link");
 
-    //get node frequency
+    // get node frequency
     m_pnh.param<double>(DvlSimDict::CONF_FREQUENCY, m_rate, 100);
 
     m_pnh.param<std::string>(DvlSimDict::CONF_TF_PREFIX, m_tf_prefix, "");
