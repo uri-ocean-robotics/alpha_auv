@@ -49,19 +49,19 @@
 #define STATIC_STRING static constexpr const char *
 #define STATIC_DOUBLE static constexpr double
 
-namespace conversions {
-    STATIC_DOUBLE inches_to_meters = 0.0254;
-    STATIC_DOUBLE degs_to_rads = 0.0174533;
-    STATIC_DOUBLE grams_to_meters_over_secsec = 9.80665;
-    STATIC_DOUBLE milli = 0.001;
-    STATIC_DOUBLE micro = 0.000001;
+namespace convert {
+    STATIC_DOUBLE percent_to_decimal = 0.01;
 }
 
 namespace DvlSimDict {
+    STATIC_STRING CONF_DVL_MAX_RANGE = "dvl_max_range";
+    STATIC_STRING CONF_SEAFLOOR_DEPTH = "seafloor_depth";
     STATIC_STRING CONF_NOISE_TYPE = "noise_type";
     STATIC_STRING CONF_NOISE_TYPES = "noise_types";
     STATIC_STRING CONF_NOISE_NO_NOISE = "none";
-    STATIC_STRING CONF_NOISE_GAUSSIAN_NOISE = "gaussian";
+    STATIC_STRING CONF_NOISE_UNIFORM_NOISE = "uniform";
+    STATIC_STRING CONF_NOISE_PERR_VELOCITY = "velocity_average_percent_err";
+    STATIC_STRING CONF_NOISE_PERR_DISTANCE = "distance_average_percent_err";
     STATIC_STRING CONF_NOISE_AXIS_MISALIGNMENT = "axis_misalignment";
     STATIC_STRING CONF_NOISE_CONSTANT_BIAS = "constant_bias";
     STATIC_STRING CONF_NOISE_RANDOM_WALK = "random_walk";
@@ -74,42 +74,40 @@ namespace DvlSimDict {
     STATIC_STRING CONF_Z = "z";
 }
 
-typedef struct vehicle_state_t {
-    vehicle_state_t();
-
-    ////dvl specific
+typedef struct dvl_state_t {
+    dvl_state_t();
+    // dvl specific
     double depth;
     double dist_to_seafloor;
-
     double dvl_distance;
     double dvl_vel;
 
+    //// from pose
     Eigen::Vector3d orientation;
 
-    //velocities
+    //// from velocities
     Eigen::Vector3d lin_velocity;
-    
     Eigen::Vector3d ang_velocity;
 
-} vehicle_state_t;
+} dvl_state_t;
 
 class DvlSim {
 private:
     enum NoiseType : uint8_t {
         None = 0,
-        Gaussian = 1,
+        Uniform = 1,
         RandomWalk = 2,
         AxisMisalignment = 3,
         ConstantBias = 4
     };
 
-    vehicle_state_t vehicle_state;
+    dvl_state_t dvl_state;
 
     double m_rate;
 
-    //+TODO: These two variables need to be parameters
-    double artificial_seafloor_depth = 50;
-    double m_max_range = 50;
+    double m_artificial_seafloor_depth;
+
+    double m_max_range;
 
     std::vector<uint8_t> m_noise_types;
 
@@ -153,10 +151,10 @@ private:
     void f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &pose,
                                const geometry_msgs::TwistStamped::ConstPtr &vel);
 
-    std::shared_ptr<std::mt19937_64> m_generator;
+    std::mt19937_64 m_generator;
 
     std::uniform_real_distribution<double> m_dvl_velocity_noise;
-    std::uniform_real_distribution<double> m_dvl_velocity_noise;
+    std::uniform_real_distribution<double> m_dvl_distance_noise;
 
     void f_generate_parameters();
 
