@@ -18,6 +18,14 @@
 
     Description: 
      - 
+
+
+    +TODO: 
+        - [] Make the seafloor depth a parameter
+        - [] Make the maximum valid range a parameter
+        - [] Add a uniform noise generator, include the +-% error similar to waterlink's datasheet
+        - [] Perform transformations with the TF Tree
+        - [] 
 */
 
 #include "dvl_sim.h"
@@ -38,7 +46,7 @@ void DvlSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &p
     // pose 
     //// depth
     vehicle_state.depth = pose->pose.position.z;
-    vehicle_state.dist_to_seafloor = m_max_range-vehicle_state.depth;
+    vehicle_state.dist_to_seafloor = artificial_seafloor_depth-vehicle_state.depth;
     
     tf2::Quaternion local_quat;
     double roll, pitch, yaw;
@@ -70,7 +78,7 @@ void DvlSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &p
     msg.distance = vehicle_state.dvl_distance;
     msg.rssi = -1;
     msg.nsd = -1;
-    msg.beam_valid = vehicle_state.dvl_distance < m_max_range ? true : false;
+    msg.beam_valid = (vehicle_state.dvl_distance < m_max_range) && (vehicle_state.dvl_distance > 0) ? true : false;
 
 
     for(const auto& i : m_noise_profiles) {
@@ -172,12 +180,6 @@ void DvlSim::f_generate_parameters() {
     }
 
     //declare temporary local variables
-    double linear_velocity_mean;
-    double linear_velocity_std;
-    double angular_velocity_mean;
-    double angular_velocity_std;
-    double orientation_mean;
-    double orientation_std;
 
     //get and set Dvl profile parameters
 

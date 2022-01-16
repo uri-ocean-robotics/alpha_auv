@@ -107,6 +107,8 @@ private:
 
     double m_rate;
 
+    //+TODO: These two variables need to be parameters
+    double artificial_seafloor_depth = 50;
     double m_max_range = 50;
 
     std::vector<uint8_t> m_noise_types;
@@ -153,9 +155,8 @@ private:
 
     std::shared_ptr<std::mt19937_64> m_generator;
 
-    std::normal_distribution<double> m_angular_velocity_noise;
-
-    std::normal_distribution<double> m_orientation_noise;
+    std::uniform_real_distribution<double> m_dvl_velocity_noise;
+    std::uniform_real_distribution<double> m_dvl_velocity_noise;
 
     void f_generate_parameters();
 
