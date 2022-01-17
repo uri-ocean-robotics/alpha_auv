@@ -1,4 +1,7 @@
-#include "alpha/common.h"
+#include "alpha/mcu/common.h"
+#include "alpha/mcu/dictionary.h"
+#include "hardware/gpio.h"
+#include "hardware/i2c.h"
 
 void initialize_i2c() {
     i2c_init(ALPHA_I2C_DEFAULT, 100 * 1000);

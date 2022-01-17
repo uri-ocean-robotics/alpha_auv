@@ -6,7 +6,7 @@
 #include "boost/thread.hpp"
 
 #include "nmea/nmea.h"
-#include "alpha_common/dictionary.h"
+#include "alpha/common/dictionary.h"
 
 
 class AlphaDriver{
@@ -50,7 +50,7 @@ public:
     void set_serial_callback(decltype(m_serial_callback) c) { m_serial_callback  = c;}
     auto get_serial_callback() -> decltype(m_serial_callback) {return m_serial_callback;}
 
-    void cmd_pwm(double pwm, uint8_t channel);
+    void cmd_pwm(uint8_t channel, double pwm, bool rate_control = true);
 };
 
 

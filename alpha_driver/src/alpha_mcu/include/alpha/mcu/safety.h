@@ -2,7 +2,7 @@
 #define DROP_WEIGHT_HPP
 
 #include "nmea/nmea.h"
-#include "alpha/dictionary.h"
+#include "dictionary.h"
 #include "hardware/gpio.h"
 #include "pico/time.h"
 
@@ -38,17 +38,17 @@ public:
 
     Safety();
 
+    void initialize();
+
     void override_relay(bool override, bool state);
 
-    void activate_relay();
+    void activate_relay() const;
 
-    void deactivate_relay();
+    void deactivate_relay() const;
 
-    bool is_activated();
+    static bool is_activated();
 
 };
 
-
-extern Safety g_safety;
 
 #endif

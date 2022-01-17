@@ -137,13 +137,8 @@ void AlphaDriverRos::f_driver_serial_callback(std::string incoming) {
         p.voltage = nmea_msg.values[0];
         p.current = nmea_msg.values[1];
         m_power_pub.publish(p);
-    } else if (nmea_msg.command == NMEA_THRUST_PWM_REPORT){
-        geometry_msgs::Vector3Stamped p;
-        p.header.stamp = ros::Time::now();
-        p.vector.x = nmea_msg.values[0];
-        p.vector.y = nmea_msg.values[1];
-        p.vector.z = nmea_msg.values[2];
-        m_thrust_report_pub.publish(p);
+    } else if (nmea_msg.command == NMEA_PWM_REPORT){
+        // todo: to be defined
     }
 }
 
@@ -164,7 +159,7 @@ void AlphaDriverRos::f_command_thrust_loop() {
         }
 
         for(int i = 0 ; i < m_thrust_per_channel.size() ; i++) {
-            m_driver->cmd_pwm(m_thrust_per_channel[i], i);
+            m_driver->cmd_pwm(i, m_thrust_per_channel[i]);
         }
 
         r.sleep();

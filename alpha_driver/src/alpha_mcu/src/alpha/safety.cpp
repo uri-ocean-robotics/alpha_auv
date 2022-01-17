@@ -1,15 +1,21 @@
-#include "alpha/safety.h"
-#include "alpha_common/dictionary.h"
-#include "alpha/ina260.h"
-#include "alpha/ms5837.h"
+#include "alpha/common/dictionary.h"
+#include "alpha/mcu/ina260.h"
+#include "alpha/mcu/ms5837.h"
+#include "alpha/mcu/safety.h"
+#include "alpha/mcu/globals.h"
 #include "iostream"
+
+
+Safety::Safety() {
+
+}
 
 bool Safety::f_monitor_voltage(struct repeating_timer *t) {
     Safety* _this = (Safety*)t->user_data;
 
     bool old = _this->m_deadman_time_marked;
 
-    if(g_multimeter_data.voltage < SAFETY_DEADMAN_VOLTAGE) {
+    if(globals::multimeter_data.voltage < SAFETY_DEADMAN_VOLTAGE) {
         _this->m_deadman_time_marked = true;
     } else {
         _this->m_deadman_time_marked = false;
@@ -33,7 +39,7 @@ bool Safety::f_monitor_underwater_time(struct repeating_timer* t) {
 
     bool old = _this->m_depth_time_marked;
 
-    if(g_pressure_data.depth > 1) {
+    if(globals::pressure_data.depth > 1) {
         _this->m_depth_time_marked = true;
     } else {
         _this->m_depth_time_marked = false;
@@ -65,7 +71,7 @@ bool Safety::f_reporter(struct repeating_timer* t) {
 
 }
 
-Safety::Safety() {
+void Safety::initialize() {
     m_override = false;
     gpio_init(DROP_WEIGHT_PIN);
 
@@ -85,13 +91,13 @@ void Safety::override_relay(bool override, bool state) {
     gpio_put(DROP_WEIGHT_PIN, state);
 }
 
-void Safety::activate_relay() {
+void Safety::activate_relay() const {
     if(!m_override) {
         gpio_put(DROP_WEIGHT_PIN, 1);
     }
 }
 
-void Safety::deactivate_relay() {
+void Safety::deactivate_relay() const {
     if(!m_override) {
         gpio_put(DROP_WEIGHT_PIN, 0);
     }
@@ -100,6 +106,3 @@ void Safety::deactivate_relay() {
 bool Safety::is_activated() {
     return gpio_get(DROP_WEIGHT_PIN);
 }
-
-
-Safety g_safety = Safety();

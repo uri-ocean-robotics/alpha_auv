@@ -1,12 +1,9 @@
-#include "alpha_common/types.h"
-#include "alpha_common/dictionary.h"
+#include "alpha/common/types.h"
+#include "alpha/common/dictionary.h"
 #include "iostream"
-#include "alpha/ina260.h"
-#include "alpha/common.h"
-
-INA260 g_multimeter = INA260();
-multimeter_t g_multimeter_data;
-
+#include "alpha/mcu/ina260.h"
+#include "alpha/mcu/common.h"
+#include "alpha/mcu/globals.h"
 
 INA260::INA260(int addr_, int alert_pin) {
     m_i2c_addr = addr_;
@@ -16,7 +13,7 @@ INA260::INA260(int addr_, int alert_pin) {
 
 void INA260::initialize() {
     // gpio_set_irq_enabled_with_callback(m_alert_pin, GPIO_IRQ_EDGE_RISE, true, &alert_callback);
-    add_repeating_timer_ms(REPORT_MULTIMETER_PERIOD, reporter, this, &m_reporter_timer);
+    add_repeating_timer_ms(REPORT_MULTIMETER_PERIOD, f_reporter, this, &m_reporter_timer);
 }
 
 bool INA260::is_exist() const {
@@ -29,7 +26,7 @@ bool INA260::is_exist() const {
     return true;
 }
 
-int INA260::rawRead(uint8_t pointer_addr,unsigned short *val_) const {
+int INA260::raw_read(uint8_t pointer_addr, unsigned short *val_) const {
     uint8_t val[2];
     if(i2c_write_blocking(ALPHA_I2C_DEFAULT, m_i2c_addr, &pointer_addr, 1, true) != PICO_ERROR_GENERIC){
         if(i2c_read_blocking(ALPHA_I2C_DEFAULT, m_i2c_addr, val, 2, false) != PICO_ERROR_GENERIC){
@@ -41,7 +38,7 @@ int INA260::rawRead(uint8_t pointer_addr,unsigned short *val_) const {
     return PICO_ERROR_GENERIC;
 }
 
-int INA260::rawWrite(char pointer_addr,unsigned short val_) const {
+int INA260::raw_write(char pointer_addr, unsigned short val_) const {
     uint8_t val[3];
     val[0] = pointer_addr;
     val[1] = static_cast<char>((val_ >> 8) & 0x00ff);
@@ -53,18 +50,18 @@ int INA260::rawWrite(char pointer_addr,unsigned short val_) const {
 }
 
 
-int INA260::getVoltage(double *V_) const{
+int INA260::get_voltage(double *V_) const{
     unsigned short val;
-    if(rawRead(0x02,&val) == 0){
+    if(raw_read(0x02, &val) == 0){
         *V_ = static_cast<double>(val) * 0.00125;
         return PICO_ERROR_NONE;
     }
     return PICO_ERROR_GENERIC;
 }
 
-int INA260::getCurrent(double *I_) const{
+int INA260::get_current(double *I_) const{
     unsigned short val;
-    if(rawRead(0x01,&val) == 0){ //current register 0X1
+    if(raw_read(0x01, &val) == 0){ //current register 0X1
         char *s_p = reinterpret_cast<char *>(&val);
         short d_s;
         char *d_p = reinterpret_cast<char *>(&d_s);
@@ -76,9 +73,9 @@ int INA260::getCurrent(double *I_) const{
     return PICO_ERROR_GENERIC;
 }
 
-int INA260::getPower(double *P_) const{
+int INA260::get_power(double *P_) const{
     unsigned short val;
-    if(rawRead(0x03,&val) == 0){ //power register 0x3
+    if(raw_read(0x03, &val) == 0){ //power register 0x3
         char *s_p = reinterpret_cast<char *>(&val);
         short d_s;
         char *d_p = reinterpret_cast<char *>(&d_s);
@@ -90,40 +87,40 @@ int INA260::getPower(double *P_) const{
     return PICO_ERROR_GENERIC;
 }
 
-int INA260::setConfig(unsigned short val) const{
-    return rawWrite(0x00,val);  //config register 0x00
+int INA260::set_config(unsigned short val) const{
+    return raw_write(0x00, val);  //config register 0x00
 }
 
-int INA260::setAlert(unsigned short val) const{
-    return rawWrite(0x00,val);  //config register 0x00
+int INA260::set_alert(unsigned short val) const{
+    return raw_write(0x00, val);  //config register 0x00
 }
 
-void INA260::readAlert() const{
+void INA260::read_alert() const{
     unsigned short val;
-    rawRead(0x06,&val);
+    raw_read(0x06, &val);
 }
 
-int INA260::setLim(unsigned short val) const{
-    return rawWrite(0x00,val);  //config register 0x00
+int INA260::set_limit(unsigned short val) const{
+    return raw_write(0x00, val);  //config register 0x00
 }
 
- bool INA260::reporter(struct repeating_timer *t) {
+ bool INA260::f_reporter(struct repeating_timer *t) {
     auto _this = (INA260*)t->user_data;
 
     double current, voltage, power;
-    if(_this->getCurrent(&current) != PICO_ERROR_NONE) {
+    if(_this->get_current(&current) != PICO_ERROR_NONE) {
         current = -1;
     }
-    if(_this->getVoltage(&voltage) != PICO_ERROR_NONE) {
+    if(_this->get_voltage(&voltage) != PICO_ERROR_NONE) {
         voltage = -1;
     }
-    if(_this->getPower(&power) != PICO_ERROR_NONE) {
+    if(_this->get_power(&power) != PICO_ERROR_NONE) {
         power = -1;
     }
 
-    g_multimeter_data.voltage = voltage;
-    g_multimeter_data.current = current;
-    g_multimeter_data.power = power;
+    globals::multimeter_data.current = current;
+    globals::multimeter_data.voltage = voltage;
+    globals::multimeter_data.power = power;
 
     NMEA* msg = new NMEA();
     msg->construct("%s,%.5f,%.2f,%.1f", NMEA_MULTIMETER_REPORT, voltage, current, power);
@@ -133,7 +130,7 @@ int INA260::setLim(unsigned short val) const{
     return true;
 }
 
-void INA260::alert_callback(uint , uint32_t) {
+void INA260::f_alert_callback(uint , uint32_t) {
     NMEA* msg = new NMEA();
     msg->construct("%s", NMEA_MULTIMETER_ALRT_REPORT);
     std::cout << msg->get_raw() << std::endl;

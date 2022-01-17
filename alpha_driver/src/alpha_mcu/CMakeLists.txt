@@ -13,17 +13,18 @@ add_subdirectory(../nmea_parser nmea_parser)
 
 # Creates a pico-sdk subdirectory in our project for the libraries
 pico_sdk_init()
-include_directories(include ${NMEA_PARSER_INCLUDE_DIS})
+include_directories(include)
 # point out the CMake, where to find the executable source file
 add_executable(${PROJECT_NAME}
-        src/main.cpp
-        src/alpha/alpha.cpp
-        src/alpha/ina260.cpp
-        src/alpha/ms5837.cpp
-        src/alpha/parser.cpp
-        src/alpha/safety.cpp
-        src/alpha/thrusters.cpp
-        src/alpha/common.cpp
+  src/main.cpp
+  src/alpha/ina260.cpp
+  src/alpha/ms5837.cpp
+  src/alpha/execution.cpp
+  src/alpha/safety.cpp
+  src/alpha/common.cpp
+  src/alpha/globals.cpp
+  src/alpha/pwm_controller.cpp
+  src/alpha/pwm_manager.cpp
 )
 # create map/bin/hex/uf2 files.
 pico_add_extra_outputs(${PROJECT_NAME})

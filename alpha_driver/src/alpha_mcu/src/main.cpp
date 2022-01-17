@@ -1,7 +1,13 @@
-#include "alpha/all.hpp"
+#include "pico/multicore.h"
+#include "pico/stdio.h"
+#include "pico/stdlib.h"
 
+#include "alpha/mcu/common.h"
+#include "alpha/mcu/ina260.h"
+#include "alpha/mcu/ms5837.h"
+#include "alpha/mcu/execution.h"
 
-
+#include "alpha/mcu/globals.h"
 
 int main() {
 
@@ -9,14 +15,11 @@ int main() {
 
     initialize_i2c();
 
-    g_thruster_manager.initialize();
-
-    g_multimeter.initialize();
-
-    g_barometer.initialize();
+    globals::initialize();
 
     multicore_launch_core1(listen_incoming_messages);
 
+    // todo: is it needed?
     while(true) {
         sleep_ms(100);
     }

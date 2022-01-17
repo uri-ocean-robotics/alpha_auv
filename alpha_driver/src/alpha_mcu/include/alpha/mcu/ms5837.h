@@ -3,9 +3,9 @@
 
 #include "hardware/i2c.h"
 #include "nmea/nmea.h"
-#include "alpha/dictionary.h"
+#include "dictionary.h"
 #include "pico/time.h"
-#include "alpha_common/types.h"
+#include "alpha/common/types.h"
 
 
 const uint8_t MS5837_ADDR = 0x76;
@@ -23,22 +23,25 @@ const uint8_t MS5837_30BA26 = 0x1A; // Sensor version: From MS5837_30BA datashee
 class MS5837 {
 private:
 
-    uint16_t C[8];
-    uint32_t D1_pres, D2_temp;
-    int32_t TEMP;
-    int32_t P;
-    uint8_t _model;
+    uint16_t m_c[8];
+    uint32_t m_D1_pres;
+    uint32_t m_D2_temp;
+    int32_t m_TEMP;
+    int32_t m_P;
+    uint8_t m_model;
 
-    float fluidDensity = 1000; // kg/m^3 (freshwater)
+    float m_fluid_density = 1000; // kg/m^3 (freshwater)
 
     struct repeating_timer m_reporter_timer;
 
     /** Performs calculations per the sensor data sheet for conversion and
      *  second order compensation.
      */
-    void calculate();
+    void f_calculate();
 
-    uint8_t crc4(uint16_t n_prom[]);
+    uint8_t f_crc4(uint16_t n_prom[]);
+
+    static bool f_reporter(struct repeating_timer *t);
 
 public:
     static constexpr float Pa = 100.f;
@@ -57,14 +60,14 @@ public:
     /** Set model of MS5837 sensor. Valid options are MS5837::MS5837_30BA (default)
      * and MS5837::MS5837_02BA.
      */
-    void setModel(uint8_t model);
+    void set_model(uint8_t model);
 
-    uint8_t getModel();
+    uint8_t get_model();
 
     /** Provide the density of the working fluid in kg/m^3. Default is for
      * seawater. Should be 997 for freshwater.
      */
-    void setFluidDensity(float density);
+    void set_fluid_density(float density);
     /** The read from I2C takes up to 40 ms, so use sparingly is possible.
      */
     void read();
@@ -82,12 +85,7 @@ public:
      */
     float depth();
 
-    static bool reporter(struct repeating_timer *t);
 
 };
-
-extern pressure_t g_pressure_data;
-
-extern MS5837 g_barometer;
 
 #endif
