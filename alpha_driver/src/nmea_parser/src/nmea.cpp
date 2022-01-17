@@ -1,7 +1,7 @@
 #include "cstdio"
 #include "cstdlib"
 #include "cstring"
-#include "../include/nmea/nmea.h"
+#include "nmea/nmea.h"
 
 NMEA::NMEA() :
     _raw(nullptr),
@@ -29,7 +29,7 @@ NMEA::~NMEA() {
     _clean_up();
 }
 
-bool NMEA::crc(uint8_t &crc, uint8_t *buf, size_t size) {
+bool NMEA::crc(uint8_t &crc, const uint8_t *buf, size_t size) {
     //NMNA0183
     uint8_t in = crc;
     crc=0;
@@ -134,11 +134,11 @@ char* NMEA::get_raw() {
     return _raw;
 }
 
-int NMEA::get_argc() {
+int NMEA::get_argc() const {
     return _argc;
 }
 
-bool NMEA::get_valid() {
+bool NMEA::get_valid() const {
     return _valid;
 }
 

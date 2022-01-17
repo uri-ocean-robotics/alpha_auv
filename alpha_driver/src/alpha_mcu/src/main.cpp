@@ -1,18 +1,7 @@
 #include "alpha/all.hpp"
 
-pressure_t g_pressure_data;
 
-multimeter_t g_multimeter_data;
 
-thruster_t g_thruster_data;
-
-ThrusterManager g_thruster_manager = ThrusterManager(ESC_MAIN_PIN, ESC_HORIZONTAL_PIN, ESC_VERTICAL_PIN);
-
-INA260 g_multimeter = INA260();
-
-MS5837 g_barometer = MS5837();
-
-Safety g_safety = Safety();
 
 int main() {
 

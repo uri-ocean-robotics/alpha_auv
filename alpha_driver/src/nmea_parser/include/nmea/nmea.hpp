@@ -1,3 +1,5 @@
+/*
+
 #ifndef NMEA_H_
 #define NMEA_H_
 
@@ -162,3 +164,4 @@ float* NMEA::get_values() {
 }
 
 #endif
+*/

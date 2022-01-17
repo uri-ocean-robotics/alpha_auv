@@ -18,6 +18,12 @@ include_directories(include ${NMEA_PARSER_INCLUDE_DIS})
 add_executable(${PROJECT_NAME}
         src/main.cpp
         src/alpha/alpha.cpp
+        src/alpha/ina260.cpp
+        src/alpha/ms5837.cpp
+        src/alpha/parser.cpp
+        src/alpha/safety.cpp
+        src/alpha/thrusters.cpp
+        src/alpha/common.cpp
 )
 # create map/bin/hex/uf2 files.
 pico_add_extra_outputs(${PROJECT_NAME})
