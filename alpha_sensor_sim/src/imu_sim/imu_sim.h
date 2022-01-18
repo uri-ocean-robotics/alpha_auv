@@ -163,8 +163,6 @@ private:
 
     void f_apply_gaussian_noise(sensor_msgs::Imu& msg);
 
-    void f_apply_noise_density(sensor_msgs::Imu& msg);
-
     void f_apply_constant_bias(sensor_msgs::Imu& msg);
 
     void f_apply_bias_instability(sensor_msgs::Imu& msg);
