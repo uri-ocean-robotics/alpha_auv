@@ -72,7 +72,7 @@ namespace DvlSimDict {
     STATIC_STRING CONF_NOISE_RANDOM_WALK = "random_walk";
     STATIC_STRING CONF_LINK_NAME = "link_name";
     STATIC_STRING CONF_PROFILE = "profile";
-    STATIC_STRING CONF_FREQUENCY = "frequency";
+    STATIC_STRING CONF_PING_RATE = "ping_rate";
     STATIC_STRING CONF_TF_PREFIX = "tf_prefix";
     STATIC_STRING CONF_X = "x";
     STATIC_STRING CONF_Y = "y";
@@ -97,7 +97,9 @@ private:
 
     std::vector<uint8_t> m_noise_types;
 
-    std::string m_link_name;
+    std::string m_dvl_link_name;
+
+    std::string m_base_link;
 
     std::string m_tf_prefix;
 
@@ -111,7 +113,7 @@ private:
     Eigen::Vector3d m_dvl_orientation;
 
     Eigen::Vector3d m_dvl_lin_velocity;
-    Eigen::Vector3d m_dvl_ang_velocity;
+    Eigen::Vector3d m_vehicle_ang_velocity;
 
     Eigen::Vector3d m_translation_wrt_baselink;
     Eigen::Matrix3d m_rotation_wrt_baselink;

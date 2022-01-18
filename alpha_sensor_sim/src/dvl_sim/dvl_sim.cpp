@@ -29,7 +29,8 @@ void DvlSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &p
                                    const geometry_msgs::TwistStamped::ConstPtr &vel) {
     // Acquire transform from baselink to dvl
     try {
-        m_transform_stamped = m_tfBuffer.lookupTransform("alpha/dvl", "alpha/base_link",ros::Time(0));
+        m_transform_stamped = m_tfBuffer.lookupTransform(m_dvl_link_name, 
+                                m_base_link,ros::Time(0));
         Eigen::Quaterniond transformation_quat(m_transform_stamped.transform.rotation.x,
                                                 m_transform_stamped.transform.rotation.y,
                                                 m_transform_stamped.transform.rotation.z,
@@ -63,11 +64,11 @@ void DvlSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &p
                                 vel->twist.linear.y,
                                 vel->twist.linear.z;
 
-    m_dvl_ang_velocity << vel->twist.angular.x,
+    m_vehicle_ang_velocity << vel->twist.angular.x,
                                 vel->twist.angular.y,
                                 vel->twist.angular.z;
 
-    m_dvl_lin_velocity+=m_dvl_ang_velocity.cross(m_translation_wrt_baselink);
+    m_dvl_lin_velocity+=m_vehicle_ang_velocity.cross(m_translation_wrt_baselink);
 
     seal_msgs::DVL msg;
     
@@ -114,12 +115,15 @@ void DvlSim::f_generate_parameters() {
     m_pnh.param<std::string>(DvlSimDict::CONF_PROFILE, m_dvl_profile, "");
 
     // get dvl link name
-    m_pnh.param<std::string>(DvlSimDict::CONF_LINK_NAME, m_link_name, "dvl_link");
+    m_pnh.param<std::string>(DvlSimDict::CONF_TF_PREFIX, m_tf_prefix, "");
+
+    m_pnh.param<std::string>(DvlSimDict::CONF_LINK_NAME, m_dvl_link_name, "dvl");
+
+    m_dvl_link_name = m_tf_prefix+"/"+m_dvl_link_name;
+    m_base_link = m_tf_prefix + "/base_link";
 
     // get node frequency
-    m_pnh.param<double>(DvlSimDict::CONF_FREQUENCY, m_rate, 100);
-
-    m_pnh.param<std::string>(DvlSimDict::CONF_TF_PREFIX, m_tf_prefix, "");
+    m_pnh.param<double>(DvlSimDict::CONF_PING_RATE, m_rate, 100);
 
     double misalignment_x;
     m_pnh.param<double>(

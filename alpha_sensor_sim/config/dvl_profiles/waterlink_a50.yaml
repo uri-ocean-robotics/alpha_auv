@@ -6,7 +6,7 @@
 # dvl_max_range: This is the maximum range of a non-ACDP DVL, in which it needs to be a certain distance from the target (seafloor). 
 
 profile: waterlink_a50
-frequency: 100
+ping_rate: 100
 
 noise_type: uniform
 
