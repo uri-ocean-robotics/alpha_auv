@@ -67,19 +67,21 @@ void DvlSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &p
 
     m_dvl_lin_velocity+=m_dvl_ang_velocity.cross(m_translation_wrt_baselink);
 
-    alpha_sensor_sim::Transducer msg;
-
+    seal_msgs::DVL msg;
+    
     m_reported_distance = f_get_dvl_dist();
 
     m_reported_vel = f_get_dvl_velocity();
     
-    msg.id = pose->header.seq;
-    msg.velocity = m_reported_vel;
-    msg.distance = m_reported_distance;
-    msg.rssi = -1;
-    msg.nsd = -1;
+    msg.header.frame_id = pose->header.frame_id;
+    msg.header.seq = pose->header.seq;
+    msg.header.stamp = ros::Time::now();
+    msg.velocity.x = m_reported_vel[0];
+    msg.velocity.y = m_reported_vel[1];
+    msg.velocity.z = m_reported_vel[2];
+    msg.altitude = m_reported_distance;
 
-    for(const auto& i : m_noise_profiles) {
+    for(const auto& i : m_noise_types) {
         switch (i) {
             case NoiseType::Uniform :
                 f_apply_uniform_noise(msg);
@@ -89,18 +91,19 @@ void DvlSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &p
         }
     }
 
-    msg.beam_valid = (m_reported_distance < m_max_range) && (m_reported_distance > 0);
-
     m_dvl_sim_data_publisher.publish(msg);
 }
 
 double DvlSim::f_get_dvl_dist() {
+    //TODO: This is a temporary condition in order to allow considerations of the seafloor
+    //  The yaw marginally contributes to the reported distance so it is neglected for now, 
+    //  assuming that the vehicle rotates about the DVL's Z axis
     return m_altitude/(cos(m_dvl_orientation[0])*cos(m_dvl_orientation[1]));
 }
 
-double DvlSim::f_get_dvl_velocity() {
-    double velocity_mag = m_dvl_lin_velocity.norm();
-    return velocity_mag;
+Eigen::Vector3d DvlSim::f_get_dvl_velocity() {
+    //TODO: This can be expanded upon with future considerations later
+    return m_dvl_lin_velocity;
 }
 
 void DvlSim::f_generate_parameters() {
@@ -139,15 +142,6 @@ void DvlSim::f_generate_parameters() {
     m_axis_misalignment = Eigen::AngleAxisd(misalignment_x, Eigen::Vector3d::UnitX())
                           * Eigen::AngleAxisd(misalignment_y, Eigen::Vector3d::UnitY())
                           * Eigen::AngleAxisd(misalignment_z, Eigen::Vector3d::UnitZ());
-
-    //get noise type
-    std::string noise_type;
-    m_pnh.param<std::string>(DvlSimDict::CONF_NOISE_TYPE, noise_type, "");
-    if(noise_type == DvlSimDict::CONF_NOISE_UNIFORM_NOISE) {
-        m_noise_type = NoiseType::Uniform;
-    } else if (noise_type == DvlSimDict::CONF_NOISE_NO_NOISE) {
-        m_noise_type = NoiseType::None;
-    }
 
     std::vector<std::string> types;
     m_pnh.param<std::vector<std::string>>(DvlSimDict::CONF_NOISE_TYPES, types, std::vector<std::string>());
@@ -221,12 +215,13 @@ DvlSim::DvlSim(): m_nh(),
             )
     );
 
-    m_dvl_sim_data_publisher = m_nh.advertise<alpha_sensor_sim::Transducer>(m_topic_dvl, 1000);
-
-
+    m_dvl_sim_data_publisher = m_nh.advertise<seal_msgs::DVL>(m_topic_dvl, 1000);
 }
 
-void DvlSim::f_apply_uniform_noise(alpha_sensor_sim::Transducer &msg) {
-    msg.velocity+=msg.velocity*m_dvl_velocity_noise(m_generator);
-    msg.distance+=msg.distance*m_dvl_distance_noise(m_generator);
+void DvlSim::f_apply_uniform_noise(seal_msgs::DVL& msg) {
+    msg.velocity.x+=msg.velocity.x*m_dvl_velocity_noise(m_generator);
+    msg.velocity.y+=msg.velocity.y*m_dvl_velocity_noise(m_generator);
+    msg.velocity.z+=msg.velocity.z*m_dvl_velocity_noise(m_generator);
+    
+    msg.altitude+=msg.altitude*m_dvl_distance_noise(m_generator);
 }

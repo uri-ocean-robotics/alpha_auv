@@ -49,7 +49,7 @@
 #include "ros/console.h"
 #include "Eigen/Dense"
 #include "boost/array.hpp"
-#include "alpha_sensor_sim/Transducer.h"
+#include "seal_msgs/DVL.h"
 
 #define STATIC_STRING static constexpr const char *
 #define STATIC_DOUBLE static constexpr double
@@ -106,7 +106,7 @@ private:
     double m_depth;
     double m_altitude;
     double m_reported_distance;
-    double m_reported_vel;
+    Eigen::Vector3d m_reported_vel;
 
     Eigen::Vector3d m_dvl_orientation;
 
@@ -123,8 +123,6 @@ private:
     ros::NodeHandle m_pnh;
 
     ros::Publisher m_dvl_sim_data_publisher;
-
-    std::vector<NoiseType> m_noise_profiles;
 
     static constexpr const char* m_topic_dvl = "dvl/data";
 
@@ -161,11 +159,11 @@ private:
 
     void f_generate_parameters();
 
-    double f_get_dvl_velocity();
+    Eigen::Vector3d  f_get_dvl_velocity();
 
     double f_get_dvl_dist();
 
-    void f_apply_uniform_noise(alpha_sensor_sim::Transducer& msg);
+    void f_apply_uniform_noise(seal_msgs::DVL& msg);
 
 public:
     DvlSim();
