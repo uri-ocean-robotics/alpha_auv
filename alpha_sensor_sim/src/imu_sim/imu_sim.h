@@ -68,9 +68,9 @@ namespace ImuSimDict {
     STATIC_STRING CONF_NOISE_CONSTANT_BIAS = "constant_bias";
     STATIC_STRING CONF_NOISE_RANDOM_WALK = "random_walk";
     STATIC_STRING CONF_LINEAR_ACCELERATION_MEAN = "linear_acceleration_mean";
-    STATIC_STRING CONF_LINEAR_ACCELERATION_STD = "linear_acceleration_std";
+    STATIC_STRING CONF_LINEAR_ACCELERATION_STD = "linear_acceleration_noise_density";
     STATIC_STRING CONF_ANGULAR_VELOCITY_MEAN = "angular_velocity_mean";
-    STATIC_STRING CONF_ANGULAR_VELOCITY_STD = "angular_velocity_std";
+    STATIC_STRING CONF_ANGULAR_VELOCITY_STD = "angular_velocity_noise_density";
     STATIC_STRING CONF_ORIENTATION_MEAN = "orientation_mean";
     STATIC_STRING CONF_ORIENTATION_STD = "orientation_std";
     STATIC_STRING CONF_LINK_NAME = "link_name";
@@ -111,8 +111,6 @@ private:
     ros::NodeHandle m_pnh;
 
     ros::Publisher m_imu_sim_data_publisher;
-
-    std::vector<NoiseType> m_noise_profiles;
 
     static constexpr const char* m_topic_imu = "imu/data";
 
@@ -160,18 +158,18 @@ private:
 
     void f_generate_parameters();
 
+    void f_apply_gaussian_noise(sensor_msgs::Imu& msg);
+
     void f_apply_constant_bias(sensor_msgs::Imu& msg);
-
-    void f_apply_axis_misalignment(sensor_msgs::Imu& msg);
-
-    void f_apply_noise_density(sensor_msgs::Imu& msg);
 
     void f_apply_bias_instability(sensor_msgs::Imu& msg);
 
     void f_apply_random_walk(sensor_msgs::Imu& msg);
-
+    
     void f_apply_acceleration_bias(sensor_msgs::Imu& msg);
 
+    void f_apply_axis_misalignment(sensor_msgs::Imu &msg);
+    
     static void f_msg_to_eigen(const sensor_msgs::Imu& msg,
                                Eigen::Quaterniond &orientation,
                                Eigen::Vector3d &linear_acceleration,
