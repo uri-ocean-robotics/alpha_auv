@@ -17,102 +17,91 @@
      - Spring 2022
 
     Description: 
-     - 
-
-
-    +TODO: 
-        - [] Make the seafloor depth a parameter
-        - [] Make the maximum valid range a parameter
-        - [] Add a uniform noise generator, include the +-% error similar to waterlink's datasheet
-        - [] Perform transformations with the TF Tree
-        - [] 
+     - DVL Simulator node. 
+       - Translates to the DVL's velocity by considering the linear and angular velocity
+         of the vehicle
+       - Simulates a flat seafloor so sensible valid and invalid beams can be considered. 
 */
 
 #include "dvl_sim.h"
 
-dvl_state_t::dvl_state_t() {
-    depth = 0;
-    dist_to_seafloor = 0;
-    dvl_distance = 0;
-    dvl_vel = 0;
-    orientation = Eigen::Vector3d::Zero();
-    lin_velocity = Eigen::Vector3d::Zero();
-    ang_velocity = Eigen::Vector3d::Zero();
-}
-
 void DvlSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &pose,
                                    const geometry_msgs::TwistStamped::ConstPtr &vel) {
-    
+    Eigen::Matrix3d rotation;
+    // Acquire transform from baselink to dvl
+    try {
+        m_transform_stamped = m_tfBuffer.lookupTransform("alpha/dvl", "alpha/base_link",ros::Time(0));
+        Eigen::Quaterniond transformation_quat(m_transform_stamped.transform.rotation.x,
+                                                m_transform_stamped.transform.rotation.y,
+                                                m_transform_stamped.transform.rotation.z,
+                                                m_transform_stamped.transform.rotation.w);
+        m_rotation_wrt_baselink = transformation_quat.toRotationMatrix();
+        m_translation_wrt_baselink << m_transform_stamped.transform.translation.x, 
+                                                m_transform_stamped.transform.translation.y, 
+                                                m_transform_stamped.transform.translation.z;
+    } catch(tf2::TransformException &ex) {
+        ROS_WARN("%s", ex.what());
+        return;
+    }
     // pose 
-    //// depth
-    dvl_state.depth = pose->pose.position.z;
-    dvl_state.dist_to_seafloor = m_artificial_seafloor_depth-dvl_state.depth;
+    //// m_depth
+    m_depth = pose->pose.position.z;
+    m_altitude = m_artificial_seafloor_depth-m_depth;
     
     tf2::Quaternion local_quat;
     double roll, pitch, yaw;
     tf2::fromMsg(pose->pose.orientation, local_quat);
+
     tf2::Matrix3x3(local_quat).getRPY(roll, pitch, yaw);
 
     //// orientation
-    dvl_state.orientation[0] = roll;
-    dvl_state.orientation[1] = pitch;
-    dvl_state.orientation[2] = yaw;
+    m_dvl_orientation << roll, pitch, yaw;
 
     //// velocity
-    dvl_state.lin_velocity[0] = vel->twist.linear.x;
-    dvl_state.lin_velocity[1] = vel->twist.linear.y;
-    dvl_state.lin_velocity[2] = vel->twist.linear.z;
+    m_dvl_lin_velocity << vel->twist.linear.x,
+                                vel->twist.linear.y,
+                                vel->twist.linear.z;
 
-    dvl_state.ang_velocity[0] = vel->twist.angular.x;
-    dvl_state.ang_velocity[1] = vel->twist.angular.y;
-    dvl_state.ang_velocity[2] = vel->twist.angular.z;
+    m_dvl_ang_velocity << vel->twist.angular.x,
+                                vel->twist.angular.y,
+                                vel->twist.angular.z;
+
+    m_dvl_lin_velocity+=m_dvl_ang_velocity.cross(m_translation_wrt_baselink);
 
     alpha_sensor_sim::Transducer msg;
 
-    dvl_state.dvl_distance = f_get_dvl_dist();
+    m_reported_distance = f_get_dvl_dist();
 
-    dvl_state.dvl_vel = f_get_dvl_velocity();
+    m_reported_vel = f_get_dvl_velocity();
     
     msg.id = pose->header.seq;
-    msg.velocity = dvl_state.dvl_vel;
-    msg.distance = dvl_state.dvl_distance;
+    msg.velocity = m_reported_vel;
+    msg.distance = m_reported_distance;
     msg.rssi = -1;
     msg.nsd = -1;
 
     for(const auto& i : m_noise_profiles) {
         switch (i) {
             case NoiseType::Uniform :
-                f_apply_noise_density(msg);
-                break;
-            case NoiseType::RandomWalk:
-                f_apply_random_walk(msg);
-                break;
-            case NoiseType::AxisMisalignment:
-                f_apply_axis_misalignment(msg);
-                break;
-            case NoiseType::ConstantBias:
-                f_apply_constant_bias(msg);
+                f_apply_uniform_noise(msg);
                 break;
             case NoiseType::None:
                 break;
         }
-    
     }
 
-    msg.beam_valid = (dvl_state.dvl_distance < m_max_range) && (dvl_state.dvl_distance > 0);
+    msg.beam_valid = (m_reported_distance < m_max_range) && (m_reported_distance > 0);
 
     m_dvl_sim_data_publisher.publish(msg);
 }
 
 double DvlSim::f_get_dvl_dist() {
-    return dvl_state.dist_to_seafloor/(cos(dvl_state.orientation[0])*cos(dvl_state.orientation[1])*cos(dvl_state.orientation[2]));
+    return m_altitude/(cos(m_dvl_orientation[0])*cos(m_dvl_orientation[1]));
 }
 
 double DvlSim::f_get_dvl_velocity() {
-    double velocity_mag = dvl_state.lin_velocity.norm();
-    double projected_angular_velocity = dvl_state.dvl_distance*dvl_state.ang_velocity.norm();
-    double apparent_beam_velocity = velocity_mag+projected_angular_velocity;
-    return apparent_beam_velocity;
+    double velocity_mag = m_dvl_lin_velocity.norm();
+    return velocity_mag;
 }
 
 void DvlSim::f_generate_parameters() {
@@ -208,7 +197,8 @@ void DvlSim::run() const {
 }
 
 DvlSim::DvlSim(): m_nh(),
-                  m_pnh("~")
+                  m_pnh("~"),
+                  m_tfListener(m_tfBuffer)
 {
 
     f_generate_parameters();
@@ -233,25 +223,11 @@ DvlSim::DvlSim(): m_nh(),
     );
 
     m_dvl_sim_data_publisher = m_nh.advertise<alpha_sensor_sim::Transducer>(m_topic_dvl, 1000);
+
+
 }
 
-void DvlSim::f_apply_noise_density(alpha_sensor_sim::Transducer &msg) {
+void DvlSim::f_apply_uniform_noise(alpha_sensor_sim::Transducer &msg) {
     msg.velocity+=msg.velocity*m_dvl_velocity_noise(m_generator);
     msg.distance+=msg.distance*m_dvl_distance_noise(m_generator);
-}
-
-void DvlSim::f_apply_constant_bias(alpha_sensor_sim::Transducer &msg) {
-    // todo: decide how to compute it
-}
-
-void DvlSim::f_apply_axis_misalignment(alpha_sensor_sim::Transducer &msg) {
-    // todo: ~~
-}
-
-void DvlSim::f_apply_bias_instability(alpha_sensor_sim::Transducer &msg) {
-    // todo: under construction
-}
-
-void DvlSim::f_apply_random_walk(alpha_sensor_sim::Transducer &msg) {
-    // todo: under construction
 }

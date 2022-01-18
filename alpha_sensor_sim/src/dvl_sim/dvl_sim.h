@@ -23,16 +23,21 @@
      - Spring 2022
 
     Description: 
-     - 
+     - DVL Simulator node. 
+       - Translates to the DVL's velocity by considering the linear and angular velocity
+         of the vehicle
+       - Simulates a flat seafloor so sensible valid and invalid beams can be considered. 
 */
 #pragma once 
 
 #include "ros/ros.h"
+#include "tf2_ros/transform_listener.h"
 #include "tf2_ros/transform_broadcaster.h"
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2/LinearMath/Matrix3x3.h"
 #include "tf2/transform_datatypes.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
+#include "geometry_msgs/TransformStamped.h"
 #include "geometry_msgs/Vector3Stamped.h"
 #include "geometry_msgs/TwistStamped.h"
 #include "geometry_msgs/PoseStamped.h"
@@ -74,23 +79,6 @@ namespace DvlSimDict {
     STATIC_STRING CONF_Z = "z";
 }
 
-typedef struct dvl_state_t {
-    dvl_state_t();
-    // dvl specific
-    double depth;
-    double dist_to_seafloor;
-    double dvl_distance;
-    double dvl_vel;
-
-    //// from pose
-    Eigen::Vector3d orientation;
-
-    //// from velocities
-    Eigen::Vector3d lin_velocity;
-    Eigen::Vector3d ang_velocity;
-
-} dvl_state_t;
-
 class DvlSim {
 private:
     enum NoiseType : uint8_t {
@@ -100,8 +88,6 @@ private:
         AxisMisalignment = 3,
         ConstantBias = 4
     };
-
-    dvl_state_t dvl_state;
 
     double m_rate;
 
@@ -116,6 +102,19 @@ private:
     std::string m_tf_prefix;
 
     std::string m_dvl_profile;
+
+    double m_depth;
+    double m_altitude;
+    double m_reported_distance;
+    double m_reported_vel;
+
+    Eigen::Vector3d m_dvl_orientation;
+
+    Eigen::Vector3d m_dvl_lin_velocity;
+    Eigen::Vector3d m_dvl_ang_velocity;
+
+    Eigen::Vector3d m_translation_wrt_baselink;
+    Eigen::Matrix3d m_rotation_wrt_baselink;
 
     uint8_t m_noise_type;
 
@@ -148,6 +147,10 @@ private:
 
     std::shared_ptr<StateSynchronizer> m_state_subscriber;
 
+    tf2_ros::Buffer m_tfBuffer;
+    tf2_ros::TransformListener m_tfListener;
+    geometry_msgs::TransformStamped m_transform_stamped;
+
     void f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &pose,
                                const geometry_msgs::TwistStamped::ConstPtr &vel);
 
@@ -162,15 +165,7 @@ private:
 
     double f_get_dvl_dist();
 
-    void f_apply_constant_bias(alpha_sensor_sim::Transducer& msg);
-
-    void f_apply_axis_misalignment(alpha_sensor_sim::Transducer& msg);
-
-    void f_apply_noise_density(alpha_sensor_sim::Transducer& msg);
-
-    void f_apply_bias_instability(alpha_sensor_sim::Transducer& msg);
-
-    void f_apply_random_walk(alpha_sensor_sim::Transducer& msg);
+    void f_apply_uniform_noise(alpha_sensor_sim::Transducer& msg);
 
 public:
     DvlSim();
