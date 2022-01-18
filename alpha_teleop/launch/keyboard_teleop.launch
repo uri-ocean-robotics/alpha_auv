@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<launch>
+
+    <arg name="robot_name" default="alpha"/>
+
+    <node pkg="alpha_teleop" type="keyboard_teleop_node" name="keyboard_teleop" output="screen">
+        
+    </node>
+
+</launch>
