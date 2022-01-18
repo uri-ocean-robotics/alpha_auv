@@ -38,13 +38,15 @@ void DvlSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &p
         m_translation_wrt_baselink << m_transform_stamped.transform.translation.x, 
                                                 m_transform_stamped.transform.translation.y, 
                                                 m_transform_stamped.transform.translation.z;
+        m_translation_wrt_baselink = m_rotation_wrt_baselink*m_translation_wrt_baselink;
+
     } catch(tf2::TransformException &ex) {
         ROS_WARN("%s", ex.what());
         return;
     }
     // pose 
     //// m_depth
-    m_depth = pose->pose.position.z;
+    m_depth = pose->pose.position.z+m_translation_wrt_baselink[2];
     m_altitude = m_artificial_seafloor_depth-m_depth;
     
     tf2::Quaternion local_quat;
@@ -222,6 +224,6 @@ void DvlSim::f_apply_uniform_noise(seal_msgs::DVL& msg) {
     msg.velocity.x+=msg.velocity.x*m_dvl_velocity_noise(m_generator);
     msg.velocity.y+=msg.velocity.y*m_dvl_velocity_noise(m_generator);
     msg.velocity.z+=msg.velocity.z*m_dvl_velocity_noise(m_generator);
-    
+
     msg.altitude+=msg.altitude*m_dvl_distance_noise(m_generator);
 }
