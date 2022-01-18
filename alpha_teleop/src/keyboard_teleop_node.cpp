@@ -1,4 +1,4 @@
-#include "keyboard_teleop/keyboard_teleop.hpp"
+#include "keyboard_teleop/keyboard_teleop.h"
 
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "keyboard_teleop_node");

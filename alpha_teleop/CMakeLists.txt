@@ -21,6 +21,7 @@ include_directories(
 
 add_executable(keyboard_teleop_node
   src/keyboard_teleop_node.cpp
+  src/keyboard_teleop/keyboard_teleop.cpp
 )
 
 #add_dependencies(keyboard_teleop_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
