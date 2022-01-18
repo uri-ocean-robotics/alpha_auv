@@ -69,9 +69,9 @@ namespace ImuSimDict {
     STATIC_STRING CONF_NOISE_CONSTANT_BIAS = "constant_bias";
     STATIC_STRING CONF_NOISE_RANDOM_WALK = "random_walk";
     STATIC_STRING CONF_LINEAR_ACCELERATION_MEAN = "linear_acceleration_mean";
-    STATIC_STRING CONF_LINEAR_ACCELERATION_STD = "linear_acceleration_std";
+    STATIC_STRING CONF_LINEAR_ACCELERATION_STD = "linear_acceleration_noise_density";
     STATIC_STRING CONF_ANGULAR_VELOCITY_MEAN = "angular_velocity_mean";
-    STATIC_STRING CONF_ANGULAR_VELOCITY_STD = "angular_velocity_std";
+    STATIC_STRING CONF_ANGULAR_VELOCITY_STD = "angular_velocity_noise_density";
     STATIC_STRING CONF_ORIENTATION_MEAN = "orientation_mean";
     STATIC_STRING CONF_ORIENTATION_STD = "orientation_std";
     STATIC_STRING CONF_LINK_NAME = "link_name";
@@ -112,8 +112,6 @@ private:
     ros::NodeHandle m_pnh;
 
     ros::Publisher m_imu_sim_data_publisher;
-
-    std::vector<NoiseType> m_noise_profiles;
 
     static constexpr const char* m_topic_imu = "imu/data";
 

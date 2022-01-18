@@ -4,7 +4,7 @@
     <arg name="robot_name" default="alpha"/>
 
     <node pkg="alpha_sensor_sim" type="imu_sim_node" name="imu_sim" output="screen">
-        <rosparam command="load" file="$(find alpha_sensor_sim)/config/imu_profiles/sample.yaml"/>
+        <rosparam command="load" file="$(find alpha_sensor_sim)/config/imu_profiles/xsens_mti630.yaml"/>
     </node>
 
 </launch>

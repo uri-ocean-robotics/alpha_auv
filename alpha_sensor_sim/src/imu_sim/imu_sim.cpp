@@ -40,7 +40,7 @@ void ImuSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &p
     msg.linear_acceleration_covariance = m_linear_acceleration_covariance;
     msg.angular_velocity_covariance = m_angular_velocity_covariance;
 
-    for(const auto& i : m_noise_profiles) {
+    for(const auto& i : m_noise_types) {
         switch (i) {
             case NoiseType::Gaussian :
                 f_apply_gaussian_noise(msg);
