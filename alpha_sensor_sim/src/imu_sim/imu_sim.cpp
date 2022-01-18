@@ -45,8 +45,15 @@ void ImuSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &p
             case NoiseType::Gaussian :
                 f_apply_gaussian_noise(msg);
                 break;
+            case NoiseType::RandomWalk:
+                f_apply_random_walk(msg);
+                f_apply_gaussian_noise(msg);
+                break;
             case NoiseType::AxisMisalignment:
                 f_apply_axis_misalignment(msg);
+                break;
+            case NoiseType::ConstantBias:
+                f_apply_constant_bias(msg);
                 break;
             case NoiseType::None:
                 break;
@@ -93,15 +100,6 @@ void ImuSim::f_generate_parameters() {
     m_axis_misalignment = Eigen::AngleAxisd(misalignment_x, Eigen::Vector3d::UnitX())
                           * Eigen::AngleAxisd(misalignment_y, Eigen::Vector3d::UnitY())
                           * Eigen::AngleAxisd(misalignment_z, Eigen::Vector3d::UnitZ());
-
-    //get noise type
-    std::string noise_type;
-    m_pnh.param<std::string>(ImuSimDict::CONF_NOISE_TYPE, noise_type, "");
-    if(noise_type == ImuSimDict::CONF_NOISE_GAUSSIAN_NOISE) {
-        m_noise_type = NoiseType::Gaussian;
-    } else if (noise_type == ImuSimDict::CONF_NOISE_NO_NOISE) {
-        m_noise_type = NoiseType::None;
-    }
 
     std::vector<std::string> types;
     m_pnh.param<std::vector<std::string>>(ImuSimDict::CONF_NOISE_TYPES, types, std::vector<std::string>());
@@ -243,6 +241,22 @@ void ImuSim::f_apply_gaussian_noise(sensor_msgs::Imu &msg) {
     msg.angular_velocity.y += m_angular_velocity_noise(*m_generator);
     msg.angular_velocity.z += m_angular_velocity_noise(*m_generator);
 
+}
+
+void ImuSim::f_apply_constant_bias(sensor_msgs::Imu &msg) {
+    // todo: decide how to compute it
+}
+
+void ImuSim::f_apply_bias_instability(sensor_msgs::Imu &msg) {
+    // todo: under construction
+}
+
+void ImuSim::f_apply_random_walk(sensor_msgs::Imu &msg) {
+    // todo: under construction
+}
+
+void ImuSim::f_apply_acceleration_bias(sensor_msgs::Imu &msg) {
+    // todo: under construction
 }
 
 void ImuSim::f_apply_axis_misalignment(sensor_msgs::Imu &msg) {
