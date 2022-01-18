@@ -43,24 +43,14 @@ void ImuSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &p
     for(const auto& i : m_noise_profiles) {
         switch (i) {
             case NoiseType::Gaussian :
-                f_apply_noise_density(msg);
-                break;
-            case NoiseType::RandomWalk:
-                f_apply_random_walk(msg);
+                f_apply_gaussian_noise(msg);
                 break;
             case NoiseType::AxisMisalignment:
                 f_apply_axis_misalignment(msg);
                 break;
-            case NoiseType::ConstantBias:
-                f_apply_constant_bias(msg);
-                break;
             case NoiseType::None:
                 break;
         }
-    }
-
-    if(m_noise_type == NoiseType::Gaussian) {
-        f_apply_noise_density(msg);
     }
 
     m_imu_sim_data_publisher.publish(msg);
@@ -220,7 +210,7 @@ ImuSim::ImuSim(): m_nh(),
     m_imu_sim_data_publisher = m_nh.advertise<sensor_msgs::Imu>(m_topic_imu, 1000);
 }
 
-void ImuSim::f_apply_noise_density(sensor_msgs::Imu &msg) {
+void ImuSim::f_apply_gaussian_noise(sensor_msgs::Imu &msg) {
 
     // Orientation
     tf2::Quaternion noise_offset;
@@ -255,10 +245,6 @@ void ImuSim::f_apply_noise_density(sensor_msgs::Imu &msg) {
 
 }
 
-void ImuSim::f_apply_constant_bias(sensor_msgs::Imu &msg) {
-    // todo: decide how to compute it
-}
-
 void ImuSim::f_apply_axis_misalignment(sensor_msgs::Imu &msg) {
 
     Eigen::Quaterniond orientation;
@@ -285,18 +271,6 @@ void ImuSim::f_apply_axis_misalignment(sensor_msgs::Imu &msg) {
     msg.angular_velocity.y = angular_velocity.y();
     msg.angular_velocity.z = angular_velocity.z();
 
-}
-
-void ImuSim::f_apply_bias_instability(sensor_msgs::Imu &msg) {
-    // todo: under construction
-}
-
-void ImuSim::f_apply_random_walk(sensor_msgs::Imu &msg) {
-    // todo: under construction
-}
-
-void ImuSim::f_apply_acceleration_bias(sensor_msgs::Imu &msg) {
-    // todo: under construction
 }
 
 void ImuSim::f_msg_to_eigen(const sensor_msgs::Imu& msg,

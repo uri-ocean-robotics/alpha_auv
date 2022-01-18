@@ -161,18 +161,10 @@ private:
 
     void f_generate_parameters();
 
-    void f_apply_constant_bias(sensor_msgs::Imu& msg);
+    void f_apply_gaussian_noise(sensor_msgs::Imu& msg);
 
-    void f_apply_axis_misalignment(sensor_msgs::Imu& msg);
-
-    void f_apply_noise_density(sensor_msgs::Imu& msg);
-
-    void f_apply_bias_instability(sensor_msgs::Imu& msg);
-
-    void f_apply_random_walk(sensor_msgs::Imu& msg);
-
-    void f_apply_acceleration_bias(sensor_msgs::Imu& msg);
-
+    void f_apply_axis_misalignment(sensor_msgs::Imu &msg);
+    
     static void f_msg_to_eigen(const sensor_msgs::Imu& msg,
                                Eigen::Quaterniond &orientation,
                                Eigen::Vector3d &linear_acceleration,
