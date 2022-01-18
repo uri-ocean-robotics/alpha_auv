@@ -47,7 +47,6 @@ void ImuSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &p
                 break;
             case NoiseType::RandomWalk:
                 f_apply_random_walk(msg);
-                f_apply_gaussian_noise(msg);
                 break;
             case NoiseType::AxisMisalignment:
                 f_apply_axis_misalignment(msg);
