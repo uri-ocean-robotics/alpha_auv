@@ -27,7 +27,6 @@
 
 void DvlSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &pose,
                                    const geometry_msgs::TwistStamped::ConstPtr &vel) {
-    Eigen::Matrix3d rotation;
     // Acquire transform from baselink to dvl
     try {
         m_transform_stamped = m_tfBuffer.lookupTransform("alpha/dvl", "alpha/base_link",ros::Time(0));
