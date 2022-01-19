@@ -1,1 +1,1 @@
-port: /dev/pico
+port: /dev/ttyUSB0
