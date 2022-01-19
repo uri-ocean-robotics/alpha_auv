@@ -99,7 +99,7 @@ private:
 
     std::string m_dvl_link_name;
 
-    std::string m_base_link;
+    std::string m_tf_source;
 
     std::string m_tf_prefix;
 

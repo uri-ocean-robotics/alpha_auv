@@ -29,8 +29,9 @@ void DvlSim::f_cb_simulation_state(const geometry_msgs::PoseStamped::ConstPtr &p
                                    const geometry_msgs::TwistStamped::ConstPtr &vel) {
     // Acquire transform from baselink to dvl
     try {
+        m_tf_source = pose->header.frame_id;
         m_transform_stamped = m_tfBuffer.lookupTransform(m_dvl_link_name, 
-                                m_base_link,ros::Time(0));
+                                m_tf_source,ros::Time(0));
         Eigen::Quaterniond transformation_quat(m_transform_stamped.transform.rotation.x,
                                                 m_transform_stamped.transform.rotation.y,
                                                 m_transform_stamped.transform.rotation.z,
@@ -118,10 +119,7 @@ void DvlSim::f_generate_parameters() {
     m_pnh.param<std::string>(DvlSimDict::CONF_TF_PREFIX, m_tf_prefix, "");
 
     m_pnh.param<std::string>(DvlSimDict::CONF_LINK_NAME, m_dvl_link_name, "dvl");
-
-    m_dvl_link_name = m_tf_prefix+"/"+m_dvl_link_name;
-    m_base_link = m_tf_prefix + "/base_link";
-
+    m_dvl_link_name = m_tf_prefix + "/" + m_dvl_link_name;
     // get node frequency
     m_pnh.param<double>(DvlSimDict::CONF_PING_RATE, m_rate, 100);
 
