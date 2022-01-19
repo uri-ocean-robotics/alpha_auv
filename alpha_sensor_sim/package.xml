@@ -20,10 +20,15 @@
   <depend>geometry_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>std_msgs</depend>
+  <depend>seal_msgs</depend>
   <depend>roscpp</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
   <depend>sensor_msgs</depend>
+  <depend>message_generation</depend>
+
+  <exec_depend>message_runtime</exec_depend>
+  
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->

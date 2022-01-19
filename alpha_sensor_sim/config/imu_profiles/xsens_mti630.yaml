@@ -25,10 +25,10 @@ tf_prefix: alpha
 link_name: imu
 
 linear_acceleration_mean: 0
-linear_acceleration_std: 60
+linear_acceleration_noise_density: 60
 
 angular_velocity_mean: 0
-angular_velocity_std: 7
+angular_velocity_noise_density: 7
 
 orientation_mean: 0
 orientation_std: 0.05
