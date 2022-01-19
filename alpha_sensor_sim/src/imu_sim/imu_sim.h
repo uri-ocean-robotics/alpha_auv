@@ -48,7 +48,6 @@
 #include "Eigen/Dense"
 #include "boost/array.hpp"
 
-
 #define STATIC_STRING static constexpr const char *
 #define STATIC_DOUBLE static constexpr double
 
