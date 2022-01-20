@@ -7,7 +7,7 @@ AlphaRos::AlphaRos() : nh_(""), pnh_("~")
 
     struct_nmea_sub_ = nh_.subscribe("driver/struct_nmea", 100, &AlphaRos::struct_nmea_callback, this);
 
-    thrust_cmd_sub_ = nh_.subscribe("controller/cmd_vel", 100, &AlphaRos::thrust_cmd_callback, this);
+    thrust_cmd_sub_ = nh_.subscribe("controller/cmd_vel", 5, &AlphaRos::thrust_cmd_callback, this);
 
     raw_nmea_pub_ = nh_.advertise<std_msgs::String>("driver/incoming_raw_nmea", 1000);
 
