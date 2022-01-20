@@ -4,5 +4,5 @@ frame_id: dvl
 velocity_covariance: [0, 0, 0, 0, 0, 0, 0, 0, 0]
 positoin_covariance: [0, 0, 0, 0, 0, 0, 0, 0, 0]
 speed_of_sound: 1500
-mounting_rotation_offset: 20
+mounting_rotation_offset: 0
 acoustics_enabled: false
