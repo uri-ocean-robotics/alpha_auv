@@ -1,6 +1,9 @@
-[submodule "alpha_devices/waterlinked_dvl_ros"]
-	path = alpha_devices/waterlinked_dvl_ros
-	url = https://github.com/GSO-soslab/waterlinked_dvl_ros
 [submodule "alpha_devices/xsens_mti_ros_driver"]
 	path = alpha_devices/xsens_mti_ros_driver
 	url = https://github.com/GSO-soslab/xsens_mti_ros_driver
+[submodule "alpha_devices/waterlinked_dvl_ros"]
+	path = alpha_devices/waterlinked_dvl_ros
+	url = https://github.com/GSO-soslab/waterlinked_dvl_ros
+[submodule "seal_msgs"]
+	path = seal_msgs
+	url = https://github.com/GSO-soslab/seal_msgs.git

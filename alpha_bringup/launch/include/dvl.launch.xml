@@ -3,7 +3,7 @@
 
   <arg name="robot_name" default="alpha"/>
 
-  <node pkg="waterlinked_a50_ros_driver" type="publisher.py" name="dvl_ros_node">
+  <node pkg="waterlinked_dvl" type="waterlinked_dvl_tcp_node" name="dvl_ros_node" output="screen">
     <rosparam command="load" file="$(find alpha_config)/config/dvl_a50.yaml"/>
   </node>
 

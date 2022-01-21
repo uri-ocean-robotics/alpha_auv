@@ -11,6 +11,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <depend>joy_teleop</depend>
   <depend>joy</depend>
+  <depend>std_msgs</depend>
 
   <export>
 

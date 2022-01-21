@@ -3,6 +3,6 @@
 
   <arg name="robot_name" default="alpha"/>
 
-  <node pkg="gpsd_client" type="gpsd_client" name="gpsd_client"/>
+  <node pkg="gpsd_client" type="gpsd_client" name="gpsd_client" output="screen"/>
 
 </launch>
