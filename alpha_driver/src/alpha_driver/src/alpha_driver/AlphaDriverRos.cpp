@@ -1,9 +1,8 @@
 #include "AlphaDriverRos.h"
 
-AlphaDriverRos::AlphaDriverRos() : m_nh(""), m_pnh("~")
-{
+AlphaDriverRos::AlphaDriverRos() : m_nh(""), m_pnh("~") {
 
-    f_generate_thrusters();
+    f_read_config();
 
     m_raw_nmea_sub = m_nh.subscribe("driver/raw_nmea", 100, &AlphaDriverRos::f_raw_nmea_callback, this);
 
@@ -19,13 +18,7 @@ AlphaDriverRos::AlphaDriverRos() : m_nh(""), m_pnh("~")
 
     m_power_pub = m_nh.advertise<alpha_msgs::Power>("driver/power", 1000);
 
-    m_pnh.param<std::string>("port", m_port, "/dev/ttyACM0");
-
-    m_pnh.param<int>("baud", m_baud, 115200);
-
-    m_pnh.param<double>("security_timeout", m_security_timeout, 3);
-
-    m_driver->set_serial_callback(std::bind(&AlphaDriverRos::f_driver_serial_callback, this, std::placeholders::_1));
+    f_initialize_topics();
 
 }
 
@@ -33,16 +26,31 @@ void AlphaDriverRos::initialize() {
 
     m_driver = std::make_shared<AlphaDriver>(m_port, m_baud);
 
+    f_initialize_pwm_channels();
+
+    m_driver->set_serial_callback(std::bind(&AlphaDriverRos::f_driver_serial_callback, this, std::placeholders::_1));
+
+    std::thread t(std::bind(&AlphaDriverRos::f_command_thrust_loop, this));
+    t.detach();
+
+
 }
 
-void AlphaDriverRos::f_generate_thrusters() {
+void AlphaDriverRos::f_read_config() {
+
+    m_pnh.param<std::string>("port", m_port, "/dev/ttyACM0");
+
+    m_pnh.param<int>("baud", m_baud, 115200);
+
+    m_pnh.param<double>("security_timeout", m_security_timeout, 3);
 
     std::vector<std::string> keys;
+
     m_nh.getParamNames(keys);
 
     auto ns = m_pnh.getNamespace();
 
-    auto param_name = ns + "/" + DriverDict::CONF_THRUSTERS;
+    auto param_name = ns + "/" + DriverDict::CONF_PWM_CONTROL;
 
     for(const auto &i : keys) {
         if(i.find(param_name) != std::string::npos) {
@@ -50,44 +58,74 @@ void AlphaDriverRos::f_generate_thrusters() {
             auto name = pp.substr(0, pp.find('/'));
             auto param = pp.substr(pp.find('/') + 1, pp.size());
 
-            if(param.find(DriverDict::CONF_THRUSTERS_PWM_CHANNEL) != std::string::npos) {
-                m_nh.getParam(i, m_thrusters[name].pwm_channel);
-            } else if (param == DriverDict::CONF_THRUSTERS_TOPIC) {
-                m_nh.getParam(i, m_thrusters[name].topic);
+            if(param == DriverDict::CONF_PWM_CHANNEL) {
+                int channel;
+                m_nh.getParam(i, channel);
+                m_pwm_control[name].channel = channel;
+            } else if (param == DriverDict::CONF_PWM_TOPIC) {
+                std::string topic;
+                m_nh.getParam(i, topic);
+                m_pwm_control[name].topic = topic;
+            } else if (param == DriverDict::CONF_PWM_MODE) {
+                std::string mode;
+                m_nh.getParam(i, mode);
+                if(mode == DriverDict::CONF_PWM_MODE_OPT_THRUSTER) {
+                    m_pwm_control[name].mode = static_cast<uint8_t>(PwmMode::Thruster);
+                } else if (mode == DriverDict::CONF_PWM_MODE_OPT_PURE) {
+                    m_pwm_control[name].mode = static_cast<uint8_t>(PwmMode::Pure);
+                } else {
+
+                }
             } else {
-                // unknown param
+
             }
         }
     }
 
-    for(const auto &i : m_thrusters) {
-
-        if(i.second.topic.size() == 0) {
-            throw alpha_driver_ros_exception("thruster defined without topic id");
-        }
-
-        for(const auto &j : m_thrusters) {
+    for(const auto &i : m_pwm_control) {
+        for(const auto &j : m_pwm_control) {
             if(i.first == j.first) {
                 continue;
             }
-            if(i.second.pwm_channel == j.second.pwm_channel) {
+
+            if(i.second.topic.empty()) {
+                throw alpha_driver_ros_exception("empty topic name");
+            }
+
+            if(i.second.channel == j.second.channel) {
                 throw alpha_driver_ros_exception("multiple thrusters with same pwm channel found");
             }
+
             if(i.second.topic == j.second.topic) {
                 throw alpha_driver_ros_exception("multiple thrusters with same topic id found");
             }
         }
     }
 
-    for(const auto& i : m_thrusters) {
+}
+
+void AlphaDriverRos::f_initialize_pwm_channels() {
+    for(const auto& i : m_pwm_control) {
+        m_driver->init_pwm(i.second.channel, i.second.mode);
+    }
+}
+
+void AlphaDriverRos::f_initialize_topics() {
+
+    for(const auto& i : m_pwm_control) {
         auto sub = m_nh.subscribe<std_msgs::Float64>(
                 i.second.topic,
                 5,
-                std::bind(&AlphaDriverRos::f_thrust_cb, this, std::placeholders::_1, i.second.pwm_channel)
+                std::bind(
+                        &AlphaDriverRos::f_pwm_cb,
+                        this,
+                        std::placeholders::_1,
+                        i.second.channel,
+                        i.second.mode
+                )
         );
         m_thrust_cmd_subscribers.emplace_back(sub);
     }
-
 }
 
 void AlphaDriverRos::f_raw_nmea_callback(const std_msgs::String::ConstPtr &msg) {
@@ -142,10 +180,13 @@ void AlphaDriverRos::f_driver_serial_callback(std::string incoming) {
     }
 }
 
-void AlphaDriverRos::f_thrust_cb(const std_msgs::Float64::ConstPtr &msg, uint8_t channel) {
+void AlphaDriverRos::f_pwm_cb(const std_msgs::Float64::ConstPtr &msg, uint16_t channel, uint8_t mode) {
 
-    m_last_thrust_command_time = ros::Time::now();
+    if(mode == PwmMode::Thruster) {
+        m_last_thrust_command_time = ros::Time::now();
+    }
 
+    m_driver->cmd_pwm(channel, msg->data);
 }
 
 void AlphaDriverRos::f_command_thrust_loop() {
@@ -154,12 +195,13 @@ void AlphaDriverRos::f_command_thrust_loop() {
     while(ros::ok()) {
 
         auto dt = ros::Time::now() - m_last_thrust_command_time;
-        if(dt.toSec() > m_security_timeout) {
-            std::for_each(m_thrust_per_channel.begin(), m_thrust_per_channel.end(), [](auto& i){ i = 0; });
-        }
 
-        for(int i = 0 ; i < m_thrust_per_channel.size() ; i++) {
-            m_driver->cmd_pwm(i, m_thrust_per_channel[i]);
+        if(dt.toSec() > m_security_timeout) {
+            for(const auto& i : m_pwm_control) {
+                if(i.second.mode == PwmMode::Thruster) {
+                    m_driver->cmd_pwm(i.second.channel, 0);
+                }
+            }
         }
 
         r.sleep();

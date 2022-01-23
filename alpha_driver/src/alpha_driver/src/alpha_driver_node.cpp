@@ -8,6 +8,8 @@ int main(int argc, char** argv) {
 
     AlphaDriverRos node;
 
+    node.initialize();
+
     ros::spin();
 
     return 0;

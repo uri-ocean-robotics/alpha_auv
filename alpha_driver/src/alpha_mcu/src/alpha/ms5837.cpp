@@ -1,7 +1,12 @@
 #include "alpha/mcu/ms5837.h"
 #include "iostream"
+#include "hardware/i2c.h"
+
 #include "alpha/common/dictionary.h"
+
 #include "alpha/mcu/globals.h"
+#include "alpha/mcu/common.h"
+#include "alpha/mcu/dictionary.h"
 
 MS5837::MS5837() {
 
@@ -99,7 +104,7 @@ uint8_t MS5837::f_crc4(uint16_t n_prom[]) {
 
 bool MS5837::initialize() {
 
-    i2c_write_blocking(ALPHA_I2C_DEFAULT, MS5837_ADDR, &MS5837_RESET, 1, false);
+    i2c_write_blocking(i2c_default, MS5837_ADDR, &MS5837_RESET, 1, false);
     // Wait for reset to complete
     busy_wait_ms(10);
 
@@ -107,8 +112,8 @@ bool MS5837::initialize() {
     for (uint8_t i = 0; i < 7; i++) {
         uint8_t m = MS5837_PROM_READ + i * 2;
         uint8_t dest[2];
-        if(i2c_write_blocking(ALPHA_I2C_DEFAULT, MS5837_ADDR, &m, 1, true) != PICO_ERROR_GENERIC) {
-            i2c_read_blocking(ALPHA_I2C_DEFAULT, MS5837_ADDR, dest, 2, false);
+        if(i2c_write_blocking(i2c_default, MS5837_ADDR, &m, 1, true) != PICO_ERROR_GENERIC) {
+            i2c_read_blocking(i2c_default, MS5837_ADDR, dest, 2, false);
             m_c[i] = static_cast<unsigned short>(dest[0]);
             m_c[i] = (m_c[i] << 8) | static_cast<unsigned short>(dest[1]);
         }
@@ -165,30 +170,30 @@ void MS5837::set_fluid_density(float density) {
  */
 void MS5837::read() {
     // D1 conversion
-    if(i2c_write_blocking(ALPHA_I2C_DEFAULT, MS5837_ADDR, &MS5837_CONVERT_D1_8192, 1, false) == PICO_ERROR_GENERIC) {
+    if(i2c_write_blocking(i2c_default, MS5837_ADDR, &MS5837_CONVERT_D1_8192, 1, false) == PICO_ERROR_GENERIC) {
 
     }
     busy_wait_ms(20); // MAX conversion time per datasheet
-    if(i2c_write_blocking(ALPHA_I2C_DEFAULT, MS5837_ADDR, &MS5837_ADC_READ, 1, true) == PICO_ERROR_GENERIC) {
+    if(i2c_write_blocking(i2c_default, MS5837_ADDR, &MS5837_ADC_READ, 1, true) == PICO_ERROR_GENERIC) {
 
     }
     uint8_t dest_1[3];
-    i2c_read_blocking(ALPHA_I2C_DEFAULT, MS5837_ADDR, dest_1, 3, false);
+    i2c_read_blocking(i2c_default, MS5837_ADDR, dest_1, 3, false);
     m_D1_pres = 0;
     m_D1_pres = dest_1[0];
     m_D1_pres = (m_D1_pres << 8) | dest_1[1];
     m_D1_pres = (m_D1_pres << 8) | dest_1[2];
 
     // D2 conversion
-    if(i2c_write_blocking(ALPHA_I2C_DEFAULT, MS5837_ADDR, &MS5837_CONVERT_D2_8192, 1, false) == PICO_ERROR_GENERIC) {
+    if(i2c_write_blocking(i2c_default, MS5837_ADDR, &MS5837_CONVERT_D2_8192, 1, false) == PICO_ERROR_GENERIC) {
 
     }
     busy_wait_ms(20); // MAX conversion time per datasheet
-    if(i2c_write_blocking(ALPHA_I2C_DEFAULT, MS5837_ADDR, &MS5837_ADC_READ, 1, true) == PICO_ERROR_GENERIC) {
+    if(i2c_write_blocking(i2c_default, MS5837_ADDR, &MS5837_ADC_READ, 1, true) == PICO_ERROR_GENERIC) {
 
     }
     uint8_t dest_2[3];
-    i2c_read_blocking(ALPHA_I2C_DEFAULT, MS5837_ADDR, dest_2, 3, false);
+    i2c_read_blocking(i2c_default, MS5837_ADDR, dest_2, 3, false);
     m_D2_temp = 0;
     m_D2_temp = dest_2[0];
     m_D2_temp = (m_D2_temp << 8) | dest_2[1];
@@ -231,7 +236,7 @@ bool MS5837::f_reporter(struct repeating_timer *t) {
 
 
     NMEA* msg = new NMEA();
-    msg->construct("%s,%.5f,%.5f,%.5f", NMEA_BAROMETER_REPORT,
+    msg->construct(NMEA_FORMAT_BAROMETER_REPORT, NMEA_BAROMETER_REPORT,
                    globals::pressure_data.pressure,
                    globals::pressure_data.temperature,
                    globals::pressure_data.depth

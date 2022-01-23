@@ -5,43 +5,31 @@
 
 #include "ms5837.h"
 #include "ina260.h"
-#include "pwm_manager.h"
+#include "pwm_controller.h"
 #include "safety.h"
+#include "memory"
+#include "map"
+#include "array"
 
-void initialize_globals();
 
 namespace globals {
     extern multimeter_t multimeter_data;
 
     extern pressure_t pressure_data;
 
-    extern pwm_t pwm_chan0_data;
-
-    extern pwm_t pwm_chan1_data;
-
-    extern pwm_t pwm_chan2_data;
-
-    extern pwm_t pwm_chan3_data;
-
-    extern pwm_t pwm_chan4_data;
-
-    extern pwm_t* pwm_chans_data[GLOB_PWM_CHANNEL_COUNT];
-
     extern INA260 multimeter;
 
     extern MS5837 barometer;
 
-    extern PwmManager pwm_chan0_manager;
+    extern std::shared_ptr<PwmController> pwm_chan0;
 
-    extern PwmManager pwm_chan1_manager;
+    extern std::shared_ptr<PwmController> pwm_chan1;
 
-    extern PwmManager pwm_chan2_manager;
+    extern std::shared_ptr<PwmController> pwm_chan2;
 
-    extern PwmManager pwm_chan3_manager;
+    extern std::shared_ptr<PwmController> pwm_chan3;
 
-    extern PwmManager pwm_chan4_manager;
-
-    extern PwmManager* pwm_managers[GLOB_PWM_CHANNEL_COUNT];
+    extern std::shared_ptr<PwmController> pwm_chan4;
 
     extern Safety safety;
 

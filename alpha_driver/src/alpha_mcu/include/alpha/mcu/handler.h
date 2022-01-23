@@ -14,7 +14,7 @@
 
 [[noreturn]] void listen_incoming_messages();
 
-namespace comm {
+namespace handler {
 
     /**
      * @brief Puts the system into usb boot state.
@@ -27,15 +27,24 @@ namespace comm {
      * @param state if 0 overrides the safety subsystem. sets safety relay low.
      * @param state if -1 lifts the override in safety subsystem.
      */
-    static inline void apply_safety(int state);
+    static inline bool apply_safety(int state);
 
     /**
      * @brief Controls pwm channels
      * @param channel
      * @param signal
-     * @param rate_control
      */
-    static inline void apply_pwm(int channel, float signal, bool rate_control = false);
+    static inline bool apply_pwm_input(int channel, float signal);
+
+    /**
+     * @brief Initializes a channel with given mode.
+     *
+     * @param channel   Channel of the pwm signal
+     * @param mode      Mode of the pwm channel. @see #PwmMode
+     * @return true     If succeeds
+     * @return false    If fails
+     */
+    static inline bool apply_pwm_enable(int channel, int mode);
 
 }
 

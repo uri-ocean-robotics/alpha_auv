@@ -4,4 +4,6 @@
   <node pkg="alpha_driver" type="alpha_driver_node" name="alpha_driver" output="screen">
     <rosparam command="load" file="$(find alpha_driver)/config/driver.yaml"/>
   </node>
+
+  <include file="$(find alpha_teleop)/launch/simple_teleop.launch"/>
 </launch>

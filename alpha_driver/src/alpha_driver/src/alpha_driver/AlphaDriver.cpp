@@ -63,8 +63,14 @@ void AlphaDriver::send_raw(std::string nmea) {
     f_serial_send_line(nmea);
 }
 
-void AlphaDriver::cmd_pwm(uint8_t channel, double pwm, bool rate_control) {
-    NMEA pwm_msg;
+void AlphaDriver::cmd_pwm(int channel, double pwm) {
+    NMEA msg;
+    msg.construct(NMEA_FORMAT_PWM_CMD, NMEA_PWM_CMD, channel, pwm);
+    f_serial_send_line(std::string(msg.get_raw()));
+}
 
-    pwm_msg.construct("%s,%d,%.5f,%d", NMEA_PWM_CMD, channel, pwm, (rate_control ? 0 : 1));
+void AlphaDriver::init_pwm(int channel, int mode) {
+    NMEA msg;
+    msg.construct(NMEA_FORMAT_PWM_INIT, NMEA_PWM_INITIALIZE, channel, mode);
+    f_serial_send_line(std::string(msg.get_raw()));
 }

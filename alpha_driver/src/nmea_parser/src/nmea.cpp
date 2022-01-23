@@ -4,7 +4,7 @@
 #include "nmea/nmea.h"
 
 NMEA::NMEA() :
-    _raw(nullptr),
+    // _raw(nullptr),
     _values(nullptr),
     _cmd(nullptr),
     _argc(0),
@@ -14,13 +14,13 @@ NMEA::NMEA() :
 }
 
 NMEA::NMEA(const char* msg) :
-    _raw(nullptr),
+    // _raw(nullptr),
     _values(nullptr),
     _cmd(nullptr),
     _argc(0),
     _valid(false)
 {
-    _raw = (char*) malloc(strlen(msg));
+    // _raw = (char*) malloc(strlen(msg));
     _argc = 0;
     strcpy(_raw, msg);
 }
@@ -79,13 +79,13 @@ void NMEA::parse() {
 
 void NMEA::parse(const char *msg) {
     _clean_up();
-    _raw = (char *)malloc(sizeof(char) * strlen(msg));
+    // _raw = (char *)malloc(sizeof(char) * strlen(msg));
     strcpy(_raw, msg);
     parse();
 }
 
 void NMEA::_clean_up() {
-    PURGE(_raw)
+    // PURGE(_raw)
     PURGE(_values)
     PURGE(_cmd)
     PURGE(_values)
@@ -93,19 +93,9 @@ void NMEA::_clean_up() {
     _valid = false;
 }
 
-void NMEA::debug() {
-    printf("[DEBUG][%d] Raw: %s,",_valid, _cmd);
-    int i = 0;
-    for(; i < _argc - 1 ; i++) {
-        printf("%.3f,", _values[i]);
-    }
-    printf("%.3f", _values[i++]);
-    printf("*%02X\r\n", _checksum);
-}
-
 void NMEA::construct(const char *cmd, float* values, size_t size) {
     char* m = (char*)malloc(BUFSIZ * sizeof(char));
-    _raw = (char*)malloc(BUFSIZ * sizeof(char));
+    // _raw = (char*)malloc(BUFSIZ * sizeof(char));
     char* cursor = m;
     cursor += sprintf(cursor, "%s,", cmd);
     int i = 0;
@@ -116,16 +106,18 @@ void NMEA::construct(const char *cmd, float* values, size_t size) {
 
     crc(_crc, (uint8_t*)m, strlen(m));
     sprintf(_raw,"$%s*%02X", m, _crc);
+    free(m);
 }
 
 void NMEA::construct(const char *format, ...) {
     va_list args;
     va_start( args, format );
     char* m = (char*)malloc(BUFSIZ * sizeof(char));
-    _raw = (char*)malloc(BUFSIZ * sizeof(char));
+    // _raw = (char*)malloc(BUFSIZ * sizeof(char));
     vsprintf(m, format, args);
     crc(_crc, (uint8_t*)m, strlen(m));
     sprintf(_raw,"$%s*%02X", m, _crc);
+    free(m);
     va_end( args );
 }
 

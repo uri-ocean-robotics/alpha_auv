@@ -11,7 +11,7 @@
 
 class NMEA {
 private:
-    char* _raw;
+    char _raw[BUFSIZ];
 
     char* _cmd;
 
@@ -54,7 +54,6 @@ public:
 
     float* get_values();
 
-    void debug();
 
 };
 

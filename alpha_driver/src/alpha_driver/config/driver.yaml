@@ -1,14 +1,22 @@
-port: /dev/pico
+port: /dev/ttyACM0
 
-thrusters:
+pwm_control:
   main:
-    pwm_channel: 1
+    channel: 0
+    mode: thruster
     topic: control/thruster/main
 
   horizontal:
-    pwm_channel: 2
+    channel: 1
+    mode: thruster
     topic: control/thruster/horizontal
 
   vertical:
-    pwm_channel: 3
+    channel: 2
+    mode: thruster
     topic: control/thruster/vertical
+
+  led:
+    channel: 3
+    mode: pure
+    topic: control/led

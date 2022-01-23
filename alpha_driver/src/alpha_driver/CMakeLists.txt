@@ -17,8 +17,13 @@ find_package(catkin REQUIRED COMPONENTS
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS system)
 
-add_subdirectory(../nmea_parser nmea_parser)
-add_subdirectory(../alpha_common alpha_common)
+if (NOT TARGET NMEA_PARSER)
+  add_subdirectory(../nmea_parser nmea_parser_catkin)
+endif()
+
+if (NOT TARGET ALPHA_COMMON)
+  add_subdirectory(../alpha_common alpha_common_catkin)
+endif()
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html

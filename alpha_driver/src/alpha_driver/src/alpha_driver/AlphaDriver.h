@@ -50,7 +50,9 @@ public:
     void set_serial_callback(decltype(m_serial_callback) c) { m_serial_callback  = c;}
     auto get_serial_callback() -> decltype(m_serial_callback) {return m_serial_callback;}
 
-    void cmd_pwm(uint8_t channel, double pwm, bool rate_control = true);
+    void cmd_pwm(int channel, double pwm);
+
+    void init_pwm(int channel, int mode);
 };
 
 

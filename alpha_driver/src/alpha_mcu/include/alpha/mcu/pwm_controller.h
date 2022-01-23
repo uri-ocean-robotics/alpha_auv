@@ -22,38 +22,55 @@ private:
 
     uint16_t m_pulse_width;
 
-    int m_pin = -1;
+    int m_mode;
 
     uint16_t m_top;
 
-    double m_desired;
+    int m_channel;
 
-    double m_current;
+    absolute_time_t m_last_comm;
+
+    int m_pin;
+
+    float m_desired;
+
+    float m_current;
+
+    bool m_is_enabled;
+
+    const uint16_t m_limiter_period = 4; // ms
+
+    struct repeating_timer m_safety_checker_timer;
+
+    struct repeating_timer m_reporter_timer;
 
     struct repeating_timer m_limiter_timer;
 
     void f_change_pulse(uint16_t pulse);
 
-    uint16_t m_limiter_period = 4; // ms
+    static bool f_safety_checker(struct repeating_timer *t);
+
+    static bool f_reporter(struct repeating_timer *t);
 
     static bool f_limiter(struct repeating_timer *t);
 
+    void f_change_magnitude(float magnitude);
+
+    void f_change_magnitude_limited(float magnitude);
+
 public:
-    PwmController();
 
-    PwmController(int pin);
+    explicit PwmController(int pin, int channel, int mode = PwmMode::Undefined);
 
-    bool initialize();
+    void initialize();
 
-    void set_pin(uint16_t pin);
+    void set_pwm(float signal);
 
-    void change_magnitude(double magnitude);
+    void enable();
 
-    void change_magnitude_limited(double magnitude);
+    void disable();
 
-    double get_magnitude() const;
-
-    double get_pulse();
+    void set_mode(int mode);
 
 
 };

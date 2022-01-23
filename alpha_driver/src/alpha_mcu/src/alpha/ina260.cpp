@@ -19,7 +19,7 @@ void INA260::initialize() {
 bool INA260::is_exist() const {
     uint8_t p_addr = 0x00;   //Select Configuration Register.
 
-    if(i2c_write_blocking(ALPHA_I2C_DEFAULT, m_i2c_addr, &p_addr, 1, false) == PICO_ERROR_GENERIC) {
+    if(i2c_write_blocking(i2c_default, m_i2c_addr, &p_addr, 1, false) == PICO_ERROR_GENERIC) {
         return false;
     }
 
@@ -28,8 +28,8 @@ bool INA260::is_exist() const {
 
 int INA260::raw_read(uint8_t pointer_addr, unsigned short *val_) const {
     uint8_t val[2];
-    if(i2c_write_blocking(ALPHA_I2C_DEFAULT, m_i2c_addr, &pointer_addr, 1, true) != PICO_ERROR_GENERIC){
-        if(i2c_read_blocking(ALPHA_I2C_DEFAULT, m_i2c_addr, val, 2, false) != PICO_ERROR_GENERIC){
+    if(i2c_write_blocking(i2c_default, m_i2c_addr, &pointer_addr, 1, true) != PICO_ERROR_GENERIC){
+        if(i2c_read_blocking(i2c_default, m_i2c_addr, val, 2, false) != PICO_ERROR_GENERIC){
             *val_ = static_cast<unsigned short>(val[0]);
             *val_ = (*val_ << 8) | static_cast<unsigned short>(val[1]);
             return PICO_ERROR_NONE;
@@ -43,7 +43,7 @@ int INA260::raw_write(char pointer_addr, unsigned short val_) const {
     val[0] = pointer_addr;
     val[1] = static_cast<char>((val_ >> 8) & 0x00ff);
     val[2] = static_cast<char>(val_ & 0x00ff);
-    if(i2c_write_blocking(ALPHA_I2C_DEFAULT, m_i2c_addr,val,3,false) == 0){
+    if(i2c_write_blocking(i2c_default, m_i2c_addr,val,3,false) == 0){
         return 0;
     }
     return 1;
@@ -123,7 +123,7 @@ int INA260::set_limit(unsigned short val) const{
     globals::multimeter_data.power = power;
 
     NMEA* msg = new NMEA();
-    msg->construct("%s,%.5f,%.2f,%.1f", NMEA_MULTIMETER_REPORT, voltage, current, power);
+    msg->construct(NMEA_FORMAT_MULTIMETER_REPORT, NMEA_MULTIMETER_REPORT, voltage, current, power);
     std::cout << msg->get_raw() << std::endl;
     delete msg;
 

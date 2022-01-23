@@ -19,9 +19,12 @@
 
 
 namespace DriverDict {
-    STATIC_STRING CONF_THRUSTERS = "thrusters";
-    STATIC_STRING CONF_THRUSTERS_PWM_CHANNEL = "pwm_channel";
-    STATIC_STRING CONF_THRUSTERS_TOPIC = "topic";
+    STATIC_STRING CONF_PWM_CONTROL = "pwm_control";
+    STATIC_STRING CONF_PWM_CHANNEL = "channel";
+    STATIC_STRING CONF_PWM_MODE = "mode";
+    STATIC_STRING CONF_PWM_MODE_OPT_THRUSTER = "thruster";
+    STATIC_STRING CONF_PWM_MODE_OPT_PURE = "pure";
+    STATIC_STRING CONF_PWM_TOPIC = "topic";
 }
 
 class alpha_driver_ros_exception : public std::runtime_error {
@@ -32,13 +35,11 @@ public:
 class AlphaDriverRos {
 private:
 
-    typedef struct thruster_t {
-        int pwm_channel;
+    typedef struct pwm_control_t : pwm_t {
         std::string topic;
-        std::string name;
-    } thruster_t;
+    } pwm_control_t;
 
-    std::map<std::string, AlphaDriverRos::thruster_t> m_thrusters;
+    std::map<std::string, pwm_control_t> m_pwm_control;
 
     std::vector<ros::Subscriber> m_thrust_cmd_subscribers;
 
@@ -82,13 +83,17 @@ private:
 
     void f_struct_nmea_callback(const alpha_msgs::NMEA::ConstPtr& msg);
 
-    void f_thrust_cb(const std_msgs::Float64::ConstPtr &msg, uint8_t channel);
+    void f_pwm_cb(const std_msgs::Float64::ConstPtr &msg, uint16_t channel, uint8_t mode);
 
     void f_driver_serial_callback(std::string incoming);
 
     void f_command_thrust_loop();
 
-    void f_generate_thrusters();
+    void f_read_config();
+
+    void f_initialize_topics();
+
+    void f_initialize_pwm_channels();
 
 public:
     AlphaDriverRos();

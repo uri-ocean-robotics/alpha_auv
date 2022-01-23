@@ -1,24 +1,32 @@
 #include "alpha/mcu/pwm_controller.h"
 
+#include <cmath>
 
-PwmController::PwmController() {
-    m_pulse_width = PULSE_WIDTH_CTR; // microseconds
-    m_freq = 50; // hertz
 
-}
-
-PwmController::PwmController(int pin) {
+PwmController::PwmController(int pin, int channel, int mode) {
     m_pin = pin;
-    m_pulse_width = PULSE_WIDTH_CTR;
+
+    m_channel = channel;
+
     m_freq = 50;
 
+    m_pulse_width = PULSE_WIDTH_CTR;
+
+    m_mode = mode;
+
+    m_current = 0;
+
+    m_desired = 0;
+
+    m_is_enabled = false;
 }
 
-bool PwmController::initialize() {
-    if(m_pin == -1) {
-        return false;
-    }
+void PwmController::initialize() {
+
+    add_repeating_timer_ms(REPORT_PWM_PERIOD, f_reporter, this, &m_reporter_timer);
+
     add_repeating_timer_ms(m_limiter_period, f_limiter, this, &m_limiter_timer);
+
     gpio_set_function(m_pin, GPIO_FUNC_PWM);
 
     m_slice_num = pwm_gpio_to_slice_num(m_pin);
@@ -33,67 +41,141 @@ bool PwmController::initialize() {
 
     pwm_set_wrap(m_slice_num, m_top);
 
-    pwm_set_chan_level(m_slice_num, 0, m_pulse_width);
+    // pwm_set_chan_level(m_slice_num, 0, m_pulse_width);
 
-    pwm_set_enabled(m_slice_num, true);
+    // pwm_set_enabled(m_slice_num, true);
+
+}
+bool PwmController::f_reporter(struct repeating_timer *t) {
+
+    auto self = (PwmController *) t->user_data;
+
+    if(!self->m_is_enabled) {
+        return true;
+    }
+
+    NMEA *msg = new NMEA();
+    msg->construct(NMEA_FORMAT_PWM_REPORT,
+                   NMEA_PWM_REPORT,
+                   self->m_channel,
+                   self->m_current,
+                   self->m_mode,
+                   self->m_is_enabled
+    );
+
+    std::cout << msg->get_raw() << std::endl;
+    delete msg;
+    return true;
+}
+
+void PwmController::set_pwm(float signal) {
+
+    m_last_comm = get_absolute_time();
+
+    if (m_mode == PwmMode::Thruster) {
+        f_change_magnitude_limited(signal);
+    } else {
+        f_change_magnitude(signal);
+    }
+}
+
+void PwmController::f_change_pulse(uint16_t pulse) {
+
+    m_pulse_width = pulse;
+
+    if(m_is_enabled) {
+        pwm_set_chan_level(m_slice_num, 0, m_pulse_width);
+    }
+}
+
+void PwmController::f_change_magnitude(float magnitude) {
+    if(m_mode == PwmMode::Thruster) {
+        magnitude = magnitude < -1 ? -1 : magnitude;
+        magnitude = magnitude > 1 ? 1 : magnitude;
+
+        m_current = magnitude;
+        f_change_pulse(static_cast<uint16_t>
+            (std::round(magnitude * ((PULSE_WIDTH_MAX - PULSE_WIDTH_MIN) / 2.0) + (PULSE_WIDTH_MAX + PULSE_WIDTH_MIN) / 2.0))
+        );
+    } else if (m_mode == PwmMode::Pure) {
+        magnitude = magnitude < 0 ? 0 : magnitude;
+        magnitude = magnitude > 1 ? 1 : magnitude;
+
+        m_current = magnitude;
+        f_change_pulse(static_cast<uint16_t>
+            (std::round(magnitude * (PULSE_WIDTH_MAX - PULSE_WIDTH_MIN) + PULSE_WIDTH_MIN))
+        );
+
+    }
+}
+
+void PwmController::f_change_magnitude_limited(float magnitude) {
+    m_desired = magnitude;
+}
+
+bool PwmController::f_limiter(struct repeating_timer *t) {
+    auto self = (PwmController*)t->user_data;
+
+    if(self->m_mode == PwmMode::Pure) {
+        return false;
+    }
+
+    if(!self->m_is_enabled) {
+        return true;
+    }
+
+    auto diff = self->m_desired - self->m_current;
+    if(diff != 0) {
+
+        float dmdt = diff / (static_cast<float>(self->m_limiter_period) / 1000.0f);
+
+        if (std::fabs(dmdt) > 5 /* slope */ ) {
+            self->m_current = self->m_current + sgn(diff) * 0.01f; // increment
+        } else {
+            self->m_current = self->m_desired;
+        }
+
+        self->f_change_magnitude(self->m_current);
+    }
 
     return true;
 }
 
-void PwmController::f_change_pulse(uint16_t pulse) {
-    if(pulse > PULSE_WIDTH_MAX) {
-        pulse = PULSE_WIDTH_MAX;
-    } else if (pulse < PULSE_WIDTH_MIN) {
-        pulse = PULSE_WIDTH_MIN;
-    } else {
-        // There is no way
-    }
+void PwmController::enable() {
 
-    m_pulse_width = pulse;
+    m_is_enabled = true;
+
+    m_pulse_width = m_mode == PwmMode::Pure ? PULSE_WIDTH_MIN : PULSE_WIDTH_CTR;
+
     pwm_set_chan_level(m_slice_num, 0, m_pulse_width);
+
+    pwm_set_enabled(m_slice_num, true);
+
+
+
+    add_repeating_timer_ms(100, f_safety_checker, this, &m_safety_checker_timer);
+
 }
 
-void PwmController::set_pin(uint16_t pin) { m_pin = pin; }
-
-void PwmController::change_magnitude(double magnitude) {
-    m_current = magnitude;
-    if(magnitude < -1) {
-        magnitude = 1;
-    } else if (magnitude > 1) {
-        magnitude = 1;
-    }
-
-    f_change_pulse(floor(magnitude * ((PULSE_WIDTH_MAX - PULSE_WIDTH_MIN) / 2.0) + PULSE_WIDTH_CTR));
+void PwmController::disable() {
+    m_is_enabled = false;
+    pwm_set_enabled(m_slice_num, false);
 }
 
-void PwmController::change_magnitude_limited(double magnitude) {
-    m_desired = magnitude;
+void PwmController::set_mode(int mode) {
+    m_mode = mode;
 }
 
-double PwmController::get_magnitude() const {
-    return (m_pulse_width - PULSE_WIDTH_CTR) / ((PULSE_WIDTH_MAX - PULSE_WIDTH_MIN) / 2.0);
-}
+bool PwmController::f_safety_checker(struct repeating_timer *t) {
+    auto self = (PwmController*)t->user_data;
 
-double PwmController::get_pulse() {
-    return m_pulse_width;
-}
-
-bool PwmController::f_limiter(struct repeating_timer *t) {
-    auto _this = (PwmController*)t->user_data;
-
-    double diff = _this->m_desired - _this->m_current;
-    if(diff == 0) {
+    if(is_nil_time(self->m_last_comm)) {
         return true;
     }
 
-    double dmdt = diff / (_this->m_limiter_period / 1000.0);
-
-    if(fabs(dmdt) > 5 /* slope */ ) {
-        _this->m_current += sgn(diff) * 0.01; // increment
-    } else {
-        _this->m_current = _this->m_desired;
+    if(absolute_time_diff_us(self->m_last_comm, get_absolute_time()) > 2999999) {
+        self->set_pwm(0);
     }
 
-    _this->change_magnitude(_this->m_current);
     return true;
 }

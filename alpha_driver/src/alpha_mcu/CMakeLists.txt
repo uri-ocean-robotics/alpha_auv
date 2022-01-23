@@ -1,15 +1,20 @@
 # Set minimum required version of CMake
 cmake_minimum_required(VERSION 3.12)
 #include build functions from Pico SDK
+
 include(pico_sdk_import.cmake)
 # Set name of project (as PROJECT_NAME) and C/C++ Standards
 project(alpha_mcu C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
+if (NOT TARGET NMEA_PARSER)
+  add_subdirectory(../nmea_parser nmea_parser_pico)
+endif()
 
-add_subdirectory(../alpha_common alpha_common)
-add_subdirectory(../nmea_parser nmea_parser)
+if (NOT TARGET ALPHA_COMMON)
+  add_subdirectory(../alpha_common alpha_common_pico)
+endif()
 
 # Creates a pico-sdk subdirectory in our project for the libraries
 pico_sdk_init()
@@ -19,12 +24,11 @@ add_executable(${PROJECT_NAME}
   src/main.cpp
   src/alpha/ina260.cpp
   src/alpha/ms5837.cpp
-  src/alpha/execution.cpp
+  src/alpha/handler.cpp
   src/alpha/safety.cpp
   src/alpha/common.cpp
   src/alpha/globals.cpp
   src/alpha/pwm_controller.cpp
-  src/alpha/pwm_manager.cpp
 )
 # create map/bin/hex/uf2 files.
 pico_add_extra_outputs(${PROJECT_NAME})
