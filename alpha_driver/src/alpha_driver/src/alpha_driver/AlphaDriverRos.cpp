@@ -165,9 +165,9 @@ void AlphaDriverRos::f_driver_serial_callback(std::string incoming) {
     if(nmea_msg.command == NMEA_BAROMETER_REPORT) {
         alpha_msgs::Pressure p;
         p.header.stamp = ros::Time::now();
-        p.depth = nmea_msg.values[0];
+        p.pressure = nmea_msg.values[0];
         p.temperature = nmea_msg.values[1];
-        p.pressure = nmea_msg.values[2];
+        p.depth = nmea_msg.values[1];
         m_pressure_pub.publish(p);
     } else if (nmea_msg.command == NMEA_MULTIMETER_REPORT) {
         alpha_msgs::Power p;
