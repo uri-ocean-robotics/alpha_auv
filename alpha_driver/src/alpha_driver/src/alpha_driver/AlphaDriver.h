@@ -35,6 +35,12 @@ protected:
 public:
     AlphaDriver();
 
+    enum SafetyState : int {
+        OVERRIDE_OFF = -1,
+        OVERRIDE_RELEASE = 0,
+        OVERRIDE_ON = 1
+    };
+
     AlphaDriver(std::string port, int baud);
 
     void initialize();
@@ -53,6 +59,10 @@ public:
     void cmd_pwm(int channel, double pwm);
 
     void init_pwm(int channel, int mode);
+
+    void configure_safety(int state);
+
+
 };
 
 

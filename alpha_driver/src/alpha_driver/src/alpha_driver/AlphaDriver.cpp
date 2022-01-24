@@ -74,3 +74,9 @@ void AlphaDriver::init_pwm(int channel, int mode) {
     msg.construct(NMEA_FORMAT_PWM_INIT, NMEA_PWM_INITIALIZE, channel, mode);
     f_serial_send_line(std::string(msg.get_raw()));
 }
+
+void AlphaDriver::configure_safety(int state) {
+    NMEA msg;
+    msg.construct(NMEA_FORMAT_SAFETY_CMD, NMEA_SAFETY_CMD, state);
+    f_serial_send_line(std::string(msg.get_raw()));
+}
