@@ -63,7 +63,7 @@ bool Safety::f_reporter(struct repeating_timer* t) {
     Safety* _this = (Safety*)t->user_data;
 
     NMEA* msg = new NMEA();
-    msg->construct("%s,%d", NMEA_SAFETY_REPORT, _this->is_activated());
+    msg->construct(NMEA_FORMAT_SAFETY_REPORT, NMEA_SAFETY_REPORT, _this->is_activated());
     std::cout << msg->get_raw() << std::endl;
     delete msg;
 
