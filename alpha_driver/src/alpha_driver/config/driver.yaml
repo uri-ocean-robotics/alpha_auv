@@ -15,8 +15,3 @@ pwm_control:
     channel: 2
     mode: thruster
     topic: control/thruster/vertical
-
-  led:
-    channel: 3
-    mode: pure
-    topic: control/led
