@@ -5,5 +5,4 @@
     <rosparam command="load" file="$(find alpha_driver)/config/driver.yaml"/>
   </node>
 
-  <include file="$(find alpha_teleop)/launch/simple_teleop.launch"/>
 </launch>
