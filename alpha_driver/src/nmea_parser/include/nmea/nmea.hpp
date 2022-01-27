@@ -1,32 +1,76 @@
+/*
+
+#ifndef NMEA_H_
+#define NMEA_H_
+
+#include "cstdint"
+#include "cstdarg"
 #include "cstdio"
 #include "cstdlib"
 #include "cstring"
-#include "nmea.h"
 
-NMEA::NMEA() :
-    _raw(nullptr),
-    _values(nullptr),
-    _cmd(nullptr),
-    _argc(0),
-    _valid(false)
+
+class NMEA {
+private:
+    char _raw[BUFSIZ];
+
+    char _cmd[BUFSIZ];
+
+    float _values[BUFSIZ];
+
+    int _argc;
+
+    uint8_t _checksum;
+
+    uint8_t _crc;
+
+    bool _valid;
+
+    void _clean_up();
+
+public:
+    NMEA();
+
+    NMEA(const char* msg);
+
+    bool crc(uint8_t &crc, uint8_t *buf, size_t size);
+
+    void parse();
+
+    void parse(const char *msg);
+
+    void construct(const char* cmd, float* values, size_t size);
+
+    void construct(const char* format, ...);
+
+    char* get_raw();
+
+    int get_argc();
+
+    bool get_valid();
+
+    char* get_cmd();
+
+    float* get_values();
+};
+
+
+NMEA::NMEA()
 {
-
+    _argc = 0;
+    _valid = false;
+    memset((void*)_raw, 0x00, BUFSIZ);
+    memset((void*)_cmd, 0x00, BUFSIZ);
+    memset((void*)_values, 0x00, BUFSIZ);
+    _checksum = 0x00;
 }
 
 NMEA::NMEA(const char* msg) :
-    _raw(nullptr),
-    _values(nullptr),
-    _cmd(nullptr),
     _argc(0),
     _valid(false)
 {
-    _raw = (char*) malloc(strlen(msg));
     _argc = 0;
     strcpy(_raw, msg);
-}
-
-NMEA::~NMEA() {
-    _clean_up();
 }
 
 bool NMEA::crc(uint8_t &crc, uint8_t *buf, size_t size) {
@@ -44,10 +88,8 @@ void NMEA::parse() {
     int offset = 0;
     char* cursor = _raw;
     sscanf(cursor, "$%*[^,]%n", &offset);
-    _cmd = (char*)malloc(offset * sizeof(char));
 
     sscanf(cursor, "$%[^,]s%n", _cmd, &offset);
-
     _argc = 0;
     for(int i = 0 ; i < strlen(_raw) ; i++) {
         if(_raw[i] == ',') {
@@ -56,8 +98,6 @@ void NMEA::parse() {
     }
 
     if(_argc > 0) {
-        _values = (float *) malloc(_argc * sizeof(float));
-
         float value;
         cursor += offset;
         for (int i = 0; i < _argc && sscanf(cursor, ",%f%n", &value, &offset); i++) {
@@ -79,54 +119,27 @@ void NMEA::parse() {
 
 void NMEA::parse(const char *msg) {
     _clean_up();
-    _raw = (char *)malloc(sizeof(char) * strlen(msg));
     strcpy(_raw, msg);
     parse();
 }
 
 void NMEA::_clean_up() {
-    PURGE(_raw)
-    PURGE(_values)
-    PURGE(_cmd)
-    PURGE(_values)
+    memset((void*)_raw, 0x00, BUFSIZ);
+    memset((void*)_values, 0x00, BUFSIZ);
+    memset((void*)_cmd, 0x00, BUFSIZ);
     _argc = 0;
     _valid = false;
-}
-
-void NMEA::debug() {
-    printf("[DEBUG][%d] Raw: %s,",_valid, _cmd);
-    int i = 0;
-    for(; i < _argc - 1 ; i++) {
-        printf("%.3f,", _values[i]);
-    }
-    printf("%.3f", _values[i++]);
-    printf("*%02X\r\n", _checksum);
-}
-
-void NMEA::construct(const char *cmd, float* values, size_t size) {
-    char* m = (char*)malloc(BUFSIZ * sizeof(char));
-    _raw = (char*)malloc(BUFSIZ * sizeof(char));
-    char* cursor = m;
-    cursor += sprintf(cursor, "%s,", cmd);
-    int i = 0;
-    for(i = 0 ; i < size - 1 ; i++) {
-        cursor += sprintf(cursor, "%.3f,", values[i]);
-    }
-    sprintf(cursor, "%.3f", values[i+1]);
-
-    crc(_crc, (uint8_t*)m, strlen(m));
-    sprintf(_raw,"$%s*%02X", m, _crc);
 }
 
 void NMEA::construct(const char *format, ...) {
     va_list args;
     va_start( args, format );
-    char* m = (char*)malloc(BUFSIZ * sizeof(char));
-    _raw = (char*)malloc(BUFSIZ * sizeof(char));
+    char* m = new char[BUFSIZ];
     vsprintf(m, format, args);
     crc(_crc, (uint8_t*)m, strlen(m));
     sprintf(_raw,"$%s*%02X", m, _crc);
     va_end( args );
+    delete m;
 }
 
 
@@ -149,3 +162,6 @@ char* NMEA::get_cmd() {
 float* NMEA::get_values() {
     return _values;
 }
+
+#endif
+*/

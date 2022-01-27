@@ -1,9 +1,9 @@
 #ifndef NMEA_H_
 #define NMEA_H_
 
-#include "stdio.h"
-#include "stdint.h"
-#include "stdarg.h"
+#include <cstdio>
+#include <cstdint>
+#include <cstdarg>
 
 #define PURGE(x) \
     if(x) {free(x) ; x = nullptr;}
@@ -11,7 +11,7 @@
 
 class NMEA {
 private:
-    char* _raw;
+    char _raw[BUFSIZ];
 
     char* _cmd;
 
@@ -19,9 +19,9 @@ private:
 
     int _argc;
 
-    uint8_t _checksum;
+    uint8_t _checksum{};
 
-    uint8_t _crc;
+    uint8_t _crc{};
 
     bool _valid;
 
@@ -30,11 +30,11 @@ private:
 public:
     NMEA();
     
-    NMEA(const char* msg);
+    explicit NMEA(const char* msg);
     
     ~NMEA();
 
-    bool crc(uint8_t &crc, uint8_t *buf, size_t size);
+    static bool crc(uint8_t &crc, const uint8_t *buf, size_t size);
 
     void parse();
 
@@ -46,15 +46,14 @@ public:
 
     char* get_raw();
     
-    int get_argc();
+    int get_argc() const;
     
-    bool get_valid();
+    bool get_valid() const;
     
     char* get_cmd();
 
     float* get_values();
 
-    void debug();
 
 };
 

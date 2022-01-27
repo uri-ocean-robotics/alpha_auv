@@ -1,0 +1,17 @@
+port: /dev/ttyACM0
+
+pwm_control:
+  main:
+    channel: 0
+    mode: thruster
+    topic: control/thruster/main
+
+  horizontal:
+    channel: 1
+    mode: thruster
+    topic: control/thruster/horizontal
+
+  vertical:
+    channel: 2
+    mode: thruster
+    topic: control/thruster/vertical
