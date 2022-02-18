@@ -1,1 +1,22 @@
-port: /dev/ttyUSB0
+port: /dev/PICO
+
+pwm_control:
+  main:
+    channel: 2
+    mode: thruster
+    topic: control/thruster/main
+
+  horizontal:
+    channel: 4
+    mode: thruster
+    topic: control/thruster/horizontal
+
+  vertical:
+    channel: 3
+    mode: thruster
+    topic: control/thruster/vertical
+
+  led:
+    channel: 1
+    mode: pure
+    topic: control/led
