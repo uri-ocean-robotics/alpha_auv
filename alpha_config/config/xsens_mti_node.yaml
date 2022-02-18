@@ -12,7 +12,6 @@
 publisher_queue_size: 5
 
 # TF transform frame_id (default: imu_link), you may want to change it if you use multiple devices
-frame_id: "imu"
 
 # Message publishers
 pub_imu: true

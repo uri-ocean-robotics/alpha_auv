@@ -1,6 +1,5 @@
 ip: 192.168.4.18
 port: 16171
-frame_id: dvl
 velocity_covariance: [0, 0, 0, 0, 0, 0, 0, 0, 0]
 positoin_covariance: [0, 0, 0, 0, 0, 0, 0, 0, 0]
 speed_of_sound: 1500

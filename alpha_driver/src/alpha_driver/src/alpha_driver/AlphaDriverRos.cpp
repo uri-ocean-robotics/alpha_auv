@@ -18,9 +18,9 @@ AlphaDriverRos::AlphaDriverRos() : m_nh(""), m_pnh("~") {
     m_depth_pub = m_nh.advertise<seal_msgs::Float64Stamped>("depth", 1000);
     m_temperature_pub = m_nh.advertise<seal_msgs::Float64Stamped>("temperature", 1000);
 
-    m_current_pub = m_nh.advertise<seal_msgs::Float64Stamped>("current", 1000);
-    m_voltage_pub = m_nh.advertise<seal_msgs::Float64Stamped>("voltage", 1000);
-    m_power_pub = m_nh.advertise<seal_msgs::Float64Stamped>("power", 1000);
+    m_current_pub = m_nh.advertise<seal_msgs::Float64Stamped>("power/current", 1000);
+    m_voltage_pub = m_nh.advertise<seal_msgs::Float64Stamped>("power/voltage", 1000);
+    m_power_pub = m_nh.advertise<seal_msgs::Float64Stamped>("power/power", 1000);
 
     f_initialize_topics();
 
