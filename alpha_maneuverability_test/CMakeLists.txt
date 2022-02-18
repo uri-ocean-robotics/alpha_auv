@@ -9,7 +9,6 @@ project(alpha_maneuverability_test)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   alpha_driver
-  alpha_msgs
   geometry_msgs
   rospy
   std_msgs

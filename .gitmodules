@@ -7,3 +7,6 @@
 [submodule "seal_msgs"]
 	path = seal_msgs
 	url = https://github.com/GSO-soslab/seal_msgs.git
+[submodule "external/uno_lqe"]
+	path = external/uno_lqe
+	url = https://github.com/GSO-soslab/uno_lqe

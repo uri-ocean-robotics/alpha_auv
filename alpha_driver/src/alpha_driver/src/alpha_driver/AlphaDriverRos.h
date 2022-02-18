@@ -3,9 +3,8 @@
 
 #include "AlphaDriver.h"
 
-#include "alpha_msgs/NMEA.h"
-#include "alpha_msgs/Pressure.h"
-#include "alpha_msgs/Power.h"
+#include "seal_msgs/NMEA.h"
+#include "seal_msgs/Float64Stamped.h"
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "std_msgs/Float64.h"
@@ -59,6 +58,14 @@ private:
 
     ros::Publisher m_pressure_pub;
 
+    ros::Publisher m_depth_pub;
+
+    ros::Publisher m_temperature_pub;
+
+    ros::Publisher m_voltage_pub;
+
+    ros::Publisher m_current_pub;
+
     ros::Publisher m_power_pub;
 
     ros::Publisher m_thrust_report_pub;
@@ -81,7 +88,7 @@ private:
 
     void f_raw_nmea_callback(const std_msgs::String::ConstPtr& msg);
 
-    void f_struct_nmea_callback(const alpha_msgs::NMEA::ConstPtr& msg);
+    void f_struct_nmea_callback(const seal_msgs::NMEA::ConstPtr& msg);
 
     void f_pwm_cb(const std_msgs::Float64::ConstPtr &msg, uint16_t channel, uint8_t mode);
 

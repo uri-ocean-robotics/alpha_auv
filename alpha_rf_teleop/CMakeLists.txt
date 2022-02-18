@@ -10,9 +10,9 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  seal_msgs
   sensor_msgs
   geometry_msgs
-  alpha_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -107,7 +107,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES alpha_rf_teleop
-  CATKIN_DEPENDS roscpp std_msgs sensor_msgs geometry_msgs alpha_msgs
+  CATKIN_DEPENDS roscpp std_msgs sensor_msgs geometry_msgs seal_msgs
 #  DEPENDS system_lib
 )
 

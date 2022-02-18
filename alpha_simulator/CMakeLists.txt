@@ -16,7 +16,6 @@ find_package(catkin REQUIRED COMPONENTS
   eigen_conversions
   tf2
   tf2_ros
-  alpha_msgs
   sensor_msgs
   waterlinked_dvl
   diagnostic_msgs

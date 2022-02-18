@@ -11,7 +11,6 @@
   <buildtool_depend>catkin</buildtool_depend>
   <depend>alpha_description</depend>
   <depend>alpha_driver</depend>
-  <depend>alpha_msgs</depend>
   <depend>alpha_teleop</depend>
   <depend>waterlinked_dvl</depend>
 

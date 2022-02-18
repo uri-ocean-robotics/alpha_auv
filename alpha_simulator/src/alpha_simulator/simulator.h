@@ -5,7 +5,6 @@
 
 #include "ros/ros.h"
 #include "nav_msgs/Odometry.h"
-#include "alpha_msgs/ThrustSignal.h"
 #include "geometry_msgs/Vector3Stamped.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "geometry_msgs/TwistStamped.h"
