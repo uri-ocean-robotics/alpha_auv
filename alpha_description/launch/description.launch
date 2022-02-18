@@ -9,6 +9,12 @@
     type="static_transform_publisher"
     args="0 0 0 0 0 3.141592653589793 world world_ned"/>
 
+  <node
+    name="odom2world"
+    pkg="tf2_ros"
+    type="static_transform_publisher"
+    args="0 0 0 0 0 0.0 world $(arg robot_name)/odom"/>
+
   <param name="robot_description" command="$(find xacro)/xacro '$(find alpha_description)/urdf/base.urdf.xacro'"/>
 
   <param name="use_gui" value="True"/>
