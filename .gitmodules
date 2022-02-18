@@ -1,0 +1,12 @@
+[submodule "external/xsens_mti_ros_driver"]
+	path = external/xsens_mti_ros_driver
+	url = https://github.com/GSO-soslab/xsens_mti_ros_driver
+[submodule "external/waterlinked_dvl_ros"]
+	path = external/waterlinked_dvl_ros
+	url = https://github.com/GSO-soslab/waterlinked_dvl_ros
+[submodule "external/uno_lqe"]
+	path = external/uno_lqe
+	url = https://github.com/GSO-soslab/uno_lqe
+[submodule "external/seal_msgs"]
+	path = external/seal_msgs
+	url = https://github.com/GSO-soslab/seal_msgs
