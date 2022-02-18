@@ -12,8 +12,8 @@
   <depend>roscpp</depend>
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
+  <depend>seal_msgs</depend>
   <depend>geometry_msgs</depend>
-  <depend>alpha_msgs</depend>
 
 
   <export>

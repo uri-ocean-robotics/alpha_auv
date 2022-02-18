@@ -10,8 +10,8 @@ add_compile_options(-std=c++17)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
-  alpha_msgs
   geometry_msgs
+  seal_msgs
 )
 
 ## System dependencies are found with CMake's conventions

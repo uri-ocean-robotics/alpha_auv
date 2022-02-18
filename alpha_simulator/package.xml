@@ -19,7 +19,6 @@
   <depend>rosgraph_msgs</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
-  <depend>alpha_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>waterlinked_dvl</depend>
   <depend>diagnostic_msgs</depend>

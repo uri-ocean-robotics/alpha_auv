@@ -6,6 +6,7 @@
 #include "geometry_msgs/Vector3Stamped.h"
 #include "chrono"
 #include "thread"
+#include "seal_msgs/NMEA.h"
 
 RfTeleop::RfTeleop() :
     m_nh(""),
@@ -43,7 +44,7 @@ void RfTeleop::f_serial_callback(std::string incoming) {
         return;
     }
 
-    alpha_msgs::NMEA nmea_msg;
+    seal_msgs::NMEA nmea_msg;
 
     nmea_msg.header.stamp = ros::Time::now();
     nmea_msg.command = std::string(data.get_cmd());

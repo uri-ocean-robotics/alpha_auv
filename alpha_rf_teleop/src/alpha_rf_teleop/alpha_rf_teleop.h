@@ -9,7 +9,6 @@
 #include "geometry_msgs/PointStamped.h"
 #include "rf_comms.h"
 #include "sensor_msgs/NavSatFix.h"
-#include "alpha_msgs/NMEA.h"
 #include "std_msgs/String.h"
 
 #define NMEA_THRUST_PWM_CMD "PWMC"

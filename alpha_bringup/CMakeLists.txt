@@ -4,7 +4,6 @@ project(alpha_bringup)
 find_package(catkin REQUIRED COMPONENTS
   alpha_description
   alpha_driver
-  alpha_msgs
   alpha_teleop
   waterlinked_dvl
 )
