@@ -27,7 +27,7 @@ pub_temperature: true
 pub_pressure: true
 pub_gnss: true
 pub_twist: true
-pub_transform: true
+pub_transform: false
 pub_positionLLA: true
 pub_velocity: true
 pub_euler: true
@@ -42,7 +42,8 @@ euler_angles_freq: 100
 ## Sensor standard deviation [x,y,z] (optional)
 ## This value is used to override the covariance matrix in sensor_msgs/Imu and
 ## sensor_msgs/MagneticField messages.
-# linear_acceleration_stddev: [0, 0, 0] # [m/s^2]
-# angular_velocity_stddev: [0, 0, 0] # [rad/s]
-# orientation_stddev: [0, 0, 0] # [rad]
-# magnetic_field_stddev: [0, 0, 0] # [Tesla]
+linear_acceleration_stddev: [0.01, 0.01, 0.01] # [m/s^2]
+angular_velocity_stddev: [0.01, 0.01, 0.01] # [rad/s]
+
+orientation_stddev: [0.01, 0.01, 0.01] # [rad]
+magnetic_field_stddev: [0.01, 0.01, 0.01] # [Tesla]
