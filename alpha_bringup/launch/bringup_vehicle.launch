@@ -23,11 +23,15 @@
     <arg name="robot_name" value="$(arg robot_name)"/>
   </include>
 
-  <include file="$(find alpha_bringup)/launch/include/rf_teleop.launch.xml">
+  <include file="$(find alpha_bringup)/launch/include/description.launch.xml">
     <arg name="robot_name" value="$(arg robot_name)"/>
   </include>
 
-  <include file="$(find alpha_bringup)/launch/include/description.launch.xml">
+  <include file="$(find alpha_bringup)/launch/include/localization.launch.xml">
+    <arg name="robot_name" value="$(arg robot_name)"/>
+  </include>
+
+  <include file="$(find alpha_bringup)/launch/include/cam.launch.xml">
     <arg name="robot_name" value="$(arg robot_name)"/>
   </include>
 

@@ -13,6 +13,7 @@
   <depend>alpha_driver</depend>
   <depend>alpha_teleop</depend>
   <depend>waterlinked_dvl</depend>
+  <depend>image_transport_plugins</depend>
 
   <export>
 
