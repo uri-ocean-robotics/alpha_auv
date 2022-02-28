@@ -5,6 +5,7 @@
 #
 ##
 control_modes:
+  - heading
   - flight
   - hold
 
@@ -23,7 +24,12 @@ control_modes:
 # - w
 #
 ##
+
+
 control_rules:
+  heading:
+    - yaw
+
   flight:
     - u
     - pitch

@@ -3,11 +3,18 @@
 
   <arg name="robot_name" default="alpha"/>
 
+  <node
+    name="world2ned"
+    pkg="tf2_ros"
+    type="static_transform_publisher"
+    args="0 0 0 0 0 3.141592653589793 world $(arg robot_name)/odom"/>
+
   <!--node
     name="world2ned"
     pkg="tf2_ros"
     type="static_transform_publisher"
     args="0 0 0 0 0 3.141592653589793 world world_ned"/>
+
 
   <node
     name="odom2world"

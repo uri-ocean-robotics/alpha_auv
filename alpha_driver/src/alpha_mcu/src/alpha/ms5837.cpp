@@ -139,6 +139,7 @@ bool MS5837::initialize() {
     } else {
         m_model = MS5837_UNRECOGNISED;
     }
+    m_model = MS5837_30BA;
     // The sensor has passed the CRC check, so we should return true even if
     // the sensor version is unrecognised.
     // (The MS5637 has the same address as the MS5837 and will also pass the CRC check)

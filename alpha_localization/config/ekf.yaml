@@ -2,7 +2,7 @@
 ##
 # State estimation frequency
 #
-frequency: 50
+frequency: 10
 #sensor_timeout: 1.0
 
 ##
@@ -64,7 +64,7 @@ pose0_rejection_threshold: 2  # Note the difference in parameter name
 pose0_nodelay: true
 
 pose1: /dvl/pose
-pose1_config: [true, true, false,
+pose1_config: [true, true, true,
                false, false, false,
                false, false, false,
                false, false, false,
@@ -76,7 +76,7 @@ pose1_rejection_threshold: 2  # Note the difference in parameter name
 pose1_nodelay: true
 
 # [ADVANCED] The process noise covariance matrix can be difficult to tune, and can vary for each application, so it is
-# exposed as a configuration parameter. This matrix represents the noise we add to the total error after each
+# exposed as a configuration parameter. Thvinyl noise camerais matrix represents the noise we add to the total error after each
 # prediction step. The better the omnidirectional motion model matches your system, the smaller these values can be.
 # However, if users find that a given variable is slow to converge, one approach is to increase the
 # process_noise_covariance diagonal value for the variable in question, which will cause the filter's predicted error
@@ -85,30 +85,30 @@ pose1_nodelay: true
 # unspecified.
 
 ### set larger value for trusted sensor measurements
-process_noise_covariance: [1e-5, 0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
-                           0,    1e-5, 0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
-                           0,    0,    1e-7,  0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
-                           0,    0,    0,    0.3,  0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
-                           0,    0,    0,    0,    0.3,  0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
-                           0,    0,    0,    0,    0,    0.1,  0,     0,     0,    0,    0,    0,    0,    0,    0,
-                           0,    0,    0,    0,    0,    0,    0.5,   0,     0,    0,    0,    0,    0,    0,    0,
-                           0,    0,    0,    0,    0,    0,    0,     0.5,   0,    0,    0,    0,    0,    0,    0,
-                           0,    0,    0,    0,    0,    0,    0,     0,     0.3,  0,    0,    0,    0,    0,    0,
-                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0.3,  0,    0,    0,    0,    0,
-                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0.3,  0,    0,    0,    0,
-                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0.3,  0,    0,    0,
-                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0.3,  0,    0,
-                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0.3,  0,
-                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0.3]
+process_noise_covariance: [0.3, 0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0.3, 0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    1e-3,  0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    1e-3,  0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    1e-3,  0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    1e-3,  0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0.1,   0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0.1,   0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0.1,  0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    1e-2,  0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    1e-2,  0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    1e-2,  0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    1e-1,  0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    1e-1,  0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    1e-1]
 
 # [ADVANCED] This represents the initial value for the state estimate error covariance matrix. Setting a diagonal
 # value (variance) to a large value will result in rapid convergence for initial measurements of the variable in
 # question. Users should take care not to use large values for variables that will not be measured directly. The values
 # are ordered as x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az. Defaults to the matrix below
 #if unspecified.
-initial_estimate_covariance: [1e-5, 0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
-                              0,    1e-6, 0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
-                              0,    0,    1e-8, 0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+initial_estimate_covariance: [0.1, 0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0.1, 0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0.1, 0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
                               0,    0,    0,    1.0,  0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
                               0,    0,    0,    0,    1.0,  0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
                               0,    0,    0,    0,    0,    0.5,  0,    0,    0,    0,     0,     0,     0,    0,    0,
