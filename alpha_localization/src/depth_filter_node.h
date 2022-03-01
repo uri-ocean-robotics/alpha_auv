@@ -20,6 +20,8 @@ private:
 
     ros::Subscriber m_depth_subscriber;
 
+    std::string m_frame_id;
+
     void f_depth_callback(const seal_msgs::Float64StampedConstPtr& msg);
 
 public:

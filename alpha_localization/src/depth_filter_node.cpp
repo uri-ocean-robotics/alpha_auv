@@ -15,6 +15,9 @@ DepthFilterNode::DepthFilterNode() {
     m_pnh->param<double>("P", P, 1.0);
     m_pnh->param<double>("x", x, 0.0);
 
+
+    m_pnh->param<std::string>("frame_id", m_frame_id, "world");
+
     m_filter.reset(new UnoLqe(x, A, B, H, Q, R, P));
 
     m_depth_subscriber = m_nh->subscribe("depth", 10, &DepthFilterNode::f_depth_callback, this);
@@ -33,6 +36,9 @@ void DepthFilterNode::f_depth_callback(const seal_msgs::Float64StampedConstPtr &
     geometry_msgs::PoseWithCovarianceStamped out;
 
     out.header = msg->header;
+    out.header.frame_id = m_frame_id;
+    out.pose.pose.position.x = 0.0;
+    out.pose.pose.position.y = 0.0;
     out.pose.pose.position.z = x;
 
     out.pose.covariance[6 * 2 + 2] = p;

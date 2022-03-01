@@ -10,6 +10,8 @@
         <param name="world_frame" type="string" value="$(arg robot_name)/odom"/>
     </node>
 
-    <node name="alpha_depth_filter" pkg="alpha_localization" type="depth_filter_node" output="screen"/>
+    <node name="alpha_depth_filter" pkg="alpha_localization" type="depth_filter_node" output="screen">
+        <param name="frame_id" value="world_ned"/>
+    </node>
 
 </launch>

@@ -36,7 +36,8 @@
 
     <link name="pressure"/>
     <joint name="pressure_joint" type="fixed">
-        <origin xyz="-0.087845 0.060 -0.124465" rpy="0 0 0"/>
+        <origin xyz="-0.087845 0.060 -0.124465" rpy="0 3.14159265359 0"/>
+        <!--origin xyz="-0.087845 0.060 -0.124465" rpy="0.0 0.0 0.0"/-->
         <parent link="base_link"/>
         <child link="pressure"/>
     </joint>
