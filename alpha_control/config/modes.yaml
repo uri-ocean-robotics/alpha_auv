@@ -1,13 +1,9 @@
 ##
 #
-# List of user defined modes. Each mode has to be
-# defined under "control_rules" variable.
+# Defines the initial state of the controller
 #
 ##
-control_modes:
-  - heading
-  - flight
-  - hold
+enabled: true
 
 ##
 #
@@ -19,25 +15,28 @@ control_modes:
 # - roll
 # - pitch
 # - yaw
-# - u
-# - v
-# - w
+# - surge
+# - sway
+# - heave
 #
-##
 
-
-control_rules:
+control_modes:
+  ##
+  # PID gains for each degree of freedom
+  ##
   heading:
-    - yaw
+    yaw:      {p: 20.0,  i: 0.5,   d: 30.0,  i_max: 20, i_min: -20}
 
   flight:
-    - u
-    - pitch
-    - yaw
+    pitch:    {p: 5.0,    i: 1.0,   d: 2.0,   i_max: 10, i_min: -10}
+    yaw:      {p: 5.0,    i: 0.5,   d: 30.0,  i_max: 20, i_min: -20}
+    surge:    {p: 10.0,   i: 3.0,   d: 5.0,   i_max: 10, i_min: -10}
 
   hold:
-    - x
-    - y
-    - z
-    - pitch
-    - yaw
+    x:        {p: 1.0,    i: 0.5,   d: 1.0,   i_max: 10, i_min: -10}
+    y:        {p: 1.0,    i: 0.5 ,  d: 1.0,   i_max: 10, i_min: -10}
+    z:        {p: 1.0,    i: 1.0 ,  d: 10.0,  i_max: 10, i_min: -10}
+    pitch:    {p: 5.0,    i: 1.0,   d: 2.0,   i_max: 10, i_min: -10}
+    yaw:      {p: 5.0,    i: 0.5,   d: 30.0,  i_max: 20, i_min: -20}
+
+  kill: false

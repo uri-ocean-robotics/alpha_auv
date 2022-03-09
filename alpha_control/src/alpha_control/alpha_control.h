@@ -54,7 +54,7 @@ private:
      * @param dt Time difference in seconds
      * @return
      */
-    bool f_calculate_pid(Eigen::VectorXd &u, double dt);
+    bool f_calculate_pid(Eigen::VectorXd *u, double dt);
 
     /** @brief Optimize thrust for given control input
      *
@@ -62,7 +62,7 @@ private:
      * @param u Control input
      * @return
      */
-    bool f_optimize_thrust(Eigen::VectorXd &t, Eigen::VectorXd u);
+    bool f_optimize_thrust(Eigen::VectorXd *t, Eigen::VectorXd u);
 
     /** @brief Error function for #AlphaControl::m_pid object
      *
@@ -72,7 +72,8 @@ private:
      * @param current
      * @return Error between desired and current state
      */
-    Eigen::ArrayXd f_error_function(Eigen::ArrayXd desired, Eigen::ArrayXd current);
+    Eigen::ArrayXd f_error_function(
+        Eigen::ArrayXd desired, Eigen::ArrayXd current);
 
     //! @brief Mutex lock for protect allocation matrix during changes
     boost::recursive_mutex m_allocation_matrix_lock;
@@ -94,14 +95,16 @@ public:
      *
      * @param matrix
      */
-    void set_control_allocation_matrix(const decltype(m_control_allocation_matrix)& matrix);
+    void set_control_allocation_matrix(
+        const decltype(m_control_allocation_matrix)& matrix);
 
 
     /** @brief Trivial getter for thruster id
      *
      * @return #AlphaControl::m_control_allocation_matrix
      */
-    auto get_control_allocation_matrix() -> decltype(m_control_allocation_matrix);
+    auto get_control_allocation_matrix() ->
+        decltype(m_control_allocation_matrix);
 
     //! @brief Standard shared pointer type
     typedef boost::shared_ptr<AlphaControl> Ptr;
@@ -148,7 +151,7 @@ public:
      * @param dt    Time difference in seconds
      * @return      status of the operation.
      */
-    bool calculate_needed_forces(Eigen::VectorXd &f, float dt);
+    bool calculate_needed_forces(Eigen::VectorXd *f, double dt);
 
     /** @brief Sets controlled freedoms
      *
@@ -167,7 +170,8 @@ public:
      * Thread safe operation for updating control allocation matrix.
      * @param m Updated control allocation matrix
      */
-    void update_control_allocation_matrix(const decltype(m_control_allocation_matrix) &m);
+    void update_control_allocation_matrix(
+        const decltype(m_control_allocation_matrix) &m);
 
     /** @brief Update degrees of freedom
      *

@@ -166,8 +166,8 @@ Simulator::Simulator() : m_nh() , m_pnh("~"){
     m_dt = 0.001; //seconds
 
     m_pnh.param<std::string>("tf_prefix", m_tf_prefix, "");
-    
-    m_odom_publisher = m_nh.advertise<nav_msgs::Odometry>("dynamics/odometry", 1000);
+
+    m_odom_publisher = m_nh.advertise<nav_msgs::Odometry>("odometry/filtered", 1000);
 
     m_pose_publisher = m_nh.advertise<geometry_msgs::PoseStamped>("dynamics/pose", 100);
 
@@ -227,11 +227,11 @@ void Simulator::main_thruster_cb(const std_msgs::Float64::ConstPtr& msg) {
 }
 
 void Simulator::horizontal_thruster_cb(const std_msgs::Float64::ConstPtr& msg) {
-    g_controls.thruster_y = (msg->data * 500) + 1500;
+    g_controls.thruster_y = (-msg->data * 500) + 1500;
 }
 
 void Simulator::vertical_thruster_cb(const std_msgs::Float64::ConstPtr& msg) {
-    g_controls.thruster_z = (-msg->data * 500) + 1500;
+    g_controls.thruster_z = (msg->data * 500) + 1500;
 }
 
 void Simulator::publish_odometry() {

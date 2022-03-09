@@ -2,7 +2,7 @@ main:
   type: topic
   message_type: std_msgs/Float64
   topic_name: control/thruster/main
-  deadman_buttons: [4]
+  deadman_buttons: [6]
   axis_mappings:
     -
       axis: 1
@@ -14,10 +14,10 @@ horizontal:
   type: topic
   message_type: std_msgs/Float64
   topic_name: control/thruster/horizontal
-  deadman_buttons: [4]
+  deadman_buttons: [6]
   axis_mappings:
     -
-      axis: 3
+      axis: 2
       target: data
       scale: 1
       offset: 0
@@ -26,10 +26,10 @@ vertical:
   type: topic
   message_type: std_msgs/Float64
   topic_name: control/thruster/vertical
-  deadman_buttons: [4]
+  deadman_buttons: [6]
   axis_mappings:
     -
-      axis: 4
+      axis: 3
       target: data
       scale: 1
       offset: 0
@@ -39,10 +39,10 @@ led:
   type: topic
   message_type: std_msgs/Float64
   topic_name: control/led
-  deadman_buttons: [4]
+  deadman_buttons: [6]
   axis_mappings:
     -
-      axis: 2
+      axis: 4
       target: data
       scale: -0.5
       offset: 0.5
@@ -51,7 +51,7 @@ led2:
   type: topic
   message_type: std_msgs/Float64
   topic_name: control/led2
-  deadman_buttons: [4]
+  deadman_buttons: [6]
   axis_mappings:
     -
       axis: 5
@@ -59,3 +59,17 @@ led2:
       scale: -0.5
       offset: 0.5
 
+enable_controller:
+  type: service
+  service_name: /controller/enable
+  # service_persistent: False # False by default
+  service_request: {}
+  buttons: [0]
+
+disable_controller:
+  type: service
+  service_name: /controller/disable
+  interface_type: std_srvs/Empty
+  service_request: {}
+  # service_persistent: False # False by default
+  buttons: [1]

@@ -55,7 +55,7 @@ private:
 
     Eigen::ArrayXd m_i;
 
-    std::function<Eigen::ArrayXd(Eigen::ArrayXd desired, Eigen::ArrayXd current)> m_error_function;
+    std::function<Eigen::ArrayXd(const Eigen::ArrayXd& desired,const Eigen::ArrayXd& current)> m_error_function;
 
 public:
 
@@ -69,7 +69,7 @@ public:
      * @param dt        Time difference between readings
      * @return          true if its not the first run
      */
-    bool calculate(Eigen::VectorXd& u, const Eigen::ArrayXd& desired, const Eigen::ArrayXd& current, double dt);
+    bool calculate(Eigen::VectorXd* u, const Eigen::ArrayXd& desired, const Eigen::ArrayXd& current, double dt);
 
     //! @brief Generic shared pointer
     typedef boost::shared_ptr<MimoPID> Ptr;

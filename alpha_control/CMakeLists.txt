@@ -23,7 +23,7 @@ find_package(Eigen3 REQUIRED)
 add_definitions(${EIGEN_DEFINITIONS})
 
 ## System dependencies are found with CMake's conventions
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system regex)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -61,6 +61,7 @@ add_message_files(
     ControlState.msg
     ControlMode.msg
     ControlModes.msg
+    PIDgains.msg
 )
 
 ## Generate services in the 'srv' folder

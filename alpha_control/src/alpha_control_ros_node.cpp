@@ -2,7 +2,7 @@
 
 int main(int argc, char* argv[]) {
 
-    ros::init(argc, argv, "alpha_control_node");
+    ros::init(argc, argv, "alpha_control");
 
     AlphaControlROS control_ros;
 

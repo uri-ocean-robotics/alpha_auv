@@ -8,10 +8,13 @@
 #include "tf2_ros/transform_listener.h"
 #include "tf2/LinearMath/Matrix3x3.h"
 #include "std_msgs/Float32.h"
+#include "std_srvs/Empty.h"
 #include "tf2_eigen/tf2_eigen.h"
 #include "nav_msgs/Odometry.h"
 #include "dynamic_reconfigure/server.h"
 #include "alpha_control/PIDConfig.h"
+
+#include "alpha_control/PIDgains.h"
 
 #include "alpha_control/ControlState.h"
 #include "alpha_control/ControlModes.h"
@@ -99,6 +102,12 @@ private:
     //! @brief Set control point ros service server
     ros::ServiceServer m_set_control_point_server;
 
+    //! @brief Enable controller ros service server
+    ros::ServiceServer m_enable_controller_server;
+
+    //! @brief Disable controller ros service server
+    ros::ServiceServer m_disable_controller_server;
+
     //! @brief Trivial subscriber
     ros::Subscriber m_odometry_subscriber;
 
@@ -115,31 +124,13 @@ private:
     nav_msgs::Odometry m_odometry_msg;
 
     //! @brief Control modes stored as ros message
-    alpha_control::ControlModes m_control_modes_msg;
+    alpha_control::ControlModes m_control_modes;
 
     //! @brief Desired state message
     alpha_control::ControlState m_desired_state_msg;
 
-    //! @brief List of control modes
-    std::vector<std::string> m_control_modes;
-
     //! @brief Current control mode
     std::string m_control_mode;
-
-    /** @brief List of all control rules with controlled degrees of freedom
-     *
-     * m_control_rules[ rule name ] -> degrees of freedom
-     * @see STATE_X_INDEX
-     * @see STATE_Y_INDEX
-     * @see STATE_Z_INDEX
-     * @see STATE_ROLL_INDEX
-     * @see STATE_PITCH_INDEX
-     * @see STATE_YAW_INDEX
-     * @see STATE_U_INDEX
-     * @see STATE_V_INDEX
-     * @see STATE_W_INDEX
-     */
-    std::map<std::string, std::vector<int>> m_control_rules;
 
     //! @brief Protects odometry_msg during changes
     boost::recursive_mutex m_odom_lock;
@@ -150,8 +141,12 @@ private:
     //! @brief Controller worker
     boost::thread m_controller_worker;
 
+    //! @brief A variable holds the controller status
+    bool m_enabled;
+
     //! @brief Dynamic configure server for PID configuration
-    boost::shared_ptr<dynamic_reconfigure::Server<alpha_control::PIDConfig>> m_dynconf_pid_server;
+    boost::shared_ptr<dynamic_reconfigure::Server<alpha_control::PIDConfig>>
+        m_dynconf_pid_server;
 
     /** @brief Generates control allocation matrix from transform tree
      *
@@ -198,13 +193,15 @@ private:
 
     /** @brief Amends changes to Dynamic reconfigure server
      *
-     * After reading the static configuration file, applies configuration to dynamic reconfigure server.
+     * After reading the static configuration file, applies configuration to
+     * dynamic reconfigure server.
      */
     void f_amend_dynconf();
 
     /** @brief Amends the control mode
      *
-     * This function checks if request mode is exist or not. Returns false if the operation requested is invalid.
+     * Changes the active control mode of the controller. Checks if request mode
+     * is exist or not. Returns false if the operation requested is invalid.
      *
      * @param mode
      * @return
@@ -213,7 +210,8 @@ private:
 
     /** @brief Amends the desired stateUpdates
      *
-     * Returns false if desired state mode is invalid. See #AlphaControlROS::f_amend_control_mode
+     * Returns false if desired state mode is invalid.
+     * See #AlphaControlROS::f_amend_control_mode
      *
      * @param state
      * @return
@@ -230,7 +228,8 @@ private:
      *
      * @param msg
      */
-    void f_cb_srv_desired_state(const alpha_control::ControlState::ConstPtr& msg);
+    void f_cb_srv_desired_state(
+        const alpha_control::ControlState::ConstPtr& msg);
 
     /** @brief Dynamic reconfigure server callback
      *
@@ -247,7 +246,9 @@ private:
      * @param resp
      * @return Success of the operation
      */
-    bool f_cb_srv_get_control_modes(alpha_control::GetControlModes::Request& req, alpha_control::GetControlModes::Response &resp);
+    bool f_cb_srv_get_control_modes(
+        alpha_control::GetControlModes::Request& req,
+        alpha_control::GetControlModes::Response &resp);
 
     /** @brief Trivial ros service server callback for set control point
      *
@@ -255,7 +256,35 @@ private:
      * @param resp
      * @return Success of the operation
      */
-    bool f_cb_srv_set_control_point(alpha_control::SetControlPoint::Request req, alpha_control::SetControlPoint::Response resp);
+    bool f_cb_srv_set_control_point(
+        alpha_control::SetControlPoint::Request req,
+        alpha_control::SetControlPoint::Response resp);
+
+    /**
+     * @brief Enables the controller
+     *
+     * @param req Trivial empty request
+     * @param resp Trivial empty response
+     * @return true
+     * @return false
+     */
+    bool f_cb_srv_enable(
+        std_srvs::Empty::Request req,
+        std_srvs::Empty::Response resp);
+
+    /**
+     * @brief disable the controller
+     *
+     * @param req Trivial empty request
+     * @param resp Trivial empty response
+     * @return true
+     * @return false
+     */
+    bool f_cb_srv_disable(
+        std_srvs::Empty::Request req,
+        std_srvs::Empty::Response resp);
+
+
 
 public:
 

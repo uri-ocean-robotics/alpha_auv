@@ -2,12 +2,12 @@
 <launch>
 
     <arg name="robot_name" default="alpha"/>
-    <arg name="node_name" default="alpha_control_node"/>
 
-    <rosparam command="load" ns="alpha_control_node" file="$(find alpha_control)/config/allocation_auto.yaml"/>
-    <rosparam command="load" ns="alpha_control_node" file="$(find alpha_control)/config/mappings.yaml"/>
-    <rosparam command="load" ns="alpha_control_node" file="$(find alpha_control)/config/modes.yaml"/>
-    <rosparam command="load" ns="alpha_control_node" file="$(find alpha_control)/config/pid.yaml"/>
-    <rosparam command="load" ns="alpha_control_node" file="$(find alpha_control)/config/thrusters.yaml"/>
+    <arg name="node_name" default="alpha_control"/>
+
+    <rosparam command="load" ns="$(arg node_name)" file="$(find alpha_control)/config/allocation_auto.yaml"/>
+    <rosparam command="load" ns="$(arg node_name)" file="$(find alpha_control)/config/mappings.yaml"/>
+    <rosparam command="load" ns="$(arg node_name)" file="$(find alpha_control)/config/thrusters.yaml"/>
+    <rosparam command="load" ns="$(arg node_name)" file="$(find alpha_control)/config/modes.yaml"/>
 
 </launch>

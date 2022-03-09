@@ -5,7 +5,7 @@ MimoPID::MimoPID() : m_error_function(nullptr) , m_dt_i(10000){
 
 }
 
-bool MimoPID::calculate(Eigen::VectorXd& u, const Eigen::ArrayXd& desired, const Eigen::ArrayXd& current, double dt) {
+bool MimoPID::calculate(Eigen::VectorXd* u, const Eigen::ArrayXd& desired, const Eigen::ArrayXd& current, double dt) {
 
     if(m_error_function == nullptr) {
         throw control_exception("error function is not defined for MIMO pid.");
@@ -35,7 +35,7 @@ bool MimoPID::calculate(Eigen::VectorXd& u, const Eigen::ArrayXd& desired, const
 
     m_pe = error;
 
-    u = p + m_i + d;
+    *u = p + m_i + d;
 
     return true;
 }

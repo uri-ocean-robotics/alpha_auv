@@ -7,7 +7,6 @@
         <rosparam command="load" file="$(find alpha_control)/config/allocation_auto.yaml"/>
         <rosparam command="load" file="$(find alpha_control)/config/mappings.yaml"/>
         <rosparam command="load" file="$(find alpha_control)/config/modes.yaml"/>
-        <rosparam command="load" file="$(find alpha_control)/config/pid.yaml"/>
         <rosparam command="load" file="$(find alpha_control)/config/thrusters.yaml"/>
     </node>
 
