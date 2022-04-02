@@ -1,0 +1,36 @@
+main:
+  type: topic
+  message_type: mvp_control/ControlProcess
+  topic_name: /controller/process/set_point
+  deadman_buttons: [6]
+  axis_mappings:
+    -
+      axis: 1
+      target: velocity.x
+      scale: 1
+      offset: 0
+    -
+      axis: 2
+      target: angular_rate.z
+      scale: -1
+      offset: 0
+    -
+      axis: 3
+      target: angular_rate.y
+      scale: -1
+      offset: 0
+
+enable_controller:
+  type: service
+  service_name: /controller/enable
+  # service_persistent: False # False by default
+  service_request: {}
+  buttons: [0]
+
+disable_controller:
+  type: service
+  service_name: /controller/disable
+  interface_type: std_srvs/Empty
+  service_request: {}
+  # service_persistent: False # False by default
+  buttons: [1]
