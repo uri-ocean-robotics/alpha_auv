@@ -332,4 +332,6 @@ tags
 
 .vscode
 
+.build
+
 # End of https://www.toptal.com/developers/gitignore/api/clion,ros,pycharm,visualstudiocode,linux,vim,cmake,macos

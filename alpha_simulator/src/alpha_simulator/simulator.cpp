@@ -166,8 +166,8 @@ Simulator::Simulator() : m_nh() , m_pnh("~"){
     m_dt = 0.001; //seconds
 
     m_pnh.param<std::string>("tf_prefix", m_tf_prefix, "");
-    
-    m_odom_publisher = m_nh.advertise<nav_msgs::Odometry>("dynamics/odometry", 1000);
+
+    m_odom_publisher = m_nh.advertise<nav_msgs::Odometry>("odometry/filtered", 1000);
 
     m_pose_publisher = m_nh.advertise<geometry_msgs::PoseStamped>("dynamics/pose", 100);
 
@@ -239,30 +239,34 @@ void Simulator::publish_odometry() {
     nav_msgs::Odometry msg;
 
     msg.header.stamp = ros::Time::now();
-    msg.header.frame_id = m_tf_prefix.empty() ? "odom" : m_tf_prefix + "/odom";
+    // msg.header.frame_id = m_tf_prefix.empty() ? "odom" : m_tf_prefix + "/odom";
+    msg.header.frame_id = "world_ned";
     msg.child_frame_id = m_tf_prefix.empty() ? "base_link" : m_tf_prefix + "/base_link";
 
-    auto world_enu = ned_to_enu(g_world_state_ned);
+    // auto world = ned_to_enu(g_world_state_ned);
+    auto world =  g_world_state_ned;
 
-    msg.pose.pose.position.x = g_world_state_ned.point.x();
-    msg.pose.pose.position.y = g_world_state_ned.point.y();
-    msg.pose.pose.position.z = g_world_state_ned.point.z();
 
-    auto vehicle_enu = ned_to_enu(g_vehicle_state_ned);
+    msg.pose.pose.position.x = world.point.x();
+    msg.pose.pose.position.y = world.point.y();
+    msg.pose.pose.position.z = world.point.z();
+
+    // auto vehicle = ned_to_enu(g_vehicle_state_ned);
+    auto vehicle = g_vehicle_state_ned;
 
     tf2::Quaternion quat;
-    quat.setRPY(g_vehicle_state_ned.roll, g_vehicle_state_ned.pitch, g_vehicle_state_ned.yaw);
+    quat.setRPY(vehicle.roll, vehicle.pitch, vehicle.yaw);
     msg.pose.pose.orientation.w = quat.w();
     msg.pose.pose.orientation.x = quat.x();
     msg.pose.pose.orientation.y = quat.y();
     msg.pose.pose.orientation.z = quat.z();
 
-    msg.twist.twist.linear.x = g_vehicle_state_ned.u;
-    msg.twist.twist.linear.y = g_vehicle_state_ned.v;
-    msg.twist.twist.linear.z = g_vehicle_state_ned.w;
+    msg.twist.twist.linear.x = vehicle.u;
+    msg.twist.twist.linear.y = vehicle.v;
+    msg.twist.twist.linear.z = vehicle.w;
 
-    msg.twist.twist.angular.y = g_vehicle_state_ned.q;
-    msg.twist.twist.angular.z = g_vehicle_state_ned.r;
+    msg.twist.twist.angular.y = vehicle.q;
+    msg.twist.twist.angular.z = vehicle.r;
 
     m_odom_publisher.publish(msg);
     static tf2_ros::TransformBroadcaster br;

@@ -141,8 +141,8 @@ vehicle_state_t enu_to_ned(vehicle_state_t ned);
 extern earth_state_t g_world_state_ned;
 extern vehicle_state_t g_vehicle_state_ned;
 
-extern earth_state_t g_world_state_enu;
-extern vehicle_state_t g_vehicle_state_enu;
+// extern earth_state_t g_world_state_enu;
+// extern vehicle_state_t g_vehicle_state_enu;
 
 extern vehicle_dimension_t g_vehicle_dimensions;
 extern mass_t g_mass;

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+    <arg name="robot_name" default="alpha"/>
+
+    <node pkg="mvp_control" type="mvp_control_ros_node" name="alpha_control" output="screen">
+        <rosparam command="load" file="$(find alpha_config)/config/control.yaml"/>
+    </node>
+
+</launch>

@@ -1,32 +1,58 @@
+generator_type: tf
+
+control_tf:
+  main: main_thruster_link
+  horizontal: horizontal_thruster_link
+  vertical: vertical_thruster_link
+
+tf_prefix: alpha
+
+cg_link: cg_link
+
+world_link: world_ned
+
+odometry_source: /odometry/filtered
+
+enabled: true
+
+control_modes:
+  teleop:
+    surge:      {p: 1.0,  i: 3.0,   d: 5.0,  i_max: 10, i_min: -10}
+    yaw_rate:   {p: 2.0,  i: 0.5,   d: 3.0,  i_max: 20, i_min: -20}
+    pitch_rate: {p: 2.0,  i: 0.5,   d: 3.0,  i_max: 20, i_min: -20}
+
+  heading:
+    yaw:      {p: 20.0,  i: 0.5,   d: 30.0,  i_max: 20, i_min: -20}
+
+  flight:
+    pitch:    {p: 5.0,    i: 1.0,   d: 2.0,   i_max: 10, i_min: -10}
+    yaw:      {p: 5.0,    i: 0.5,   d: 30.0,  i_max: 20, i_min: -20}
+    surge:    {p: 10.0,   i: 3.0,   d: 5.0,   i_max: 10, i_min: -10}
+
+  hold:
+    x:        {p: 0.5,    i: 5.5,   d: 5.0,   i_max: 5, i_min: -5}
+    y:        {p: 0.5,    i: 5.5 ,  d: 5.0,   i_max: 5, i_min: -5}
+    z:        {p: 0.5,    i: 5.0 ,  d: 5.0,  i_max: 5, i_min: -5}
+    surge:    {p: 1.0,   i: 3.0,   d: 5.0,   i_max: 10, i_min: -10}
+    # pitch:    {p: 1.0,    i: 1.0,   d: 1.0,   i_max: 1, i_min: -1}
+    # yaw:      {p: 5.0,    i: 0.5,   d: 30.0,  i_max: 20, i_min: -20}
+
+  kill: false
+
+
 ##
-# Thruster IDs
-# Each thruster has its unique ID. These unique IDs
-# will be used for configuring them. In the rest of the
-# configuration file, those IDs must match.
-#
-# There are no defaults for parameters below.
+# THRUSTERS
 ##
 thruster_ids:
   - main
   - horizontal
   - vertical
 
-##
-# Thruster thrust command topic names.
-# Each topic should have type of std_msgs/Float64
-# Thruster command messages will be sent out to this
-# topic addresses.
-#
-# There are no defaults for parameters below.
-##
 thruster_command_topics:
   main: control/thruster/main
   horizontal: control/thruster/horizontal
   vertical: control/thruster/vertical
 
-##
-# Force from each thruster
-##
 thruster_force_topics:
   main: control/force/main
   horizontal: control/force/horizontal
@@ -62,3 +88,4 @@ thruster_polynomials:
   main:       [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
   horizontal: [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
   vertical:   [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
+

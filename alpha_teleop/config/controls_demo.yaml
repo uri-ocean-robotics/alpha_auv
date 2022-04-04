@@ -1,0 +1,80 @@
+main:
+  type: topic
+  message_type: mvp_control/ControlProcess
+  topic_name: /controller/process/set_point
+  deadman_buttons: [6]
+  axis_mappings:
+    -
+      axis: 1
+      target: velocity.x
+      scale: 1
+      offset: 0
+    -
+      axis: 2
+      target: angular_rate.z
+      scale: -1
+      offset: 0
+    -
+      axis: 3
+      target: angular_rate.y
+      scale: -1
+      offset: 0
+
+point_1:
+  type: service
+  service_name: /controller/set_point
+  interface_type: mvp_control/SetControlPoint
+  service_request:
+    setpoint:
+      control_mode: 'hold'
+      position: {x: -5.0, y: -5.0, z: 1.0}
+      orientation: {x: 0.0, y: 0.0, z: 0.0}
+      velocity: {x: 0.5, y: 0.0, z: 0.0}
+      angular_rate: {x: 0.0, y: 0.0, z: 0.0}
+  buttons: [3]
+
+point_2:
+  type: service
+  service_name: /controller/set_point
+  interface_type: mvp_control/SetControlPoint
+  service_request:
+    setpoint:
+      control_mode: 'hold'
+      position: {x: 5.0, y: 5.0, z: 1.0}
+      orientation: {x: 0.0, y: 0.0, z: 0.0}
+      velocity: {x: 0.5, y: 0.0, z: 0.0}
+      angular_rate: {x: 0.0, y: 0.0, z: 0.0}
+  buttons: [4]
+
+
+engage_teleop:
+  type: service
+  service_name: /controller/set_point
+  interface_type: mvp_control/SetControlPoint
+  service_request:
+    setpoint:
+      header:
+        seq: 0
+        stamp: {secs: 0, nsecs: 0}
+        frame_id: ''
+      control_mode: 'teleop'
+      position: {x: 0.0, y: 0.0, z: 0.0}
+      orientation: {x: 0.0, y: 0.0, z: 0.0}
+      velocity: {x: 0.5, y: 0.0, z: 0.0}
+      angular_rate: {x: 0.0, y: 0.0, z: 0.0}
+  buttons: [11]
+
+enable_controller:
+  type: service
+  service_name: /controller/enable
+  # service_persistent: False # False by default
+  service_request: {}
+  buttons: [0]
+
+disable_controller:
+  type: service
+  service_name: /controller/disable
+  interface_type: std_srvs/Empty
+  service_request: {}
+  # service_persistent: False # False by default
+  buttons: [1]
