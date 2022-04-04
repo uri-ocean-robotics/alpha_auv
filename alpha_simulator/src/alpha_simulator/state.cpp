@@ -104,9 +104,6 @@ Eigen::Matrix3d transformation = Eigen::Matrix3d((Eigen::Matrix3d()
 earth_state_t g_world_state_ned = earth_state_t();
 vehicle_state_t g_vehicle_state_ned = vehicle_state_t();
 
-earth_state_t g_world_state_enu = earth_state_t();
-vehicle_state_t g_vehicle_state_enu = vehicle_state_t();
-
 vehicle_dimension_t g_vehicle_dimensions = vehicle_dimension_t();
 mass_t g_mass = mass_t();
 inertial_t g_inertia = inertial_t();
