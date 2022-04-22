@@ -14,6 +14,7 @@
   <depend>alpha_teleop</depend>
   <depend>waterlinked_dvl</depend>
   <depend>image_transport_plugins</depend>
+  <depend>imu_tools</depend>
 
   <export>
 

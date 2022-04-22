@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+
+    <node
+        type="imu_filter_node"
+        name="madgwick_filter"
+        pkg="imu_filter_madgwick">
+
+        <remap from="imu/data_raw" to="imu/data"/>
+        <remap from="imu/mag" to="imu/mag"/>
+        <remap from="imu/data" to="imu/madgwick/data"/>
+        <rosparam command="load" file="$(find alpha_config)/config/madgwick.yaml"/>
+    </node>
+
+</launch>
