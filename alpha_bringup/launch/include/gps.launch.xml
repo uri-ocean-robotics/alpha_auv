@@ -3,6 +3,14 @@
 
   <arg name="robot_name" default="alpha"/>
 
-  <node pkg="gpsd_client" type="gpsd_client" name="gpsd_client" output="screen"/>
+  <node pkg="gpsd_client" type="gpsd_client" name="gpsd_client" output="screen">
+    <remap from="fix" to="gps/fix"/>
+
+
+  </node>
+
+  <node pkg="robot_localization" type="navsat_transform_node" name="gps_odom">
+
+  </node>
 
 </launch>
