@@ -1,0 +1,84 @@
+##################################################################
+######################## Serial Interface ########################
+##################################################################
+
+Interface:
+  # Note: USB device name
+  device: /dev/PING360
+
+  # Note: baudarate of serial device
+  baudrate: 115200
+
+  # Note: Emulates a sonar if Ping360 cannot be initialized
+  emulates: true
+
+###################################################################
+###################### Sonar Configuration ########################
+###################################################################
+
+Configuration:
+  # Note: Sonar gain (0 = low, 1 = normal, 2 = high)
+  # Default: 0
+  gain: 0
+
+  # Note: Sonar operating frequency [kHz], from 650 to 850
+  # Default: 740
+  frequency: 740
+
+  # Note: Sonar max range [m], from 1 to 50
+  # Default: 2
+  range: 2
+
+  # Note: Scanned angular sector around sonar heading [degrees], from 60 to 360. Will oscillate if not 360.
+  # Default: 360
+  angle_sector: 180
+
+  # Note: Sonar angular resolution [degrees], from 1 to 20.
+  # Default: 1
+  angle_step: 1
+
+  # Note: Speed of sound [m/s], from 1450 to 1550
+  # Default: 1500
+  speed_of_sound: 1500
+
+  # Note: trigger rate [Hz], example: 10hz, 0.1s to trigger sonar rotate some degree, from 1 to ?
+  # Default: 10
+  trigger_rate: 10
+
+###################################################################
+########################### ROS Driver ############################
+###################################################################
+
+Driver:
+  # Note: frame_id in ROS messages
+  frame_id: pin360_link
+
+  # Note: Publish images on Sensors_msgs/Image
+  # Default: true
+  image_publish: true
+
+  # Note: Output image size [pixels], from 100 to 1000
+  # Default: 300
+  image_size: 300
+
+  # Note: Image publishing rate [ms], from 50 to 2000
+  # Default: 100
+  image_rate_ms: 100
+
+  # Note: Publish scan on Sensors_msgs/LaserScan
+  # Default: false
+  scan_publish: true
+
+  # Note: Intensity threshold for LaserScan message, from 1 to 255
+  # Default: 200
+  scan_threshold: 200
+
+  # Note: publish raw echo on ping360_msgs/SonarEcho
+  # Default: false
+  echo_publish: true
+
+
+
+##################################################################
+############################ Just Test ###########################
+##################################################################

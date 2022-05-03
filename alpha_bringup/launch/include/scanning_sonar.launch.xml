@@ -1,0 +1,9 @@
+<?xml version="0.1"?>
+<launch>
+
+    <arg name="robot_name" default="alpha"/>
+
+    <node pkg="ping360_sonar" type="ping360_sonar_node" name="ping360_sonar_node" output="screen">
+        <rosparam command="load" file="$(find alpha_config)/config/ping360.yaml"/>
+    </node>
+</launch>
