@@ -7,12 +7,12 @@ pwm_control:
     topic: control/thruster/main
 
   horizontal:
-    channel: 4
+    channel: 3
     mode: thruster
     topic: control/thruster/horizontal
 
   vertical:
-    channel: 3
+    channel: 4
     mode: thruster
     topic: control/thruster/vertical
 

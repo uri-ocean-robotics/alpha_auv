@@ -19,7 +19,7 @@ Interface:
 Configuration:
   # Note: Sonar gain (0 = low, 1 = normal, 2 = high)
   # Default: 0
-  gain: 0
+  gain: 1
 
   # Note: Sonar operating frequency [kHz], from 650 to 850
   # Default: 740
@@ -27,11 +27,11 @@ Configuration:
 
   # Note: Sonar max range [m], from 1 to 50
   # Default: 2
-  range: 2
+  range: 5
 
   # Note: Scanned angular sector around sonar heading [degrees], from 60 to 360. Will oscillate if not 360.
   # Default: 360
-  angle_sector: 180
+  angle_sector: 120
 
   # Note: Sonar angular resolution [degrees], from 1 to 20.
   # Default: 1

@@ -13,16 +13,23 @@ world_link: world_ned
 
 odometry_source: /odometry/filtered
 
-enabled: true
+enabled: false
 
 control_modes:
+  idle: false
+
   teleop:
     surge:      {p: 1.0,  i: 3.0,   d: 5.0,  i_max: 10, i_min: -10}
     yaw_rate:   {p: 2.0,  i: 0.5,   d: 3.0,  i_max: 20, i_min: -20}
     pitch_rate: {p: 2.0,  i: 0.5,   d: 3.0,  i_max: 20, i_min: -20}
 
   heading:
-    yaw:      {p: 20.0,  i: 0.5,   d: 30.0,  i_max: 20, i_min: -20}
+    yaw:      {p: 10.0,  i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
+
+  tuning:
+    yaw:      {p: 10.0,  i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
+    pitch:      {p: 10.0,  i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
+    surge:    {p: 10.0,   i: 3.0,   d: 5.0,   i_max: 10, i_min: -10}
 
   flight:
     pitch:      {p: 10.0,    i: 0.01,   d: 10.0,  i_max: 20, i_min: -20}
@@ -35,7 +42,6 @@ control_modes:
     z:        {p: 0.5,    i: 5.0 ,  d: 5.0,  i_max: 5, i_min: -5}
     surge:    {p: 1.0,   i: 3.0,   d: 5.0,   i_max: 10, i_min: -10}
 
-  idle: false
 
 
 ##

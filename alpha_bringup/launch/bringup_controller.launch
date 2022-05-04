@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+    <arg name="robot_name" default="alpha"/>
+
+    <include file="$(find alpha_bringup)/launch/include/control.launch.xml">
+        <arg name="robot_name" value="$(arg robot_name)"/>
+    </include>
+
+</launch>
