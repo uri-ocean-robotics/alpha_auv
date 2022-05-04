@@ -20,33 +20,6 @@ main:
       scale: -1
       offset: 0
 
-point_1:
-  type: service
-  service_name: /controller/set_point
-  interface_type: mvp_control/SetControlPoint
-  service_request:
-    setpoint:
-      control_mode: 'hold'
-      position: {x: -5.0, y: -5.0, z: 1.0}
-      orientation: {x: 0.0, y: 0.0, z: 0.0}
-      velocity: {x: 0.5, y: 0.0, z: 0.0}
-      angular_rate: {x: 0.0, y: 0.0, z: 0.0}
-  buttons: [3]
-
-point_2:
-  type: service
-  service_name: /controller/set_point
-  interface_type: mvp_control/SetControlPoint
-  service_request:
-    setpoint:
-      control_mode: 'hold'
-      position: {x: 5.0, y: 5.0, z: 1.0}
-      orientation: {x: 0.0, y: 0.0, z: 0.0}
-      velocity: {x: 0.5, y: 0.0, z: 0.0}
-      angular_rate: {x: 0.0, y: 0.0, z: 0.0}
-  buttons: [4]
-
-
 engage_teleop:
   type: service
   service_name: /controller/set_point
