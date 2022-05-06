@@ -231,7 +231,7 @@ void Simulator::horizontal_thruster_cb(const std_msgs::Float64::ConstPtr& msg) {
 }
 
 void Simulator::vertical_thruster_cb(const std_msgs::Float64::ConstPtr& msg) {
-    g_controls.thruster_z = (-msg->data * 500) + 1500;
+    g_controls.thruster_z = (msg->data * 500) + 1500;
 }
 
 void Simulator::publish_odometry() {

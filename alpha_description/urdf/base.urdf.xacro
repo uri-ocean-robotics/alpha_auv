@@ -4,7 +4,7 @@
 
     <link name="base_link">
         <visual>
-            <origin xyz="-0.045 0.0 -0.13" rpy="0.0 1.57079632679 1.57079632679"/>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
 
             <geometry>
                 <mesh filename="package://alpha_description/mesh/alpha.stl" scale="0.001 0.001 0.001"/>
@@ -15,28 +15,28 @@
 
     <link name="cg_link"/>
     <joint name="cg_joint" type="fixed">
-        <origin xyz="0.223 0.000 -0.11" rpy="0 0 0"/>
+        <origin xyz="0.100 0.000 -0.08" rpy="0 0 0"/>
         <parent link="base_link"/>
         <child link="cg_link"/>
     </joint>
 
     <link name="imu"/>
     <joint name="imu_joint" type="fixed">
-        <origin xyz="0.0465 0.060 -0.14648" rpy="0 0 0"/>
+        <origin xyz="-0.0465 -0.060 -0.14648" rpy="0 0 0"/>
         <parent link="base_link"/>
         <child link="imu"/>
     </joint>
 
     <link name="gps"/>
     <joint name="gps_joint" type="fixed">
-        <origin xyz="-0.110 0.0 -0.337241" rpy="0 0 0"/>
+        <origin xyz="-0.320 0.0 -0.437241" rpy="0 0 0"/>
         <parent link="base_link"/>
         <child link="gps"/>
     </joint>
 
     <link name="pressure"/>
     <joint name="pressure_joint" type="fixed">
-        <origin xyz="-0.087845 0.060 -0.124465" rpy="0 3.14159265359 0"/>
+        <origin xyz="-0.187845 -0.060 -0.124465" rpy="0 3.14159265359 0"/>
         <!--origin xyz="-0.087845 0.060 -0.124465" rpy="0.0 0.0 0.0"/-->
         <parent link="base_link"/>
         <child link="pressure"/>
@@ -44,7 +44,7 @@
 
     <link name="usb_cam"/>
     <joint name="usb_cam_joint" type="fixed">
-        <origin xyz="0.0 0.0 0.0" rpy="0 0 3.14159265359"/>
+        <origin xyz="-0.112533 0.0 0.0" rpy="0 0 3.14159265359"/>
         <parent link="base_link"/>
         <child link="usb_cam"/>
     </joint>
@@ -65,21 +65,21 @@
 
     <link name="main_thruster_link"/>
     <joint name="main_thruster_joint" type="fixed">
-        <origin xyz="-0.297 0.0 -0.130" rpy="0.0 0.0 0.0"/>
+        <origin xyz="-0.524 0.0 -0.130" rpy="0.0 0.0 0.0"/>
         <parent link="base_link"/>
         <child link="main_thruster_link"/>
     </joint>
 
     <link name="vertical_thruster_link"/>
     <joint name="vertical_thruster_joint" type="fixed">
-        <origin xyz="0.612 0.0 -0.029" rpy="0.0 -1.57079632679 0.0"/>
+        <origin xyz="0.48735 0.0 -0.029" rpy="0.0 -1.57079632679 0.0"/>
         <parent link="base_link"/>
         <child link="vertical_thruster_link"/>
     </joint>
 
     <link name="horizontal_thruster_link"/>
     <joint name="horizontal_thruster_joint" type="fixed">
-        <origin xyz="0.691 -0.118 -0.125" rpy="0.0 0.0 1.57079632679"/>
+        <origin xyz="0.57635 -0.118 -0.125" rpy="0.0 0.0 1.57079632679"/>
         <parent link="base_link"/>
         <child link="horizontal_thruster_link"/>
     </joint>

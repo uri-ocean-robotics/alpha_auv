@@ -28,12 +28,12 @@ control_modes:
 
   tuning:
     yaw:      {p: 10.0,  i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
-    pitch:      {p: 10.0,  i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
+    pitch:    {p: 10.0,  i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
     surge:    {p: 10.0,   i: 3.0,   d: 5.0,   i_max: 10, i_min: -10}
 
   flight:
-    pitch:      {p: 10.0,    i: 0.01,   d: 10.0,  i_max: 20, i_min: -20}
-    yaw:      {p: 10.0,    i: 0.01,   d: 10.0,  i_max: 20, i_min: -20}
+    pitch:    {p: 10.0,  i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
+    yaw:      {p: 10.0,  i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
     surge:    {p: 10.0,   i: 3.0,   d: 5.0,   i_max: 10, i_min: -10}
 
   hold:
