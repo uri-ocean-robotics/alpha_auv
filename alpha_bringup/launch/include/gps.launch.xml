@@ -5,11 +5,12 @@
 
   <node pkg="gpsd_client" type="gpsd_client" name="gpsd_client" output="screen">
     <remap from="fix" to="gps/fix"/>
+    <param name="frame_id" value="$(arg robot_name)/gps"/>
 
   </node>
 
   <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform">
-
+    <rosparam command="load" file="$(find alpha_config)/config/navsat_transform.yaml"/>
   </node>
 
   <node pkg="geographic_tools" type="geographic_tools_node" name="geographic_tools" output="screen">

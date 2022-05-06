@@ -7,4 +7,5 @@
         <rosparam command="load" file="$(find alpha_config)/config/uvc_cam.yaml"/>
         <param name="frame_id" value="$(arg robot_name)/usb_cam"/>
     </node>
+
 </launch>
