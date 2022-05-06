@@ -2,7 +2,7 @@
 width: 1920
 height: 1080
 video_mode: mjpeg
-frame_rate: 30
+frame_rate: 10
 
 # parameters to find the camera
 vendor: "0x0c45"
