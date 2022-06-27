@@ -24,7 +24,7 @@ control_modes:
     pitch_rate: {p: 2.0,  i: 0.5,   d: 3.0,  i_max: 20, i_min: -20}
 
   heading:
-    yaw:      {p: 10.0,  i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
+    yaw:      {p: 20.0,  i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
 
   tuning:
     yaw:      {p: 10.0,  i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
@@ -32,11 +32,12 @@ control_modes:
     surge:    {p: 10.0,   i: 3.0,   d: 5.0,   i_max: 10, i_min: -10}
 
   flight:
-    # Pitch is newly disabled: may 6th 2022, 14:15
-    pitch:    {p: 10.0,    i: 1.0,   d: 15.0,  i_max: 20, i_min: -20}
+    pitch:    {p: 5.0,    i: 0.1,   d: 10.0,  i_max: 20, i_min: -20}
 
-    yaw:      {p: 20.0,    i: 1.0,   d: 28.0,  i_max: 20, i_min: -20}
-    surge:    {p: 30.0,    i: 5.0,   d: 5.0,   i_max: 30, i_min: -30}
+    yaw:      {p: 15.0,    i: 0.0,   d: 25.0,  i_max: 20, i_min: -20}
+
+
+    surge:    {p: 10.0,    i: 5.0,   d: 5.0,   i_max: 30, i_min: -30}
 
     # Z is newly added: may 6th 2022, 14:15
     # Z is deleted again: may 6th 2022, 15:16
@@ -112,3 +113,14 @@ thruster_polynomials:
   horizontal: [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
   vertical:   [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
 
+## Force limits
+thruster_limits:
+  main:
+    max: 40
+    min: -30
+  horizontal:
+    max: 20
+    min: -20
+  vertical:
+    max: 30
+    min: -30
