@@ -1,9 +1,13 @@
-use_local_cartesian: true
-publish_filtered_gps: true
-broadcast_utm_transform: true
-use_odometry_yaw: true
-frame_id: world_ned
+# Beachpond RI: 13.80W, 2022, 27th April.
+# Jamestown Bridge RI: 13.94W, 2022, 27th June
 magnetic_declination_radians: -0.2408554
+
 yaw_offset: 0
-frequency: 5
-datum: [41.5738343, -71.7872212, 0.0, world_ned, alpha/base_link]
+
+publish_filtered_gps: true
+
+broadcast_cartesian_transform: true
+
+use_local_cartesian: true
+
+broadcast_cartesian_transform_as_parent_frame: true
