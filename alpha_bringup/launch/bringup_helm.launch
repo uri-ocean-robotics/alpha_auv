@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+
+    <arg name="config_file" default="$(find alpha_config)/mission/config/helm.xml"/>
+
+    <node pkg="mvp_helm" type="helm" name="helm" output="screen">
+        <param
+            name="configuration"
+            command="$(find xacro)/xacro $(arg config_file)"/>
+    </node>
+
+</launch>
