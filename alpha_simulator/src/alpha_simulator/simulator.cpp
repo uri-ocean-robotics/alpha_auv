@@ -7,6 +7,7 @@
 #include "tf2_ros/transform_broadcaster.h"
 #include "geometry_msgs/TransformStamped.h"
 #include "geometry_msgs/Vector3Stamped.h"
+#include "geometry_msgs/AccelStamped.h"
 #include "tf2/LinearMath/Quaternion.h"
 #include "sensor_msgs/Imu.h"
 #include "sensor_msgs/FluidPressure.h"
@@ -17,7 +18,7 @@ void Simulator::iterate(control_commands_t cmd) {
 
     g_thruster.XT = pwm2thrust(cmd.thruster_x);
     g_thruster.YT = pwm2thrust(cmd.thruster_y);
-    g_thruster.ZT = pwm2thrust(cmd.thruster_z);
+    g_thruster.ZT = -pwm2thrust(cmd.thruster_z);
 
     if(g_world_state_ned.point.z() < 0) {
         g_mass.variable_buoyancy = g_mass.buoyancy * (pow(g_world_state_ned.point.z(),2) * 0.01);
@@ -171,7 +172,7 @@ Simulator::Simulator() : m_nh() , m_pnh("~"){
 
     m_pose_publisher = m_nh.advertise<geometry_msgs::PoseStamped>("dynamics/pose", 100);
 
-    m_acceleration_publisher = m_nh.advertise<geometry_msgs::TwistStamped>("dynamics/acceleration", 100);
+    m_acceleration_publisher = m_nh.advertise<geometry_msgs::AccelStamped>("dynamics/acceleration", 100);
 
     m_velocity_publisher = m_nh.advertise<geometry_msgs::TwistStamped>("dynamics/velocity",100);
 
@@ -311,18 +312,18 @@ void Simulator::loop() {
 
 void Simulator::publish_acceleration() {
 
-    geometry_msgs::TwistStamped msg;
+    geometry_msgs::AccelStamped msg;
 
     msg.header.stamp = ros::Time::now();
     msg.header.frame_id = m_tf_prefix.empty() ? "base_link" : m_tf_prefix + "/base_link";
 
-    msg.twist.linear.x = g_vehicle_state_ned.u_dot;
-    msg.twist.linear.y = g_vehicle_state_ned.v_dot;
-    msg.twist.linear.z = g_vehicle_state_ned.w_dot;
+    msg.accel.linear.x = g_vehicle_state_ned.u_dot;
+    msg.accel.linear.y = g_vehicle_state_ned.v_dot;
+    msg.accel.linear.z = g_vehicle_state_ned.w_dot;
 
-    msg.twist.angular.x = 0;
-    msg.twist.angular.y = g_vehicle_state_ned.q_dot;
-    msg.twist.angular.z = g_vehicle_state_ned.r_dot;
+    msg.accel.angular.x = 0;
+    msg.accel.angular.y = g_vehicle_state_ned.q_dot;
+    msg.accel.angular.z = g_vehicle_state_ned.r_dot;
 
     m_acceleration_publisher.publish(msg);
 
