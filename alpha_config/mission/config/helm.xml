@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<helm>
+    <!-- =================================================================== -->
+    <!-- Helm Configuration-->
+    <!-- =================================================================== -->
+
+    <helm-configuration>
+        <param name="frequency" value="10"/>
+    </helm-configuration>
+
+    <!-- =================================================================== -->
+    <!-- Finite State Machine Configuration-->
+    <!-- =================================================================== -->
+    <state-machine-configuration>
+
+        <state initial="true" name="start" mode="flight">
+            <transition to="survey_local"/>
+            <transition to="survey_utm"/>
+            <transition to="kill"/>
+        </state>
+
+        <state name="survey_local" mode="flight">
+            <transition to="start"/>
+            <transition to="kill"/>
+        </state>
+
+        <state name="survey_utm" mode="flight">
+            <transition to="start"/>
+            <transition to="kill"/>
+        </state>
+
+        <state name="kill" mode="idle">
+            <transition to="start"/>
+        </state>
+
+    </state-machine-configuration>
+
+    <!-- =================================================================== -->
+    <!-- Behavior Configuration-->
+    <!-- =================================================================== -->
+    <behavior-configuration>
+
+        <behavior name="bhv00" plugin="helm::PathFollowing">
+            <!-- Activate the behavior on survey_local state -->
+            <state name="survey_local" priority="1"/>
+
+            <parameters type="ros">
+                <rosparam command="load" file="$(find alpha_config)/mission/param/bhv00.yaml"/>
+                <param name="state_done" type="string" value="start"/>
+                <param name="state_fail" type="string" value="kill"/>
+            </parameters>
+        </behavior>
+
+        <behavior name="bhv01" plugin="helm::PathFollowing">
+            <!-- Activate the behavior on survey_utm state -->
+            <state name="survey_utm" priority="1"/>
+
+            <parameters type="ros">
+                <rosparam command="load" file="$(find alpha_config)/mission/param/bhv01.yaml"/>
+                <param name="state_done" type="string" value="start"/>
+                <param name="state_fail" type="string" value="kill"/>
+            </parameters>
+        </behavior>
+
+        <behavior name="bhv02" plugin="helm::DepthTracking">
+            <!-- Activate the behavior on survey_utm and survey_local state -->
+            <state name="survey_utm" priority="1"/>
+            <state name="survey_local" priority="1"/>
+
+            <parameters type="ros">
+                <rosparam command="load" file="$(find alpha_config)/mission/param/bhv02.yaml"/>
+            </parameters>
+        </behavior>
+
+        <behavior name="bhv03" plugin="helm::PeriodicSurface">
+            <!-- Activate the behavior on survey_utm and survey_local state -->
+            <state name="survey_utm" priority="2"/>
+            <state name="survey_local" priority="2"/>
+            <parameters type="ros">
+                <rosparam command="load" file="$(find alpha_config)/mission/param/bhv03.yaml"/>
+            </parameters>
+
+        </behavior>
+
+    </behavior-configuration>
+
+</helm>

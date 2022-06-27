@@ -1,0 +1,22 @@
+##
+# Behavior: Path following
+# States:
+#   - survey_local
+##
+
+waypoints:
+  - {x: 20, y: 0}
+  - {x: -20, y: 0}
+  - {x: -20, y: 10}
+  - {x: 20, y: 10}
+  - {x: 20, y: 20}
+  - {x: -20, y: 20}
+  - {x: 0, y: 0}
+frame_id: world_ned
+
+acceptance_radius: 3.0
+update_topic: update_waypoints
+append_topic: append_waypoints
+surge_velocity: 0.70
+lookahead_distance: 3.0
+beta_gain: 0.0

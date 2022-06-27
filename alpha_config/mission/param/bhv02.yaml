@@ -1,0 +1,11 @@
+##
+# Behavior: Depth tracking
+# States:
+#   - survey_utm
+#   - survey_local
+##
+
+p_gain: 0.25 # proportional gain
+d_gain: 0.25 # Differential gain
+max_pitch: 0.2617993877991494 # radians
+desired_depth: 3.0 # meters
