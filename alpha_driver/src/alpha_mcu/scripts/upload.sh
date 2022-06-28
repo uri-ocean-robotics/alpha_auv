@@ -11,8 +11,8 @@ while read i; do if [ "$i" = RPI-RP2 ]; then break; fi; done \
 
 sleep 1
 
-./elf2uf2/elf2uf2 alpha-mcu.elf alpha-mcu.uf2
+./elf2uf2/elf2uf2 alpha_mcu.elf alpha_mcu.uf2
 
-cp alpha-mcu.uf2 /media/${USER}/RPI-RP2
+cp alpha_mcu.uf2 /media/${USER}/RPI-RP2
 
 echo "Done!"
