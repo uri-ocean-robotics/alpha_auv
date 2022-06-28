@@ -4,15 +4,20 @@
 #   - survey_utm
 ##
 
+## Coordinates:
+# Lat: 41.52529
+# Long: -71.40089
+# Draws a square that is 20m long edges
+# UTM Zone: 19
+# North up.
+
 waypoints:
-  - {x: 20, y: 0}
-  - {x: -20, y: 0}
-  - {x: -20, y: 10}
-  - {x: 20, y: 10}
-  - {x: 20, y: 20}
-  - {x: -20, y: 20}
-  - {x: 0, y: 0}
-frame_id: world_ned
+  - {x: 299685.8445722851, y: 4599855.127124295}
+  - {x: 299685.8445722851, y: 4599875.127124295}
+  - {x: 299705.8445722851, y: 4599875.127124295}
+  - {x: 299705.8445722851, y: 4599855.127124295}
+  - {x: 299685.8445722851, y: 4599855.127124295}
+frame_id: utm
 
 acceptance_radius: 3.0
 update_topic: update_waypoints

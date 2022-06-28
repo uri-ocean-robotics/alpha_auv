@@ -5,14 +5,12 @@
 ##
 
 waypoints:
-  - {x: 20, y: 0}
-  - {x: -20, y: 0}
-  - {x: -20, y: 10}
-  - {x: 20, y: 10}
-  - {x: 20, y: 20}
-  - {x: -20, y: 20}
   - {x: 0, y: 0}
-frame_id: world_ned
+  - {x: 0, y: 20}
+  - {x: 20, y: 20}
+  - {x: 20, y: 0}
+  - {x: 0, y: 0}
+frame_id: utm
 
 acceptance_radius: 3.0
 update_topic: update_waypoints
