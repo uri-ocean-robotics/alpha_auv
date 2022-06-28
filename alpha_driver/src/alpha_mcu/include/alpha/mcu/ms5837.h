@@ -30,7 +30,7 @@ private:
     int32_t m_P;
     uint8_t m_model;
 
-    float m_fluid_density = 1000; // kg/m^3 (freshwater)
+    float m_fluid_density = 1023; // kg/m^3 (freshwater)
 
     struct repeating_timer m_reporter_timer;
 
