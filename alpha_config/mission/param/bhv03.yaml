@@ -5,6 +5,6 @@
 #   - survey_local
 ##
 
-surface_period: 120
+surface_period: 20
 surface_duration: 10
 max_pitch: 0.2617993877991494
