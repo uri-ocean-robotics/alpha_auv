@@ -17,8 +17,8 @@
 void Simulator::iterate(control_commands_t cmd) {
 
     g_thruster.XT = pwm2thrust(cmd.thruster_x);
-    g_thruster.YT = pwm2thrust(cmd.thruster_y);
-    g_thruster.ZT = -pwm2thrust(cmd.thruster_z);
+    g_thruster.YT = - pwm2thrust(cmd.thruster_y);
+    g_thruster.ZT = - pwm2thrust(cmd.thruster_z);
 
     if(g_world_state_ned.point.z() < 0) {
         g_mass.variable_buoyancy = g_mass.buoyancy * (pow(g_world_state_ned.point.z(),2) * 0.01);
