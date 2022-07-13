@@ -25,3 +25,5 @@ append_topic: append_waypoints
 surge_velocity: 0.70
 lookahead_distance: 3.0
 beta_gain: 0.0
+state_done: start
+state_fail: kill
