@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<launch>
-    <node pkg="alpha_sensor_sim" name="dvl_sim_node" type="dvl_sim_node">
-        <rosparam command="load" file="$(find alpha_sensor_sim)/config/dvl_profiles/waterlink_a50.yaml"/>
-    </node>
-</launch>
