@@ -74,6 +74,7 @@ bool Safety::f_reporter(struct repeating_timer* t) {
 void Safety::initialize() {
     m_override = false;
     gpio_init(DROP_WEIGHT_PIN);
+    gpio_set_dir(DROP_WEIGHT_PIN, GPIO_OUT);
 
     m_depth_time_marked = false;
     m_deadman_time_marked = false;
@@ -82,7 +83,6 @@ void Safety::initialize() {
     add_repeating_timer_ms(250, Safety::f_monitor_underwater_time, this, &m_depth_monitor_timer);
     add_repeating_timer_ms(REPORT_SAFETY_PERIOD, Safety::f_reporter, this, &m_reporter_timer);
 
-    gpio_set_dir(DROP_WEIGHT_PIN, GPIO_OUT);
     activate_relay();
 }
 

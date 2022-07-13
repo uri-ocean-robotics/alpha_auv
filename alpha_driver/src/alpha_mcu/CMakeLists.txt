@@ -29,6 +29,7 @@ add_executable(${PROJECT_NAME}
   src/alpha/common.cpp
   src/alpha/globals.cpp
   src/alpha/pwm_controller.cpp
+  src/alpha/strobe.cpp
 )
 # create map/bin/hex/uf2 files.
 pico_add_extra_outputs(${PROJECT_NAME})

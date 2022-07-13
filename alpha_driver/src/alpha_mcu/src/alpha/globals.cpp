@@ -18,6 +18,8 @@ namespace globals {
 
     Safety safety = Safety();
 
+    Strobe strobe = Strobe();
+
     void initialize() {
 
         pwm_chan0->initialize();
@@ -31,6 +33,8 @@ namespace globals {
         globals::barometer.initialize();
 
         globals::safety.initialize();
+
+        globals::strobe.initialize();
 
     }
 }

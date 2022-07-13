@@ -46,6 +46,13 @@ namespace handler {
      */
     static inline bool apply_pwm_enable(int channel, int mode);
 
+    /**
+     * @brief Applies strobe command
+     *
+     * @param state 1 to turn on, 0 to turn off
+     */
+    static inline void apply_strobe(int state);
+
 }
 
 #endif

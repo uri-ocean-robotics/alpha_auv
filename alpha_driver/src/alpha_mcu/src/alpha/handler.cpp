@@ -34,6 +34,13 @@
                     static_cast<int>(msg.get_values()[0]),
                     static_cast<int>(msg.get_values()[1])
             );
+        } else if (strcmp(msg.get_cmd(), NMEA_STROBE_CMD) == 0) {
+            if(msg.get_argc() != 1) {
+                continue;
+            }
+            handler::apply_strobe(
+                    static_cast<int>(msg.get_values()[0])
+            );
         }
     }
 }
@@ -76,6 +83,16 @@ bool handler::apply_pwm_input(int channel, float signal) {
     return true;
 }
 
+void handler::apply_strobe(int state) {
+    if(state == 1) {
+        globals::strobe.enable();
+    } else if (state == 0) {
+        globals::strobe.disable();
+    } else {
+        // do something about it
+    }
+}
+
 bool handler::apply_pwm_enable(int channel, int mode) {
     switch (channel) {
         case 0:
@@ -103,3 +120,4 @@ bool handler::apply_pwm_enable(int channel, int mode) {
     }
     return true;
 }
+

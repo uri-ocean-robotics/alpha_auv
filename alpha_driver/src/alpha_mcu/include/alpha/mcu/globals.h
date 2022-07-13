@@ -7,6 +7,7 @@
 #include "ina260.h"
 #include "pwm_controller.h"
 #include "safety.h"
+#include "strobe.h"
 #include "memory"
 #include "map"
 #include "array"
@@ -32,6 +33,8 @@ namespace globals {
     extern std::shared_ptr<PwmController> pwm_chan4;
 
     extern Safety safety;
+
+    extern Strobe strobe;
 
     void initialize();
 }
