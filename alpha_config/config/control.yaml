@@ -37,7 +37,7 @@ control_modes:
     # pitch:    {p: 10.0,    i: 2.0,   d: 15.0,  i_max: 20, i_min: -20}
     pitch:    {p: 10.0,    i: 3.0,   d: 15.0,  i_max: 20, i_min: -20}
 
-    yaw:      {p: 15.0,    i: 0.0,   d: 1.0,  i_max: 20, i_min: -20}
+    yaw:      {p: 7.0,    i: 0.5,   d: 7.0,  i_max: 20, i_min: -20}
 
     surge:    {p: 10.0,    i: 5.0,   d: 5.0,   i_max: 30, i_min: -30}
 
@@ -124,5 +124,5 @@ thruster_limits:
     max: 20
     min: -20
   vertical:
-    max: 30
-    min: -30
+    max: 20
+    min: -20
