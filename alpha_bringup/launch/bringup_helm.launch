@@ -1,12 +1,18 @@
 <?xml version="1.0"?>
 <launch>
 
-    <arg name="config_file" default="$(find alpha_config)/mission/config/helm.xml"/>
+    <arg name="config_file"
+         default="$(find alpha_config)/mission/config/helm.yaml"/>
 
     <node pkg="mvp_helm" type="helm" name="helm" output="screen">
-        <param
-            name="configuration"
-            command="$(find xacro)/xacro $(arg config_file)"/>
+        <rosparam
+            command="load"
+            file="$(arg config_file)"/>
+
+        <rosparam command="load" ns="bhv00" file="$(find alpha_config)/mission/param/bhv00.yaml"/>
+        <rosparam command="load" ns="bhv01" file="$(find alpha_config)/mission/param/bhv01.yaml"/>
+        <rosparam command="load" ns="bhv02" file="$(find alpha_config)/mission/param/bhv02.yaml"/>
+        <rosparam command="load" ns="bhv03" file="$(find alpha_config)/mission/param/bhv03.yaml"/>
     </node>
 
 </launch>
