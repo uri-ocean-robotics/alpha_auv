@@ -7,9 +7,6 @@
 [submodule "external/uno_lqe"]
 	path = external/uno_lqe
 	url = https://github.com/GSO-soslab/uno_lqe
-[submodule "external/seal_msgs"]
-	path = external/seal_msgs
-	url = https://github.com/GSO-soslab/seal_msgs
 [submodule "external/bluerobotics_ping360"]
 	path = external/bluerobotics_ping360
 	url = https://github.com/GSO-soslab/bluerobotics_ping360.git
