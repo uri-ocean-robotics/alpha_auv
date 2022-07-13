@@ -47,3 +47,5 @@ angular_velocity_stddev: [0.01, 0.01, 0.01] # [rad/s]
 
 orientation_stddev: [0.01, 0.01, 0.01] # [rad]
 magnetic_field_stddev: [0.01, 0.01, 0.01] # [Tesla]
+
+onboard_filter_profile: Robust/NorthReference

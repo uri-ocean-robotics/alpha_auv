@@ -1,10 +1,13 @@
-
 # Beachpond RI: 13.80W, 2022, 27th April.
+# Jamestown Bridge RI: 13.94W, 2022, 27th June
 magnetic_declination_radians: -0.2408554
 
-# Xsens outputs 0 degree yaw when X axis facing east
 yaw_offset: 0
 
 publish_filtered_gps: true
 
-broadcast_utm_transform: true
+broadcast_cartesian_transform: true
+
+use_local_cartesian: false
+
+broadcast_cartesian_transform_as_parent_frame: false

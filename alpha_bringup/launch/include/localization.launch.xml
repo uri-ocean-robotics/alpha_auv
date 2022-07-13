@@ -3,8 +3,15 @@
 
     <arg name="robot_name" default="alpha"/>
 
-    <include file="$(find alpha_localization)/launch/localization.launch">
+    <include file="$(find alpha_localization)/launch/robot_localization_local.launch">
         <arg name="robot_name" value="$(arg robot_name)"/>
     </include>
+
+    <include file="$(find alpha_localization)/launch/robot_localization_global.launch">
+        <arg name="robot_name" value="$(arg robot_name)"/>
+        <arg name="navsat_transform_param" value="$(find alpha_config)/config/navsat_transform.yaml"/>
+    </include>
+
+
 
 </launch>
