@@ -66,6 +66,7 @@ private:
 
     std::thread m_loop_thread;
 
+    ros::ServiceClient m_gazebo_set_model_state;
 
     std::thread m_100hz_thread;
 

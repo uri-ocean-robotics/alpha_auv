@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   waterlinked_dvl
   diagnostic_msgs
+  gazebo_msgs
 )
 
 find_package(Eigen3 REQUIRED)

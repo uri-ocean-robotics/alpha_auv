@@ -13,6 +13,12 @@
     <arg name="robot_name" value="$(arg robot_name)"/>
   </include>
 
+  <node
+    name="local_enu_tf_publisher"
+    pkg="tf2_ros"
+    type="static_transform_publisher"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 local_enu $(arg robot_name)/odom"/>
+
   <node pkg="rviz" type="rviz" name="rviz" args="-d $(find alpha_description)/rviz/config.rviz"/>
 
 </launch>

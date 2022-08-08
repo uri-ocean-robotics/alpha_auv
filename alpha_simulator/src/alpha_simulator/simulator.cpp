@@ -13,6 +13,7 @@
 #include "sensor_msgs/FluidPressure.h"
 #include "waterlinked_dvl/TransducerReportStamped.h"
 #include "diagnostic_msgs/DiagnosticArray.h"
+#include "gazebo_msgs/SetModelState.h"
 
 void Simulator::iterate(control_commands_t cmd) {
 
@@ -182,6 +183,8 @@ Simulator::Simulator() : m_nh() , m_pnh("~"){
     m_horizontal_thruster_setpoint = m_nh.subscribe("control/thruster/horizontal", 100, &Simulator::horizontal_thruster_cb, this);
     m_vertical_thruster_setpoint = m_nh.subscribe("control/thruster/vertical", 100, &Simulator::vertical_thruster_cb, this);
 
+    m_gazebo_set_model_state = m_nh.serviceClient<gazebo_msgs::SetModelState>("/gazebo/set_model_state");
+
     m_loop_thread = std::thread([this]() {
         this->loop();
     });
@@ -287,6 +290,28 @@ void Simulator::publish_odometry() {
 
     br.sendTransform(tf_stamped);
 
+    gazebo_msgs::SetModelState model_state;
+    model_state.request.model_state.model_name = "alpha";
+    model_state.request.model_state.pose.position.x = msg.pose.pose.position.x;
+    model_state.request.model_state.pose.position.y = msg.pose.pose.position.y;
+    model_state.request.model_state.pose.position.z = msg.pose.pose.position.z;
+    model_state.request.model_state.pose.orientation.w = quat.w();
+    model_state.request.model_state.pose.orientation.x = quat.x();
+    model_state.request.model_state.pose.orientation.y = quat.y();
+    model_state.request.model_state.pose.orientation.z = quat.z();
+    model_state.request.model_state.twist.linear.x = g_vehicle_state_ned.u;
+    model_state.request.model_state.twist.linear.y = g_vehicle_state_ned.v;
+    model_state.request.model_state.twist.linear.z = g_vehicle_state_ned.w;
+    model_state.request.model_state.twist.angular.x = g_vehicle_state_ned.p;
+    model_state.request.model_state.twist.angular.x = g_vehicle_state_ned.q;
+    model_state.request.model_state.twist.angular.x = g_vehicle_state_ned.r;
+
+    try{
+        m_gazebo_set_model_state.call(model_state);
+    } catch(ros::Exception e) {
+        std::cout << "service call is failed" << std::endl;
+    }
+
 }
 
 
@@ -297,6 +322,8 @@ void Simulator::loop() {
         publish_clock();
 
         iterate(g_controls);
+
+        // TODO: set model state
 
 
         std::this_thread::sleep_until(now + std::chrono::duration<double>(m_dt));
