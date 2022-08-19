@@ -1,0 +1,218 @@
+<?xml version="1.0"?>
+<scenario>
+
+    <environment>
+        <ned latitude="41.7777" longitude="3.0333"/>
+        <ocean>
+            <water density="1000.0" jerlov="0.2"/>
+            <!--waves height="0.0"/>
+            <particles enabled="true"/>
+            <current type="uniform">
+                <velocity xyz="0.0 0.0 0.0"/>
+            </current-->
+        </ocean>
+        <atmosphere>
+            <sun azimuth="50.0" elevation="50.0"/>
+        </atmosphere>
+    </environment>
+
+    <materials>
+        <material name="Foam" density="320.37" restitution="0.1"/>
+        <material name="Neutral" density="1000.0" restitution="0.1"/>
+        <material name="Resin" density="1150.0" restitution="0.1"/>
+        <material name="Rock" density="3000.0" restitution="0.8"/>
+        <material name="Fiberglass" density="1500.0" restitution="0.3"/>
+        <material name="Aluminium" density="2710.0" restitution="0.5"/>
+        <material name="Vehicle" density="990.0" restitution="0.8"/>
+        <friction_table>
+            <friction material1="Neutral" material2="Neutral" static="0.5" dynamic="0.2"/>
+            <friction material1="Neutral" material2="Rock" static="0.2" dynamic="0.1"/>
+            <friction material1="Neutral" material2="Fiberglass" static="0.5" dynamic="0.2"/>
+            <friction material1="Neutral" material2="Aluminium" static="0.1" dynamic="0.02"/>
+            <friction material1="Rock" material2="Rock" static="0.9" dynamic="0.7"/>
+            <friction material1="Rock" material2="Fiberglass" static="0.6" dynamic="0.4"/>
+            <friction material1="Rock" material2="Aluminium" static="0.6" dynamic="0.3"/>
+            <friction material1="Fiberglass" material2="Fiberglass" static="0.5" dynamic="0.2"/>
+            <friction material1="Fiberglass" material2="Aluminium" static="0.5" dynamic="0.2"/>
+            <friction material1="Aluminium" material2="Aluminium" static="0.8" dynamic="0.5"/>
+        </friction_table>
+    </materials>
+
+    <looks>
+        <look name="black" gray="0.05" roughness="0.2"/>
+        <look name="yellow" rgb="1.0 0.9 0.0" roughness="0.3"/>
+        <look name="blue" rgb="0.1 0.1 0.9" roughness="0.3"/>
+        <look name="red" rgb="0.9 0.1 0.1" roughness="0.3"/>
+        <look name="gray" gray="0.5" roughness="0.4" metalness="0.5"/>
+        <look name="tank" rgb="0.9 0.9 0.9" roughness="0.9"/>
+        <look name="duct" gray="0.1" roughness="0.4" metalness="0.5"/>
+        <look name="manipulator" rgb="0.2 0.15 0.1" roughness="0.6" metalness="0.8"/>
+        <look name="ee" rgb="0.59 0.56 0.51" roughness="0.6" metalness="0.8"/>
+    </looks>
+
+    <robot name="alpha" fixed="false" self_collisions="false">
+        <!--ros_base_link_transforms publish="true"/-->
+
+        <base_link name="Vehicle" type="compound" physics="submerged">
+            <external_part name="Hull" type="model" physics="submerged" buoyant="false">
+                <physical>
+                    <mesh filename="hull_phy.obj" scale="1.0"/>
+                    <!--thickness value="0.035"/-->
+                    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                </physical>
+                <visual>
+                    <mesh filename="hull.obj" scale="1.0"/>
+                    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                </visual>
+                <material name="Vehicle"/>
+                <look name="yellow"/>
+                <mass value="25"/>
+                <compound_transform rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                <cg xyz="-0.65 0.0 0.1" rpy="0.0 0.0 0.0"/>
+            </external_part>
+
+            <internal_part name="Foam" type="cylinder" physics="floating" buoyant="true">
+                <dimensions radius="0.1" height="1.0"/>
+                <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                <material name="Foam"/>
+                <mass value="6.0"/>
+                <look name="grey"/>
+                <compound_transform rpy="0.0 1.571 0.0" xyz="-0.65 0.0 -0.05"/>
+            </internal_part>
+
+            <!--internal_part name="Weight" type="cylinder" physics="floating" buoyant="false">
+                <dimensions radius="0.065" height="1.0"/>
+                <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                <material name="Rock"/>
+                <mass value="17.0"/>
+                <look name="grey"/>
+                <compound_transform rpy="0.0 1.571 0.0" xyz="-0.65 0.0 0.10"/>
+            </internal_part-->
+
+            <external_part name="Mast" type="model" physics="submerged">
+                <physical>
+                    <mesh filename="mast.obj" scale="0.001"/>
+                    <origin rpy="-1.571 0.0 1.571"  xyz="-1.0 0.0 0.0"/>
+                </physical>
+                <visual>
+                    <mesh filename="mast.obj" scale="0.001"/>
+                    <origin rpy="-1.571 0.0 1.571" xyz="-1.0 0.0 0.0"/>
+                </visual>
+                <material name="Resin"/>
+                <look name="white"/>
+                <compound_transform rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+            </external_part>
+
+            <external_part name="ThrusterDuctSurge" type="model" physics="submerged" buoyant="false">
+                <physical>
+                    <mesh filename="duct.obj" scale="0.001"/>
+                    <origin rpy="0.0 1.571 0.0" xyz="-1.325 0.0 0.0"/>
+                </physical>
+                <visual>
+                    <mesh filename="duct.obj" scale="0.001"/>
+                    <origin rpy="0.0 1.571 0.0" xyz="-1.325 0.0 0.0"/>
+                </visual>
+                <material name="Fiberglass"/>
+                <look name="black"/>
+                <compound_transform rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+            </external_part>
+        </base_link>
+
+        <actuator name="ThrusterHeaveBow" type="thruster">
+            <link name="Vehicle"/>
+            <origin rpy="0.0 1.571 0.0" xyz="-1.0956 0.0 0.0"/>
+            <specs thrust_coeff="0.4315" thrust_coeff_backward="0.3404" torque_coeff="0.01" max_rpm="3000.0"/>
+            <propeller diameter="0.08" right="true">
+                <mesh filename="prop.obj" scale="1.0"/>
+                <material name="Neutral"/>
+                <look name="red"/>
+            </propeller>
+            <ros_subscriber topic="/control/thruster/heave_bow"/>
+        </actuator>
+
+        <actuator name="ThrusterHeaveStern" type="thruster">
+            <link name="Vehicle"/>
+            <origin rpy="0.0 1.57e 0.0" xyz="-0.2857 0.0 0.0"/>
+            <specs thrust_coeff="0.4315" thrust_coeff_backward="0.3404" torque_coeff="0.01" max_rpm="3000.0"/>
+            <propeller diameter="0.08" right="true">
+                <mesh filename="prop.obj" scale="1.0"/>
+                <material name="Neutral"/>
+                <look name="blue"/>
+            </propeller>
+            <ros_subscriber topic="/control/thruster/heave_stern"/>
+        </actuator>
+
+        <actuator name="ThrusterSwayStern" type="thruster">
+            <link name="Vehicle"/>
+            <origin rpy="0.0 0.0 1.571" xyz="-0.171 0.0 0.0"/>
+            <specs thrust_coeff="0.4315" thrust_coeff_backward="0.3404" torque_coeff="0.01" max_rpm="3000.0"/>
+            <propeller diameter="0.08" right="true">
+                <mesh filename="prop.obj" scale="1.0"/>
+                <material name="Neutral"/>
+                <look name="white"/>
+            </propeller>
+            <ros_subscriber topic="/control/thruster/sway_stern"/>
+        </actuator>
+
+        <actuator name="ThrusterSurge" type="thruster">
+            <link name="Vehicle"/>
+            <origin rpy="0.0 0.0 0.0" xyz="-1.325 0.0 0.0"/>
+            <specs thrust_coeff="0.4315" thrust_coeff_backward="0.3404" torque_coeff="0.01" max_rpm="3000.0"/>
+            <propeller diameter="0.08" right="true">
+                <origin rpy="1.571 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                <mesh filename="prop.obj" scale="1.0"/>
+                <material name="Neutral"/>
+                <look name="white"/>
+            </propeller>
+            <ros_subscriber topic="/control/thruster/surge"/>
+        </actuator>
+
+        <!--sensor name="dynamics" type="odometry" rate="30.0">
+            <link name="Vehicle"/>
+            <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+            <ros_publisher topic="/odometry/local"/>
+        </sensor-->
+
+        <sensor name="pressure" type="pressure" rate="5.0">
+            <link name="Vehicle"/>
+            <origin rpy="0.0 0.0 0.0" xyz="-1.20 0.0 0.0"/>
+            <noise pressure="5.0"/>
+            <ros_publisher topic="/pressure"/>
+        </sensor>
+
+        <sensor name="dvl" type="dvl" rate="5.0">
+            <link name="Vehicle"/>
+            <origin rpy="0.0 0.0 0.0" xyz="-0.75 0.0 0.10"/>
+            <specs beam_angle="30.0"/>
+            <range velocity="9.0 9.0 9.0" altitude_min="0.05" altitude_max="50.0"/>
+            <noise velocity="0.0015" altitude="0.001"/>
+            <ros_publisher topic="/dvl/twist" altitude_topic="/dvl/altitude"/>
+        </sensor>
+
+        <sensor name="imu" type="imu" rate="20.0">
+            <link name="Vehicle"/>
+            <origin rpy="3.1416 0.0 0.0" xyz="-0.65 0.0 0.0"/>
+            <noise angle="0.000001745" angular_velocity="0.00001745"/>
+            <ros_publisher topic="/imu/data"/>
+        </sensor>
+
+        <sensor name="gps" type="gps" rate="1.0">
+            <link name="Vehicle"/>
+            <origin rpy="0.0 0.0 0.0" xyz="-0.54 0.0 -0.2"/>
+            <noise ned_position="0.5"/>
+            <ros_publisher topic="/gps/fix"/>
+        </sensor>
+
+        <world_transform rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+
+    </robot>
+
+    <static name="Bottom" type="terrain">
+        <height_map filename="plain_terrain.png"/>
+        <dimensions scalex="20" scaley="20" height="10.0"/>
+        <material name="Rock"/>
+        <look name="Gray"/>
+        <world_transform xyz="0.0 0.0 5.0" rpy="0.0 0.0 0.0"/>
+    </static>
+
+</scenario>

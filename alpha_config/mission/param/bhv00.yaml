@@ -10,7 +10,7 @@ waypoints:
   - {x: 20, y: 20}
   - {x: 20, y: 0}
   - {x: 0, y: 0}
-frame_id: local_enu
+frame_id: world_ned
 
 acceptance_radius: 3.0
 update_topic: update_waypoints

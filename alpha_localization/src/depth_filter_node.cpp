@@ -39,7 +39,7 @@ void DepthFilterNode::f_depth_callback(const seal_msgs::Float64StampedConstPtr &
     out.header.frame_id = m_frame_id;
     out.pose.pose.position.x = 0.0;
     out.pose.pose.position.y = 0.0;
-    out.pose.pose.position.z = x;
+    out.pose.pose.position.z = -x;
 
     out.pose.covariance[6 * 2 + 2] = p;
 

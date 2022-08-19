@@ -1,0 +1,129 @@
+generator_type: tf
+
+control_tf:
+  surge: surge_thruster_link
+  sway_stern: sway_stern_thruster_link
+  heave_bow: heave_bow_thruster_link
+  heave_stern: heave_stern_thruster_link
+
+tf_prefix: alpha
+
+cg_link: cg_link
+
+world_link: world_ned
+
+odometry_source: /odometry/local
+
+enabled: true
+
+control_modes:
+  idle: false
+
+  teleop:
+    surge:      {p: 1.0,  i: 3.0,   d: 5.0,  i_max: 10, i_min: -10}
+    yaw_rate:   {p: 2.0,  i: 0.5,   d: 3.0,  i_max: 20, i_min: -20}
+    pitch_rate: {p: 2.0,  i: 0.5,   d: 3.0,  i_max: 20, i_min: -20}
+
+  heading:
+    yaw:      {p: 20.0,  i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
+
+  tuning:
+    yaw:      {p: 10.0,  i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
+    pitch:    {p: 10.0,  i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
+    surge:    {p: 10.0,   i: 3.0,   d: 5.0,   i_max: 10, i_min: -10}
+
+  flight:
+    pitch:    {p: 10.0,    i: 3.0,   d: 15.0,  i_max: 20, i_min: -20}
+    yaw:      {p: 7.0,    i: 0.5,   d: 7.0,  i_max: 20, i_min: -20}
+    surge:    {p: 10.0,    i: 5.0,   d: 5.0,   i_max: 30, i_min: -30}
+
+    # Z is newly added: may 6th 2022, 14:15
+    # Z is deleted again: may 6th 2022, 15:16
+    # z:        {p: 10.0,    i: 5.0 ,  d: 10.0,  i_max: 20, i_min: -20}
+
+  hold:
+    x:        {p: 2.5,    i: 1.0,   d: 5.0,  i_max: 10, i_min: -10}
+    y:        {p: 2.5,    i: 1.0 ,  d: 5.0,  i_max: 10, i_min: -10}
+    z:        {p: 10.0,   i: 1.0 ,  d: 5.0,  i_max: 20, i_min: -20}
+
+  hold2:
+    x:        {p: 2.5,    i: 1.0,   d: 5.0,  i_max: 10, i_min: -10}
+    y:        {p: 2.5,    i: 1.0 ,  d: 5.0,  i_max: 10, i_min: -10}
+    z:        {p: 10.0,   i: 1.0 ,  d: 5.0,  i_max: 20, i_min: -20}
+    pitch:    {p: 10.0,   i: 0.01,  d: 5.0,  i_max: 20, i_min: -20}
+
+  hold3:
+    x:        {p: 2.5,    i: 1.0,   d: 5.0,  i_max: 10, i_min: -10}
+    y:        {p: 2.5,    i: 1.0 ,  d: 5.0,  i_max: 10, i_min: -10}
+    z:        {p: 10.0,   i: 1.0 ,  d: 5.0,  i_max: 20, i_min: -20}
+    pitch:    {p: 10.0,   i: 0.01,  d: 5.0,  i_max: 20, i_min: -20}
+    yaw:      {p: 10.0,   i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
+
+
+##
+# THRUSTERS
+##
+thruster_ids:
+  - surge
+  - sway_stern
+  - heave_bow
+  - heave_stern
+
+thruster_command_topics:
+  surge: control/thruster/surge
+  sway_stern: control/thruster/sway_stern
+  heave_bow: control/thruster/heave_bow
+  heave_stern: control/thruster/heave_stern
+
+thruster_force_topics:
+  surge: control/force/surge
+  sway_stern: control/force/sway_stern
+  heave_bow: control/force/heave_bow
+  heave_stern: control/force/heave_stern
+
+
+##
+# Polynomials for each thruster.
+#
+# Quadratic Programming Optimization computes the thrust
+# required. We need to turn that number into thruster command.
+# Setpoint commands in this system defined between -1 and 1.
+#
+# y axis of the polynomial , f(x) = y, should be in Newton.
+#
+# Take the polynomial
+# f(x) = a_n x^n + a_(n-1) x^(n-1) + ... + a_1 x + a_0
+#
+# Array would hold the lower degrees in lower indexes. Shown below:
+# [a_0, a_1, ... ,a_(n-1), a(n)]
+#
+# For T200 bluerobotics thrusters:
+#   f(x) = a5*x^5 + a4*x^4 + a3*x^3 + a2*x^2 + a1*x + a0
+# Curve fitting results:
+#   a0 =      0.06165
+#   a1 =      20.32
+#   a2 =      9.632
+#   a3 =      93.05
+#   a4 =      -2.856
+#   a5 =      -74.1
+##
+thruster_polynomials:
+  surge:       [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
+  sway_stern: [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
+  heave_bow:   [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
+  heave_stern:   [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
+
+## Force limits
+thruster_limits:
+  surge:
+    max: 40
+    min: -30
+  sway_stern:
+    max: 20
+    min: -20
+  heave_bow:
+    max: 20
+    min: -20
+  heave_stern:
+    max: 20
+    min: -20

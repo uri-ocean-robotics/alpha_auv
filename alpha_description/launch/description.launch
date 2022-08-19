@@ -2,14 +2,18 @@
 <launch>
 
   <arg name="robot_name" default="alpha"/>
+  <arg name="robot_version" default="v1-1"/>
 
-  <node
+  <!--node
     name="world2ned"
     pkg="tf2_ros"
     type="static_transform_publisher"
-    args="0 0 0 1.570796327 0 3.141592653589793 $(arg robot_name)/odom world_ned"/>
+    args="0 0 0 1.570796327 0 3.141592653589793 $(arg robot_name)/odom world_ned"/--> <!-- x y z yaw pitch roll frame_id child_frame_id -->
 
-  <param name="robot_description" command="$(find xacro)/xacro '$(find alpha_description)/urdf/base.urdf.xacro'"/>
+  <node name="world2ned" pkg="tf2_ros" type="static_transform_publisher" args="0.0 0.0 0.0 1.570796327 0.0 3.141592653589793 world world_ned"/>
+  <node name="odom2world" pkg="tf2_ros" type="static_transform_publisher" args="0.0 0.0 0.0 0.0 0.0 0.0 $(arg robot_name)/odom world"/>
+
+  <param name="robot_description" command="$(find xacro)/xacro '$(find alpha_description)/urdf/base_$(arg robot_version).urdf.xacro'"/>
 
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
     <param name="tf_prefix" type="string" value="$(arg robot_name)"/>
