@@ -12,6 +12,14 @@
         <remap from="accel/filtered" to="accel/local"/>
     </node>
 
+    <node name="imu_transformer" pkg="imu_transformer" type="imu_transformer_node" output="screen">
+        <remap from="imu_in/data" to="imu/data"/>
+        <remap from="imu_in/mag" to="imu/mag"/>
+        <remap from="imu_out/data" to="imu/transformed/data"/>
+        <remap from="imu_out/mag" to="imu/transformed/mag"/>
+        <param name="target_frame" value="$(arg robot_name)/base_link"/>
+    </node>
+
     <node name="alpha_depth_filter" pkg="alpha_localization" type="depth_filter_node" output="screen">
         <param name="frame_id" value="$(arg robot_name)/odom"/>
     </node>

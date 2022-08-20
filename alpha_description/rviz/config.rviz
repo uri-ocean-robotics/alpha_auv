@@ -5,9 +5,12 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
+        - /Odometry1
         - /Odometry1/Shape1
         - /Odometry1/Covariance1
+        - /TF1
         - /TF1/Frames1
+        - /Imu1
         - /Imu1/Axes properties1
       Splitter Ratio: 0.5
     Tree Height: 826
@@ -152,7 +155,7 @@ Visualization Manager:
         Shaft Length: 1
         Shaft Radius: 0.05000000074505806
         Value: Axes
-      Topic: /odometry/filtered
+      Topic: /odometry/local
       Unreliable: false
       Value: true
     - Class: rviz/TF
@@ -189,9 +192,9 @@ Visualization Manager:
         utm:
           Value: true
         world:
-          Value: true
+          Value: false
         world_ned:
-          Value: true
+          Value: false
       Marker Alpha: 1
       Marker Scale: 0.5
       Name: TF
@@ -234,7 +237,7 @@ Visualization Manager:
       Marker Topic: /helm/bhv00/path
       Name: Marker
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -250,7 +253,7 @@ Visualization Manager:
       Marker Topic: /helm/bhv00/segment
       Name: Marker
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -278,12 +281,12 @@ Visualization Manager:
         y_scale: 1
         z_scale: 1
       Class: rviz_imu_plugin/Imu
-      Enabled: true
+      Enabled: false
       Name: Imu
       Queue Size: 10
       Topic: /imu/data
       Unreliable: false
-      Value: true
+      Value: false
       fixed_frame_orientation: true
   Enabled: true
   Global Options:
@@ -313,7 +316,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 3.5199999809265137
+      Distance: 8.648324012756348
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -329,9 +332,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.045398157089948654
+      Pitch: 0.47479695081710815
       Target Frame: alpha/base_link
-      Yaw: 6.138583660125732
+      Yaw: 2.925389051437378
     Saved: ~
 Window Geometry:
   Displays:

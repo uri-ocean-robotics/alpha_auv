@@ -8,10 +8,10 @@
         <!--arg name="robot_name" value="$(arg robot_name)"/-->
     </include>
 
-    <!--include file="$(find alpha_bringup)/launch/include/control.launch.xml">
+    <include file="$(find alpha_bringup)/launch/include/control.launch.xml">
         <arg name="robot_name" value="$(arg robot_name)"/>
         <arg name="robot_version" value="$(arg robot_version)"/>
-    </include-->
+    </include>
 
     <include file="$(find alpha_bringup)/launch/include/description.launch.xml">
         <arg name="robot_name" value="$(arg robot_name)"/>

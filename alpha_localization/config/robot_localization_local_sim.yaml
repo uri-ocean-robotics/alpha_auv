@@ -30,7 +30,7 @@ history_length: 5.0
 #    V_roll,  V_pitch,    V_yaw,
 #        ax,       ay,       az]
 
-imu0: /imu/data
+imu0: /imu/transformed/data
 imu0_config: [false, false, false,
               true, true, true,
               false, false, false,
