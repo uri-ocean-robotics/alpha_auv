@@ -44,8 +44,8 @@ behaviors:
       - { name: survey_local, priority: 1 }
       - { name: survey_global, priority: 1 }
 
-  # - name: bhv03
-  #   plugin: helm::PeriodicSurface
-  #   states:
-  #     - {name: survey_local, priority: 2 }
-  #     - {name: survey_global, priority: 2 }
+  - name: bhv03
+    plugin: helm::PeriodicSurface
+    states:
+      - {name: survey_local, priority: 2 }
+      - {name: survey_global, priority: 2 }

@@ -15,8 +15,8 @@ frame_id: world_ned
 acceptance_radius: 3.0
 update_topic: update_waypoints
 append_topic: append_waypoints
-surge_velocity: 0.60
+surge_velocity: 0.80
 lookahead_distance: 5.0
-beta_gain: 0.0
+beta_gain: 1.0
 state_done: start
 state_fail: kill

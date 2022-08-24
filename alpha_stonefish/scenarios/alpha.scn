@@ -91,11 +91,11 @@
 
             <external_part name="Mast" type="model" physics="submerged">
                 <physical>
-                    <mesh filename="mast_reduced.obj" scale="0.001"/>
+                    <mesh filename="mast.obj" scale="0.001"/>
                     <origin rpy="-1.571 0.0 1.571"  xyz="-1.0 0.0 0.0"/>
                 </physical>
                 <visual>
-                    <mesh filename="mast_reduced.obj" scale="0.001"/>
+                    <mesh filename="mast.obj" scale="0.001"/>
                     <origin rpy="-1.571 0.0 1.571" xyz="-1.0 0.0 0.0"/>
                 </visual>
                 <material name="Resin"/>
@@ -105,11 +105,11 @@
 
             <external_part name="ThrusterDuctSurge" type="model" physics="submerged" buoyant="false">
                 <physical>
-                    <mesh filename="duct_reduced.obj" scale="0.001"/>
+                    <mesh filename="duct.obj" scale="0.001"/>
                     <origin rpy="0.0 1.571 0.0" xyz="-1.325 0.0 0.0"/>
                 </physical>
                 <visual>
-                    <mesh filename="duct_reduced.obj" scale="0.001"/>
+                    <mesh filename="duct.obj" scale="0.001"/>
                     <origin rpy="0.0 1.571 0.0" xyz="-1.325 0.0 0.0"/>
                 </visual>
                 <material name="Fiberglass"/>
@@ -207,14 +207,14 @@
 
     </robot>
 
-    <!-- <static name="Bottom" type="terrain"> 
+    <!-- <static name="Bottom" type="terrain">
         <height_map filename="plain_terrain.png"/>
         <dimensions scalex="0.01" scaley="0.01" height="10.0"/>
         <material name="Rock"/>
         <look name="Gray"/>
         <world_transform xyz="0.0 0.0 5.0" rpy="0.0 0.0 0.0"/>
     </static> -->
-    <static name="Bottom" type="model"> 
+    <static name="Bottom" type="model">
         <physical>
             <mesh filename="seabed.obj" scale="2.0" convex="true"/>
             <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>

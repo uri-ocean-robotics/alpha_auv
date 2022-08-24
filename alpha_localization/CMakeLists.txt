@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   seal_msgs
   sensor_msgs
+  imu_transformer
 )
 
 ## System dependencies are found with CMake's conventions

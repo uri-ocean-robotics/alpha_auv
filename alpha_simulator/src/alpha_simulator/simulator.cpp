@@ -169,7 +169,7 @@ Simulator::Simulator() : m_nh() , m_pnh("~"){
 
     m_pnh.param<std::string>("tf_prefix", m_tf_prefix, "");
 
-    m_odom_publisher = m_nh.advertise<nav_msgs::Odometry>("odometry/filtered", 1000);
+    m_odom_publisher = m_nh.advertise<nav_msgs::Odometry>("odometry/local", 1000);
 
     m_pose_publisher = m_nh.advertise<geometry_msgs::PoseStamped>("dynamics/pose", 100);
 
@@ -183,7 +183,7 @@ Simulator::Simulator() : m_nh() , m_pnh("~"){
     m_horizontal_thruster_setpoint = m_nh.subscribe("control/thruster/horizontal", 100, &Simulator::horizontal_thruster_cb, this);
     m_vertical_thruster_setpoint = m_nh.subscribe("control/thruster/vertical", 100, &Simulator::vertical_thruster_cb, this);
 
-    m_gazebo_set_model_state = m_nh.serviceClient<gazebo_msgs::SetModelState>("/gazebo/set_model_state");
+    // m_gazebo_set_model_state = m_nh.serviceClient<gazebo_msgs::SetModelState>("/gazebo/set_model_state");
 
     m_loop_thread = std::thread([this]() {
         this->loop();
@@ -205,7 +205,6 @@ Simulator::Simulator() : m_nh() , m_pnh("~"){
         ros::Rate r(100);
         while(ros::ok()) {
             auto now = std::chrono::system_clock::now();
-
 
             publish_pose();
             publish_velocity();
@@ -289,7 +288,7 @@ void Simulator::publish_odometry() {
     tf_stamped.transform.rotation.z = quat.z();
 
     br.sendTransform(tf_stamped);
-
+/*
     gazebo_msgs::SetModelState model_state;
     model_state.request.model_state.model_name = "alpha";
     model_state.request.model_state.pose.position.x = msg.pose.pose.position.x;
@@ -311,7 +310,7 @@ void Simulator::publish_odometry() {
     } catch(ros::Exception e) {
         std::cout << "service call is failed" << std::endl;
     }
-
+*/
 }
 
 
