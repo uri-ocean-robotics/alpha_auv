@@ -56,7 +56,7 @@
         <base_link name="Vehicle" type="compound" physics="submerged">
             <external_part name="Hull" type="model" physics="submerged" buoyant="false">
                 <physical>
-                    <mesh filename="hull_phy.obj" scale="1.0"/>
+                    <mesh filename="hull_phy_reduced.obj" scale="1.0"/>
                     <!--thickness value="0.035"/-->
                     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                 </physical>
@@ -91,11 +91,11 @@
 
             <external_part name="Mast" type="model" physics="submerged">
                 <physical>
-                    <mesh filename="mast.obj" scale="0.001"/>
+                    <mesh filename="mast_reduced.obj" scale="0.001"/>
                     <origin rpy="-1.571 0.0 1.571"  xyz="-1.0 0.0 0.0"/>
                 </physical>
                 <visual>
-                    <mesh filename="mast.obj" scale="0.001"/>
+                    <mesh filename="mast_reduced.obj" scale="0.001"/>
                     <origin rpy="-1.571 0.0 1.571" xyz="-1.0 0.0 0.0"/>
                 </visual>
                 <material name="Resin"/>
@@ -105,11 +105,11 @@
 
             <external_part name="ThrusterDuctSurge" type="model" physics="submerged" buoyant="false">
                 <physical>
-                    <mesh filename="duct.obj" scale="0.001"/>
+                    <mesh filename="duct_reduced.obj" scale="0.001"/>
                     <origin rpy="0.0 1.571 0.0" xyz="-1.325 0.0 0.0"/>
                 </physical>
                 <visual>
-                    <mesh filename="duct.obj" scale="0.001"/>
+                    <mesh filename="duct_reduced.obj" scale="0.001"/>
                     <origin rpy="0.0 1.571 0.0" xyz="-1.325 0.0 0.0"/>
                 </visual>
                 <material name="Fiberglass"/>
@@ -184,7 +184,7 @@
             <link name="Vehicle"/>
             <origin rpy="3.1416 0.0 0.0" xyz="-0.75 0.0 0.10"/>
             <specs beam_angle="30.0"/>
-            <range velocity="9.0 9.0 9.0" altitude_min="0.05" altitude_max="50.0"/>
+            <range velocity="9.0 9.0 9.0" altitude_min="0.05" altitude_max="200.0"/>
             <noise velocity="0.0015" altitude="0.001"/>
             <ros_publisher topic="/dvl/twist" altitude_topic="/dvl/altitude"/>
         </sensor>
@@ -207,12 +207,25 @@
 
     </robot>
 
-    <static name="Bottom" type="terrain">
+    <!-- <static name="Bottom" type="terrain"> 
         <height_map filename="plain_terrain.png"/>
-        <dimensions scalex="20" scaley="20" height="10.0"/>
+        <dimensions scalex="0.01" scaley="0.01" height="10.0"/>
         <material name="Rock"/>
         <look name="Gray"/>
         <world_transform xyz="0.0 0.0 5.0" rpy="0.0 0.0 0.0"/>
+    </static> -->
+    <static name="Bottom" type="model"> 
+        <physical>
+            <mesh filename="seabed.obj" scale="2.0" convex="true"/>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        </physical>
+        <visual>
+            <mesh filename="seabed.obj" scale="2.0"/>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        </visual>
+        <material name="Rock"/>
+        <look name="Gray"/>
+        <world_transform xyz="-500.0 -500.0 20.0" rpy="0.0 0.0 0.0"/>
     </static>
 
 </scenario>
