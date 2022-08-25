@@ -203,6 +203,17 @@
             <ros_publisher topic="/gps/fix"/>
         </sensor>
 
+        <!-- multibeam sonar -->
+        <sensor name="multibeam" rate="5.0" type="multibeam">
+            <specs fov="60.0" steps="64"/>
+            <range distance_min="0.5" distance_max="200.0"/>
+            <noise distance="0.1"/>
+            <history samples="1"/>
+            <origin xyz="0.0 0.0 2.0" rpy="0.0 -1.57 0.0"/>
+            <link name="Vehicle"/>
+            <ros_publisher topic="/mbs/data"/>
+        </sensor>
+
         <world_transform rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
 
     </robot>
@@ -225,7 +236,7 @@
         </visual>
         <material name="Rock"/>
         <look name="Gray"/>
-        <world_transform xyz="-500.0 -500.0 20.0" rpy="0.0 0.0 0.0"/>
+        <world_transform xyz="-500.0 -500.0 -50.0" rpy="0.0 0.0 0.0"/>
     </static>
 
 </scenario>
