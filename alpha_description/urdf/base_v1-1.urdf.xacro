@@ -92,7 +92,7 @@
 
     <link name="multibeam"/>
     <joint name="multibeam_joint" type="fixed">
-        <origin xyz="0.0 0.0 0.2" rpy="0.0 1.57079632679 3.1415926"/>
+        <origin xyz="0.0 0.0 0.2" rpy="3.1416 1.0471975511965976 0.0"/>
         <parent link="base_link"/>
         <child link="multibeam"/>
     </joint>

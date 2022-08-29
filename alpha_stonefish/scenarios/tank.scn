@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<scenario>
+
+    <include file="$(find alpha_stonefish)/scenarios/alpha.scn"/>
+    <include file="$(find alpha_stonefish)/scenarios/looks.scn"/>
+    <include file="$(find alpha_stonefish)/scenarios/materials.scn"/>
+
+    <environment>
+        <ned latitude="41.7777" longitude="3.0333"/>
+        <ocean>
+            <water density="1000.0" jerlov="0.2"/>
+            <waves height="0.0"/>
+            <particles enabled="true"/>
+            <current type="uniform">
+                <velocity xyz="0.0 0.0 0.0"/>
+            </current>
+        </ocean>
+        <atmosphere>
+            <sun azimuth="50.0" elevation="50.0"/>
+        </atmosphere>
+    </environment>
+
+    <static name="tank" type="model">
+        <physical>
+            <mesh filename="tank.obj" scale="1.0" convex="false"/>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        </physical>
+        <visual>
+            <mesh filename="tank.obj" scale="1.0"/>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        </visual>
+        <material name="Rock"/>
+        <look name="Gray"/>
+        <world_transform xyz="10.0 10.0 20.0" rpy="3.1415926 0.0 0.0"/>
+    </static>
+
+</scenario>
