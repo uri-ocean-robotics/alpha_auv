@@ -25,7 +25,7 @@ DepthFilterNode::DepthFilterNode() {
 
 }
 
-void DepthFilterNode::f_depth_callback(const seal_msgs::Float64StampedConstPtr &msg) {
+void DepthFilterNode::f_depth_callback(const mvp_msgs::Float64StampedConstPtr &msg) {
 
     m_filter->predict();
     m_filter->update(msg->data);

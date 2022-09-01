@@ -13,7 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   uno_lqe
   std_msgs
   geometry_msgs
-  seal_msgs
+  mvp_msgs
   sensor_msgs
   imu_transformer
 )

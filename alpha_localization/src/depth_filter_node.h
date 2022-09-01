@@ -4,7 +4,7 @@
 #include "ros/ros.h"
 #include "uno_lqe/uno_lqe.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
-#include "seal_msgs/Float64Stamped.h"
+#include "mvp_msgs/Float64Stamped.h"
 
 class DepthFilterNode{
 
@@ -22,7 +22,7 @@ private:
 
     std::string m_frame_id;
 
-    void f_depth_callback(const seal_msgs::Float64StampedConstPtr& msg);
+    void f_depth_callback(const mvp_msgs::Float64StampedConstPtr& msg);
 
 public:
 

@@ -4,7 +4,7 @@
 #include "ros/ros.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
 #include "sensor_msgs/FluidPressure.h"
-#include "seal_msgs/Float64Stamped.h"
+#include "mvp_msgs/Float64Stamped.h"
 
 class PressureToDepthNode{
 

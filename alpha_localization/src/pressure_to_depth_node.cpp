@@ -12,7 +12,7 @@ PressureToDepthNode::PressureToDepthNode()
         "pressure", 10, &PressureToDepthNode::f_pressure_callback, this);
 
     m_depth_publisher = m_nh->advertise
-        <seal_msgs::Float64Stamped>("depth", 10);
+        <mvp_msgs::Float64Stamped>("depth", 10);
 
     m_pnh->param<double>("water_density", m_fluid_density, 1023.0);
 
@@ -22,7 +22,7 @@ void PressureToDepthNode::f_pressure_callback(
     const sensor_msgs::FluidPressureConstPtr &msg)
 {
 
-    seal_msgs::Float64Stamped depth;
+    mvp_msgs::Float64Stamped depth;
 
     depth.data = msg->fluid_pressure / (m_fluid_density * 9.81);
     depth.header.frame_id = m_frame_id;

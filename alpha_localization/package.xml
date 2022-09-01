@@ -52,7 +52,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <depend>robot_localization</depend>
   <depend>roscpp</depend>
-  <depend>seal_msgs</depend>
+  <depend>mvp_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>uno_lqe</depend>
   <depend>sensor_msgs</depend>

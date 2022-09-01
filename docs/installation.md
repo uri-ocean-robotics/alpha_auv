@@ -7,7 +7,7 @@
 Pull repository and other dependencies
 ```bash
 git clone https://github.com/GSO-soslab/alpha_auv
-git clone https://github.com/GSO-soslab/seal_msgs
+git clone https://github.com/GSO-soslab/mvp_msgs
 git clone https://github.com/GSO-soslab/mvp_controller
 git clone https://github.com/GSO-soslab/mvp_mission
 cd alpha_auv
