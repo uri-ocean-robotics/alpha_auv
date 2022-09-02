@@ -137,7 +137,7 @@
             <ros_publisher topic="/gps/fix"/>
         </sensor>
 
-        <sensor name="multibeam" rate="10.0" type="multibeam">
+        <!-- <sensor name="multibeam" rate="10.0" type="multibeam">
             <specs fov="90.0" steps="64"/>
             <range distance_min="0.5" distance_max="200.0"/>
             <noise distance="0.0"/>
@@ -145,6 +145,16 @@
             <origin xyz="0.0 0.0 0.2" rpy="0.0 -1.0471975511965976 0.0"/>
             <link name="Vehicle"/>
             <ros_publisher topic="/mbs/data"/>
+        </sensor> -->
+
+        <sensor name="MSIS" type="msis">
+            <link name="Vehicle"/>
+            <specs step="1.0" bins="500" horizontal_beam_width="2.0" vertical_beam_width="2.0"/>
+            <settings range_min="0.5" range_max="50.0" rotation_min="-180.0" rotation_max="180.0" gain="20.0"/>
+            <noise multiplicative="0.01" additive="0.01"/>
+            <display colormap="hot"/>
+            <origin xyz="0.0 0.0 0.0" rpy="1.57 0.00 1.57"/>
+            <ros_publisher topic="/msis/data"/>
         </sensor>
 
         <world_transform rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>

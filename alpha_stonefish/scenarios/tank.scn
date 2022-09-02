@@ -31,7 +31,7 @@
         </visual>
         <material name="Rock"/>
         <look name="Gray"/>
-        <world_transform xyz="10.0 10.0 20.0" rpy="3.1415926 0.0 0.0"/>
+        <world_transform xyz="0.0 0.0 18.0" rpy="3.1415926 0.0 0.0"/>
     </static>
 
 </scenario>
