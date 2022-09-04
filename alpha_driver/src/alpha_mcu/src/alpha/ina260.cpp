@@ -1,9 +1,9 @@
 #include "alpha/common/types.h"
 #include "alpha/common/dictionary.h"
 #include "iostream"
-#include "alpha/mcu/ina260.h"
-#include "alpha/mcu/common.h"
-#include "alpha/mcu/globals.h"
+#include "ina260.h"
+#include "common.h"
+#include "globals.h"
 
 INA260::INA260(int addr_, int alert_pin) {
     m_i2c_addr = addr_;

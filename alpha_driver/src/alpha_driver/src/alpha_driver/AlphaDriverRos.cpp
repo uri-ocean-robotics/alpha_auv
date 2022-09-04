@@ -152,21 +152,15 @@ void AlphaDriverRos::f_driver_serial_callback(std::string incoming) {
     raw_msg.data = incoming;
     m_raw_nmea_pub.publish(raw_msg);
 
-    mvp_msgs::NMEA nmea_msg;
-    NMEA data;
-    data.parse(incoming.c_str());
 
-    if(not data.get_valid()) {
+    NMEA msg;
+    msg.parse(incoming.c_str());
+
+    if(not msg.get_valid()) {
         return;
     }
 
-
-    nmea_msg.header.stamp = ros::Time::now();
-    nmea_msg.command = std::string(data.get_cmd());
-    nmea_msg.values = std::vector<float>(data.get_values(), data.get_values() + data.get_argc());
-    m_struct_nmea_pub.publish(nmea_msg);
-
-    if(nmea_msg.command == NMEA_BAROMETER_REPORT) {
+    if(strcmp(msg.get_cmd(), NMEA_BAROMETER_REPORT) == 0) {
         mvp_msgs::Float64Stamped pressure, depth, temperature;
 
         std_msgs::Header header;
@@ -174,36 +168,35 @@ void AlphaDriverRos::f_driver_serial_callback(std::string incoming) {
         header.frame_id = "alpha/pressure";
 
         pressure.header = header;
-        pressure.data = nmea_msg.values[0];
         temperature.header = header;
-        temperature.data = nmea_msg.values[1];
         depth.header = header;
-        depth.data = nmea_msg.values[2];
 
+        sscanf(msg.get_data(), "%*s,%lf,%lf,%lf",
+               &pressure.data, &temperature.data, &depth.data);
 
         m_depth_pub.publish(depth);
         m_pressure_pub.publish(pressure);
         m_temperature_pub.publish(temperature);
 
-    } else if (nmea_msg.command == NMEA_MULTIMETER_REPORT) {
+    } else if (strcmp(msg.get_cmd(), NMEA_MULTIMETER_REPORT) == 0) {
         mvp_msgs::Float64Stamped current, voltage, power;
 
         std_msgs::Header header;
         header.stamp = ros::Time::now();
 
+        sscanf(msg.get_data(), "%*s,%lf,%lf,%lf",
+               &voltage.data, &current.data, &power.data);
+
         voltage.header = header;
-        voltage.data = nmea_msg.values[0];
 
         current.header = header;
-        current.data = nmea_msg.values[1];
 
         current.header = header;
-        power.data = nmea_msg.values[2];
 
         m_voltage_pub.publish(voltage);
         m_current_pub.publish(current);
         m_power_pub.publish(power);
-    } else if (nmea_msg.command == NMEA_PWM_REPORT){
+    } else {
         // todo: to be defined
     }
 }

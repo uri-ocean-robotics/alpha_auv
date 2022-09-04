@@ -1,8 +1,9 @@
 #include "alpha/common/dictionary.h"
-#include "alpha/mcu/ina260.h"
-#include "alpha/mcu/ms5837.h"
-#include "alpha/mcu/safety.h"
-#include "alpha/mcu/globals.h"
+
+#include "ina260.h"
+#include "ms5837.h"
+#include "safety.h"
+#include "globals.h"
 #include "iostream"
 
 

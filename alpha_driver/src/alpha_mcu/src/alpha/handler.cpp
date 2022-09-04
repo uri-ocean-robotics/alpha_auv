@@ -1,5 +1,5 @@
-#include "alpha/mcu/handler.h"
-#include "alpha/mcu/globals.h"
+#include "handler.h"
+#include "globals.h"
 
 [[noreturn]] void listen_incoming_messages() {
     while(true) {
@@ -9,38 +9,60 @@
         NMEA msg(t.c_str());
 
         msg.parse();
+
+        if(!msg.get_valid()) {
+            continue;
+        }
+
         if( strcmp(msg.get_cmd(), NMEA_BOOTSEL_CMD) == 0) {
+
             handler::apply_usb_boot();
         } else if (strcmp(msg.get_cmd(), NMEA_SAFETY_CMD) == 0) {
+
             if (msg.get_argc() != 1) {
                 continue;
             }
+
+            int value;
+            sscanf(msg.get_data(),"%*s,%d", &value);
+
             handler::apply_safety(
-                    static_cast<int>(msg.get_values()[0])
+                    static_cast<int>(value)
             );
+
         } else if (strcmp(msg.get_cmd(), NMEA_PWM_CMD) == 0) {
             if(msg.get_argc() != 2) {
                 continue;
             }
-            handler::apply_pwm_input(
-                    static_cast<int>(msg.get_values()[0]),
-                    static_cast<float>(msg.get_values()[1])
-            );
+            int channel;
+            float signal;
+            sscanf(msg.get_data(), "%*s,%d,%f", &channel, &signal);
+            handler::apply_pwm_input(channel, signal);
         } else if (strcmp(msg.get_cmd(), NMEA_PWM_INITIALIZE) == 0) {
             if(msg.get_argc() != 2) {
                 continue;
             }
-            handler::apply_pwm_enable(
-                    static_cast<int>(msg.get_values()[0]),
-                    static_cast<int>(msg.get_values()[1])
-            );
+            int channel;
+            int mode;
+            sscanf(msg.get_data(), "%*s,%d,%d", &channel, &mode);
+            handler::apply_pwm_enable(channel, mode);
         } else if (strcmp(msg.get_cmd(), NMEA_STROBE_CMD) == 0) {
             if(msg.get_argc() != 1) {
                 continue;
             }
-            handler::apply_strobe(
-                    static_cast<int>(msg.get_values()[0])
-            );
+            int state;
+            sscanf(msg.get_data(), "%*s,%d", &state);
+            handler::apply_strobe(state);
+        } else if (strcmp(msg.get_cmd(), NMEA_SERIAL0) == 0) {
+            // relay it back
+            std::string m(msg.get_data());
+            handler::relay_serial0(
+                m.substr(strlen(msg.get_cmd()) + 1,std::string::npos));
+        } else if (strcmp(msg.get_cmd(), NMEA_SERIAL1) == 0) {
+            // relay it back
+            std::string m(msg.get_data());
+            handler::relay_serial1(
+                m.substr(strlen(msg.get_cmd()) + 1,std::string::npos));
         }
     }
 }
@@ -51,11 +73,11 @@ void handler::apply_usb_boot() {
 
 bool handler::apply_safety(int state) {
     if (state == 1) {
-        globals::safety.override_relay(true, true);
+        globals::safety->override_relay(true, true);
     } else if (state == -1) {
-        globals::safety.override_relay(true, false);
+        globals::safety->override_relay(true, false);
     } else {
-        globals::safety.override_relay(false, false);
+        globals::safety->override_relay(false, false);
     }
     return true;
 }
@@ -85,9 +107,9 @@ bool handler::apply_pwm_input(int channel, float signal) {
 
 void handler::apply_strobe(int state) {
     if(state == 1) {
-        globals::strobe.enable();
+        globals::strobe->enable();
     } else if (state == 0) {
-        globals::strobe.disable();
+        globals::strobe->disable();
     } else {
         // do something about it
     }
@@ -120,4 +142,17 @@ bool handler::apply_pwm_enable(int channel, int mode) {
     }
     return true;
 }
+
+void handler::relay_serial0(const std::string& msg) {
+    NMEA m;
+    m.construct("%s", msg.c_str());
+    globals::a_uart0->put_string(std::string(m.get_raw()));
+}
+
+void handler::relay_serial1(const std::string& msg) {
+    NMEA m;
+    m.construct("%s", msg.c_str());
+    globals::a_uart1->put_string(std::string(m.get_raw()));
+}
+
 

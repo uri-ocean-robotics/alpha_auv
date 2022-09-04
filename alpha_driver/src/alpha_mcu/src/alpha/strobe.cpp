@@ -1,5 +1,5 @@
 #include "alpha/common/dictionary.h"
-#include "alpha/mcu/strobe.h"
+#include "strobe.h"
 #include "iostream"
 
 

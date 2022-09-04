@@ -5,33 +5,31 @@
 #include <cstdint>
 #include <cstdarg>
 
-#define PURGE(x) \
+#define PURGE(x) vals\
     if(x) {free(x) ; x = nullptr;}
 
 
 class NMEA {
 private:
-    char _raw[BUFSIZ];
+    char m_raw[BUFSIZ];
 
-    char* _cmd;
+    char m_data[BUFSIZ];
 
-    float* _values;
+    char m_cmd[BUFSIZ];
 
-    int _argc;
+    int m_argc;
 
-    uint8_t _checksum{};
+    uint8_t m_checksum{};
 
-    uint8_t _crc{};
+    uint8_t m_crc{};
 
-    bool _valid;
-
-    void _clean_up();
+    bool m_valid;
 
 public:
     NMEA();
-    
+
     explicit NMEA(const char* msg);
-    
+
     ~NMEA();
 
     static bool crc(uint8_t &crc, const uint8_t *buf, size_t size);
@@ -39,21 +37,18 @@ public:
     void parse();
 
     void parse(const char *msg);
-    
-    void construct(const char* cmd, float* values, size_t size);
-    
+
     void construct(const char* format, ...);
 
     char* get_raw();
-    
-    int get_argc() const;
-    
-    bool get_valid() const;
-    
+
+    [[nodiscard]] int get_argc() const;
+
+    [[nodiscard]] bool get_valid() const;
+
     char* get_cmd();
 
-    float* get_values();
-
+    char* get_data();
 
 };
 

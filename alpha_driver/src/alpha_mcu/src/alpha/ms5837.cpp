@@ -1,12 +1,12 @@
-#include "alpha/mcu/ms5837.h"
 #include "iostream"
 #include "hardware/i2c.h"
 
 #include "alpha/common/dictionary.h"
 
-#include "alpha/mcu/globals.h"
-#include "alpha/mcu/common.h"
-#include "alpha/mcu/dictionary.h"
+#include "ms5837.h"
+#include "globals.h"
+#include "common.h"
+#include "dictionary.h"
 
 MS5837::MS5837() {
 

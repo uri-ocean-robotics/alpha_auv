@@ -53,6 +53,10 @@ namespace handler {
      */
     static inline void apply_strobe(int state);
 
+    static inline void relay_serial0(const std::string& msg);
+
+    static inline void relay_serial1(const std::string& msg);
+
 }
 
 #endif
