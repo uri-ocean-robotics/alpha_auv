@@ -15,7 +15,7 @@
                 </visual>
                 <material name="Vehicle"/>
                 <look name="yellow"/>
-                <mass value="25.1"/>
+                <mass value="24.8"/>
                 <compound_transform rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                 <cg xyz="-0.65 0.0 0.1" rpy="0.0 0.0 0.0"/>
             </external_part>
@@ -45,14 +45,14 @@
 
             <external_part name="ThrusterDuctSurge" type="model" physics="submerged" buoyant="false">
                 <physical>
-                    <mesh filename="duct.obj" scale="0.001"/>
+                    <mesh filename="duct.obj" scale="0.0015"/>
                     <origin rpy="0.0 1.571 0.0" xyz="-1.325 0.0 0.0"/>
                 </physical>
                 <visual>
-                    <mesh filename="duct.obj" scale="0.001"/>
+                    <mesh filename="duct.obj" scale="0.0015"/>
                     <origin rpy="0.0 1.571 0.0" xyz="-1.325 0.0 0.0"/>
                 </visual>
-                <material name="Fiberglass"/>
+                <material name="Neutral"/>
                 <look name="black"/>
                 <compound_transform rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
             </external_part>
@@ -97,10 +97,10 @@
         <actuator name="ThrusterSurge" type="thruster">
             <link name="Vehicle"/>
             <origin rpy="0.0 0.0 0.0" xyz="-1.325 0.0 0.0"/>
-            <specs thrust_coeff="0.4315" thrust_coeff_backward="0.3404" torque_coeff="0.01" max_rpm="3000.0"/>
+            <specs thrust_coeff="1.7568" thrust_coeff_backward="1.0882" torque_coeff="0.01" max_rpm="3000.0"/>
             <propeller diameter="0.08" right="true">
                 <origin rpy="1.571 0.0 0.0" xyz="0.0 0.0 0.0"/>
-                <mesh filename="prop.obj" scale="1.0"/>
+                <mesh filename="prop.obj" scale="1.5"/>
                 <material name="Neutral"/>
                 <look name="white"/>
             </propeller>
