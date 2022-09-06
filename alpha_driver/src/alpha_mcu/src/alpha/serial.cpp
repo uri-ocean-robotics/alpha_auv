@@ -1,6 +1,9 @@
 
 #include "serial.h"
 
+std::string in0 = std::string();
+std::string in1 = std::string();
+
 Serial::Serial(int chan, int baud) {
 
     if(chan == 0) {
@@ -13,29 +16,48 @@ Serial::Serial(int chan, int baud) {
 
 }
 
-void uart_callback(uart_inst_t* u) {
+
+void uart_callback(uart_inst_t* u, std::string* in) {
     // read it into std::string
-    std::string in;
     while (uart_is_readable(u)) {
-        in.push_back(uart_getc(u));
+        char c = uart_getc(u);
+        if(c == '\n') {
+
+            NMEA *msg_in = new NMEA();
+            NMEA *msg = new NMEA();
+
+            msg_in->parse(in->c_str());
+            if(msg_in->get_valid()) {
+
+                msg->construct("%s,%s",
+                               u == uart0 ? NMEA_SERIAL0_CMD : NMEA_SERIAL1_CMD,
+                               msg_in->get_data());
+
+                std::cout << msg->get_raw() << std::endl;
+            } else {
+                msg->construct("%s,invalid",
+                               u == uart0 ? NMEA_SERIAL0_CMD : NMEA_SERIAL1_CMD);
+                std::cout << msg->get_raw() << std::endl;
+            }
+
+            delete msg;
+            delete msg_in;
+
+            in->clear();
+        } else {
+            in->push_back(c);
+        }
     }
 
-    NMEA* msg = new NMEA();
 
-    msg->construct("%s,%s",
-                   u == uart0 ? NMEA_SERIAL0 : NMEA_SERIAL1,
-                   in.c_str());
-
-    std::cout << msg->get_raw() << std::endl;
-    delete msg;
 }
 
 void uart0_callback() {
-    uart_callback(uart0);
+    uart_callback(uart0, &in0);
 }
 
 void uart1_callback() {
-    uart_callback(uart1);
+    uart_callback(uart1, &in1);
 }
 
 void Serial::initialize() {
@@ -60,12 +82,15 @@ void Serial::initialize() {
     uart_init(m_hw, m_baud);
     gpio_set_function(rx_pin, GPIO_FUNC_UART);
     gpio_set_function(tx_pin, GPIO_FUNC_UART);
-    // irq_set_exclusive_handler(uart_irq, irq);
-    // irq_set_enabled(uart_irq, true);
+    irq_set_exclusive_handler(uart_irq, irq);
+    irq_set_enabled(uart_irq, true);
+    uart_set_irq_enables(m_hw, true, false);
+
 }
 
 void Serial::put_string(const std::string &s) {
 
     uart_puts(m_hw, s.c_str());
+    uart_puts(m_hw, "\r\n");
 
 }

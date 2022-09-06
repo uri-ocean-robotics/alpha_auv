@@ -53,12 +53,12 @@
             int state;
             sscanf(msg.get_data(), "%*s,%d", &state);
             handler::apply_strobe(state);
-        } else if (strcmp(msg.get_cmd(), NMEA_SERIAL0) == 0) {
+        } else if (strcmp(msg.get_cmd(), NMEA_SERIAL0_CMD) == 0) {
             // relay it back
             std::string m(msg.get_data());
             handler::relay_serial0(
                 m.substr(strlen(msg.get_cmd()) + 1,std::string::npos));
-        } else if (strcmp(msg.get_cmd(), NMEA_SERIAL1) == 0) {
+        } else if (strcmp(msg.get_cmd(), NMEA_SERIAL1_CMD) == 0) {
             // relay it back
             std::string m(msg.get_data());
             handler::relay_serial1(

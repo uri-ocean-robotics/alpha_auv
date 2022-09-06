@@ -14,6 +14,10 @@
 #include "nmea/nmea.h"
 #include "alpha/common/dictionary.h"
 
+
+extern std::string in0;
+extern std::string in1;
+
 class Serial {
 private:
 
