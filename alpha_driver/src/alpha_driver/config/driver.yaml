@@ -1,17 +1,27 @@
 port: /dev/ttyACM0
 
 pwm_control:
-  main:
+  pwm_chan0:
     channel: 0
     mode: thruster
-    topic: control/thruster/main
+    topic: control/pwm_chan0
 
-  horizontal:
+  pwm_chan1:
     channel: 1
     mode: thruster
-    topic: control/thruster/horizontal
+    topic: control/pwm_chan1
 
-  vertical:
+  pwm_chan2:
     channel: 2
     mode: thruster
-    topic: control/thruster/vertical
+    topic: control/pwm_chan2
+
+  pwm_chan3:
+    channel: 3
+    mode: thruster
+    topic: control/pwm_chan3
+
+  pwm_chan4:
+    channel: 4
+    mode: thruster
+    topic: control/pwm_chan4

@@ -20,27 +20,27 @@ namespace globals {
 
     extern pressure_t pressure_data;
 
-    extern std::shared_ptr<INA260> multimeter;
+    extern INA260* multimeter;
 
-    extern std::shared_ptr<MS5837> barometer;
+    extern MS5837* barometer;
 
-    extern std::shared_ptr<PwmController> pwm_chan0;
+    extern PwmController* pwm_chan0;
 
-    extern std::shared_ptr<PwmController> pwm_chan1;
+    extern PwmController* pwm_chan1;
 
-    extern std::shared_ptr<PwmController> pwm_chan2;
+    extern PwmController* pwm_chan2;
 
-    extern std::shared_ptr<PwmController> pwm_chan3;
+    extern PwmController* pwm_chan3;
 
-    extern std::shared_ptr<PwmController> pwm_chan4;
+    extern PwmController* pwm_chan4;
 
-    extern std::shared_ptr<Safety> safety;
+    extern Safety* safety;
 
-    extern std::shared_ptr<Strobe> strobe;
+    extern Strobe* strobe;
 
-    extern std::shared_ptr<Serial> a_uart0;
+    extern Serial* a_uart0;
 
-    extern std::shared_ptr<Serial> a_uart1;
+    extern Serial* a_uart1;
 
     void initialize();
 }

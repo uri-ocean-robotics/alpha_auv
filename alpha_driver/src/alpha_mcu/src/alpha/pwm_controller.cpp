@@ -46,6 +46,7 @@ void PwmController::initialize() {
     // pwm_set_enabled(m_slice_num, true);
 
 }
+
 bool PwmController::f_reporter(struct repeating_timer *t) {
 
     auto self = (PwmController *) t->user_data;
@@ -66,7 +67,9 @@ bool PwmController::f_reporter(struct repeating_timer *t) {
     std::cout << msg->get_raw() << std::endl;
     delete msg;
     return true;
+
 }
+#pragma clang diagnostic pop
 
 void PwmController::set_pwm(float signal) {
 
@@ -143,6 +146,9 @@ bool PwmController::f_limiter(struct repeating_timer *t) {
 
 void PwmController::enable() {
 
+    std::cout << "ENABLED!" << std::endl;
+    sleep_ms(1000);
+
     m_is_enabled = true;
 
     m_pulse_width = m_mode == PwmMode::Pure ? PULSE_WIDTH_MIN : PULSE_WIDTH_CTR;
@@ -150,8 +156,6 @@ void PwmController::enable() {
     pwm_set_chan_level(m_slice_num, 0, m_pulse_width);
 
     pwm_set_enabled(m_slice_num, true);
-
-
 
     add_repeating_timer_ms(100, f_safety_checker, this, &m_safety_checker_timer);
 

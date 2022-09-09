@@ -24,7 +24,7 @@
             }
 
             int value;
-            sscanf(msg.get_data(),"%*s,%d", &value);
+            sscanf(msg.get_data(),"%*[^,],%d", &value);
 
             handler::apply_safety(
                     static_cast<int>(value)
@@ -36,22 +36,24 @@
             }
             int channel;
             float signal;
-            sscanf(msg.get_data(), "%*s,%d,%f", &channel, &signal);
+            sscanf(msg.get_data(), "%*[^,],%d,%f", &channel, &signal);
             handler::apply_pwm_input(channel, signal);
         } else if (strcmp(msg.get_cmd(), NMEA_PWM_INITIALIZE) == 0) {
+
             if(msg.get_argc() != 2) {
                 continue;
             }
             int channel;
             int mode;
-            sscanf(msg.get_data(), "%*s,%d,%d", &channel, &mode);
+            std::cout  << "Incoming: " << msg.get_data() << std::endl;
+            sscanf(msg.get_data(), "%*[^,],%d,%d", &channel, &mode);
             handler::apply_pwm_enable(channel, mode);
         } else if (strcmp(msg.get_cmd(), NMEA_STROBE_CMD) == 0) {
             if(msg.get_argc() != 1) {
                 continue;
             }
             int state;
-            sscanf(msg.get_data(), "%*s,%d", &state);
+            sscanf(msg.get_data(), "%*[^,]s,%d", &state);
             handler::apply_strobe(state);
         } else if (strcmp(msg.get_cmd(), NMEA_SERIAL0_CMD) == 0) {
             // relay it back
@@ -116,6 +118,9 @@ void handler::apply_strobe(int state) {
 }
 
 bool handler::apply_pwm_enable(int channel, int mode) {
+
+    std::cout << "ENABLE: " << channel << " WITH MODE: " << mode << std::endl;
+
     switch (channel) {
         case 0:
             globals::pwm_chan0->set_mode(mode);

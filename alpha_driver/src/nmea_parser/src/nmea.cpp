@@ -116,8 +116,7 @@ void NMEA::parse() {
         check ^= m_raw[i];
     }
     m_valid = m_checksum == check;
-    memcpy(m_data, &m_raw[1], l - 3);
-    return;
+    memcpy(m_data, m_raw + 1, sizeof(char) * (l - 3));
 }
 
 void NMEA::parse(const char *msg) {
