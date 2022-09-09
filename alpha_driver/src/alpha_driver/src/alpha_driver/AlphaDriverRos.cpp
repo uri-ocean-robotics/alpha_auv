@@ -163,7 +163,7 @@ void AlphaDriverRos::f_driver_serial_callback(std::string incoming) {
         temperature.header = header;
         depth.header = header;
 
-        sscanf(msg.get_data(), "%*s,%lf,%lf,%lf",
+        sscanf(msg.get_data(), "%*[^,],%lf,%lf,%lf",
                &pressure.data, &temperature.data, &depth.data);
 
         m_depth_pub.publish(depth);
@@ -176,7 +176,7 @@ void AlphaDriverRos::f_driver_serial_callback(std::string incoming) {
         std_msgs::Header header;
         header.stamp = ros::Time::now();
 
-        sscanf(msg.get_data(), "%*s,%lf,%lf,%lf",
+        sscanf(msg.get_data(), "%*[^,],%lf,%lf,%lf",
                &voltage.data, &current.data, &power.data);
 
         voltage.header = header;
