@@ -3,7 +3,6 @@
 
 #include "AlphaDriver.h"
 
-#include "mvp_msgs/NMEA.h"
 #include "mvp_msgs/Float64Stamped.h"
 #include "ros/ros.h"
 #include "std_msgs/String.h"
@@ -50,6 +49,14 @@ private:
 
     ros::Subscriber m_raw_nmea_sub;
 
+    ros::Subscriber m_serial0_sub;
+
+    ros::Subscriber m_serial1_sub;
+
+    ros::Publisher m_serial0_pub;
+
+    ros::Publisher m_serial1_pub;
+
     ros::Subscriber m_struct_nmea_sub;
 
     ros::Publisher m_raw_nmea_pub;
@@ -88,7 +95,7 @@ private:
 
     void f_raw_nmea_callback(const std_msgs::String::ConstPtr& msg);
 
-    void f_struct_nmea_callback(const mvp_msgs::NMEA::ConstPtr& msg);
+    void f_serial_callback(const std_msgs::String::ConstPtr& msg, int channel);
 
     void f_pwm_cb(const std_msgs::Float64::ConstPtr &msg, uint16_t channel, uint8_t mode);
 

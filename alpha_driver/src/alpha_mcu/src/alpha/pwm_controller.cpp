@@ -1,4 +1,4 @@
-#include "alpha/mcu/pwm_controller.h"
+#include "pwm_controller.h"
 
 #include <cmath>
 

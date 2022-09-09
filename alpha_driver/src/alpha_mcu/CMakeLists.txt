@@ -30,6 +30,7 @@ add_executable(${PROJECT_NAME}
   src/alpha/globals.cpp
   src/alpha/pwm_controller.cpp
   src/alpha/strobe.cpp
+  src/alpha/serial.cpp
 )
 # create map/bin/hex/uf2 files.
 pico_add_extra_outputs(${PROJECT_NAME})
@@ -47,6 +48,7 @@ target_link_libraries(${PROJECT_NAME}
         hardware_pwm
         hardware_gpio
         hardware_i2c
+        hardware_uart
         pico_multicore
         NMEA_PARSER
         ALPHA_COMMON

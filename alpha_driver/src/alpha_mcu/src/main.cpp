@@ -2,12 +2,12 @@
 #include "pico/stdio.h"
 #include "pico/stdlib.h"
 
-#include "alpha/mcu/common.h"
-#include "alpha/mcu/ina260.h"
-#include "alpha/mcu/ms5837.h"
-#include "alpha/mcu/handler.h"
-#include "alpha/mcu/strobe.h"
-#include "alpha/mcu/globals.h"
+#include "alpha/common.h"
+#include "alpha/ina260.h"
+#include "alpha/ms5837.h"
+#include "alpha/handler.h"
+#include "alpha/strobe.h"
+#include "alpha/globals.h"
 
 int main() {
 

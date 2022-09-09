@@ -1,4 +1,4 @@
-#include "alpha/mcu/globals.h"
+#include "globals.h"
 #include "memory"
 
 namespace globals {
@@ -6,9 +6,9 @@ namespace globals {
 
     pressure_t pressure_data = pressure_t();
 
-    INA260   multimeter = INA260();
+    std::shared_ptr<INA260> multimeter = std::make_shared<INA260>();
 
-    MS5837   barometer = MS5837();
+    std::shared_ptr<MS5837> barometer = std::make_shared<MS5837>();
 
     std::shared_ptr<PwmController> pwm_chan0 = std::make_shared<PwmController>(GLOB_PWM_CHANNEL_0_PIN, 0);
     std::shared_ptr<PwmController> pwm_chan1 = std::make_shared<PwmController>(GLOB_PWM_CHANNEL_1_PIN, 1);
@@ -16,9 +16,13 @@ namespace globals {
     std::shared_ptr<PwmController> pwm_chan3 = std::make_shared<PwmController>(GLOB_PWM_CHANNEL_3_PIN, 3);
     std::shared_ptr<PwmController> pwm_chan4 = std::make_shared<PwmController>(GLOB_PWM_CHANNEL_4_PIN, 4);
 
-    Safety safety = Safety();
+    std::shared_ptr<Serial> a_uart0 = std::make_shared<Serial>(0, 115200);
 
-    Strobe strobe = Strobe();
+    std::shared_ptr<Serial> a_uart1 = std::make_shared<Serial>(1, 115200);
+
+    std::shared_ptr<Safety> safety = std::make_shared<Safety>();
+
+    std::shared_ptr<Strobe> strobe = std::make_shared<Strobe>();
 
     void initialize() {
 
@@ -28,13 +32,17 @@ namespace globals {
         pwm_chan3->initialize();
         pwm_chan4->initialize();
 
-        globals::multimeter.initialize();
+        globals::multimeter->initialize();
 
-        globals::barometer.initialize();
+        globals::barometer->initialize();
 
-        globals::safety.initialize();
+        globals::safety->initialize();
 
-        globals::strobe.initialize();
+        globals::strobe->initialize();
+
+        globals::a_uart0->initialize();
+
+        globals::a_uart1->initialize();
 
     }
 }

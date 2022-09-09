@@ -6,11 +6,7 @@ AlphaDriverRos::AlphaDriverRos() : m_nh(""), m_pnh("~") {
 
     m_raw_nmea_sub = m_nh.subscribe("driver/raw_nmea", 100, &AlphaDriverRos::f_raw_nmea_callback, this);
 
-    m_struct_nmea_sub = m_nh.subscribe("driver/struct_nmea", 100, &AlphaDriverRos::f_struct_nmea_callback, this);
-
     m_raw_nmea_pub = m_nh.advertise<std_msgs::String>("driver/incoming_raw_nmea", 1000);
-
-    m_struct_nmea_pub = m_nh.advertise<mvp_msgs::NMEA>("driver/incoming_struct_nmea", 1000);
 
     m_thrust_report_pub = m_nh.advertise<geometry_msgs::Vector3Stamped>("driver/thrust_report", 1000);
 
@@ -21,6 +17,12 @@ AlphaDriverRos::AlphaDriverRos() : m_nh(""), m_pnh("~") {
     m_current_pub = m_nh.advertise<mvp_msgs::Float64Stamped>("power/current", 1000);
     m_voltage_pub = m_nh.advertise<mvp_msgs::Float64Stamped>("power/voltage", 1000);
     m_power_pub = m_nh.advertise<mvp_msgs::Float64Stamped>("power/power", 1000);
+
+    m_serial0_sub = m_nh.subscribe<std_msgs::String>("serial/0/in", 100, std::bind(&AlphaDriverRos::f_serial_callback, this, std::placeholders::_1, 0));
+    m_serial1_sub = m_nh.subscribe<std_msgs::String>("serial/1/in", 100, std::bind(&AlphaDriverRos::f_serial_callback, this, std::placeholders::_1, 1));
+
+    m_serial0_pub = m_nh.advertise<std_msgs::String>("serial/0/out", 100);
+    m_serial1_pub = m_nh.advertise<std_msgs::String>("serial/1/out", 100);
 
     f_initialize_topics();
 
@@ -136,37 +138,21 @@ void AlphaDriverRos::f_raw_nmea_callback(const std_msgs::String::ConstPtr &msg) 
     m_driver->send_raw(msg->data);
 }
 
-void AlphaDriverRos::f_struct_nmea_callback(const mvp_msgs::NMEA::ConstPtr &msg) {
-    NMEA nmea;
-
-    nmea.construct(msg->command.c_str(), (float*)&msg->values[0], msg->values.size());
-
-    std::string message(nmea.get_raw());
-
-    m_driver->send_raw(message);
-}
-
 void AlphaDriverRos::f_driver_serial_callback(std::string incoming) {
 
     std_msgs::String raw_msg;
     raw_msg.data = incoming;
     m_raw_nmea_pub.publish(raw_msg);
 
-    mvp_msgs::NMEA nmea_msg;
-    NMEA data;
-    data.parse(incoming.c_str());
 
-    if(not data.get_valid()) {
+    NMEA msg;
+    msg.parse(incoming.c_str());
+
+    if(not msg.get_valid()) {
         return;
     }
 
-
-    nmea_msg.header.stamp = ros::Time::now();
-    nmea_msg.command = std::string(data.get_cmd());
-    nmea_msg.values = std::vector<float>(data.get_values(), data.get_values() + data.get_argc());
-    m_struct_nmea_pub.publish(nmea_msg);
-
-    if(nmea_msg.command == NMEA_BAROMETER_REPORT) {
+    if(strcmp(msg.get_cmd(), NMEA_BAROMETER_REPORT) == 0) {
         mvp_msgs::Float64Stamped pressure, depth, temperature;
 
         std_msgs::Header header;
@@ -174,37 +160,46 @@ void AlphaDriverRos::f_driver_serial_callback(std::string incoming) {
         header.frame_id = "alpha/pressure";
 
         pressure.header = header;
-        pressure.data = nmea_msg.values[0];
         temperature.header = header;
-        temperature.data = nmea_msg.values[1];
         depth.header = header;
-        depth.data = nmea_msg.values[2];
 
+        sscanf(msg.get_data(), "%*s,%lf,%lf,%lf",
+               &pressure.data, &temperature.data, &depth.data);
 
         m_depth_pub.publish(depth);
         m_pressure_pub.publish(pressure);
         m_temperature_pub.publish(temperature);
 
-    } else if (nmea_msg.command == NMEA_MULTIMETER_REPORT) {
+    } else if (strcmp(msg.get_cmd(), NMEA_MULTIMETER_REPORT) == 0) {
         mvp_msgs::Float64Stamped current, voltage, power;
 
         std_msgs::Header header;
         header.stamp = ros::Time::now();
 
+        sscanf(msg.get_data(), "%*s,%lf,%lf,%lf",
+               &voltage.data, &current.data, &power.data);
+
         voltage.header = header;
-        voltage.data = nmea_msg.values[0];
 
         current.header = header;
-        current.data = nmea_msg.values[1];
 
         current.header = header;
-        power.data = nmea_msg.values[2];
 
         m_voltage_pub.publish(voltage);
         m_current_pub.publish(current);
         m_power_pub.publish(power);
-    } else if (nmea_msg.command == NMEA_PWM_REPORT){
-        // todo: to be defined
+    } else if(strcmp(msg.get_cmd(), NMEA_SERIAL0_CMD) == 0) {
+        std::string data(msg.get_data());
+        std_msgs::String d;
+        d.data = data.substr(data.find(',') + 1, data.length());
+        m_serial0_pub.publish(d);
+    } else if(strcmp(msg.get_cmd(), NMEA_SERIAL1_CMD) == 0) {
+        std::string data(msg.get_data());
+        std_msgs::String d;
+        d.data = data.substr(data.find(',') + 1, data.length());
+        m_serial1_pub.publish(d);
+    } else {
+
     }
 }
 
@@ -235,4 +230,14 @@ void AlphaDriverRos::f_command_thrust_loop() {
         r.sleep();
     }
 
+}
+
+void AlphaDriverRos::f_serial_callback(const std_msgs::String::ConstPtr &msg,
+                                       int channel) {
+
+    NMEA* m = new NMEA();
+    m->construct("%s,%s", channel == 0 ? NMEA_SERIAL0_CMD : NMEA_SERIAL1_CMD, msg->data.c_str());
+    m_driver->send_raw(m->get_raw());
+
+    delete m;
 }
