@@ -2,9 +2,11 @@
 <launch>
 
   <arg name="robot_name" default="alpha"/>
+  <arg name="robot_version" default="v1"/>
 
   <include file="$(find alpha_description)/launch/description.launch">
     <arg name="robot_name" value="$(arg robot_name)"/>
+    <arg name="robot_version" value="$(arg robot_version)"/>
   </include>
 
 </launch>

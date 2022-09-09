@@ -11,7 +11,7 @@
 #include "rf_comms.h"
 #include "sensor_msgs/NavSatFix.h"
 #include "std_msgs/String.h"
-#include "seal_msgs/NMEA.h"
+#include "mvp_msgs/NMEA.h"
 #include "geometry_msgs/Vector3Stamped.h"
 
 #define NMEA_THRUST_PWM_CMD "PWMC"

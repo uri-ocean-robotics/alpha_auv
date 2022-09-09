@@ -3,12 +3,42 @@
 
     <arg name="robot_name" default="alpha"/>
 
-    <include file="$(find alpha_bringup)/launch/include/simulator.launch.xml">
-        <arg name="robot_name" value="$(arg robot_name)"/>
-    </include>
+    <arg name="robot_version" default="v1-1"/>
 
-    <include file="$(find alpha_bringup)/launch/include/control.launch.xml">
-        <arg name="robot_name" value="$(arg robot_name)"/>
-    </include>
+    <arg name="legacy" default="false"/>
+
+    <arg name="simulation_world" default="simulation"/>
+
+    <group unless="$(arg legacy)">
+        <include file="$(find alpha_stonefish)/launch/alpha_$(arg simulation_world).launch">
+        </include>
+
+        <include file="$(find alpha_bringup)/launch/include/control.launch.xml">
+            <arg name="robot_name" value="$(arg robot_name)"/>
+            <arg name="robot_version" value="$(arg robot_version)"/>
+        </include>
+
+        <include file="$(find alpha_bringup)/launch/include/description.launch.xml">
+            <arg name="robot_name" value="$(arg robot_name)"/>
+            <arg name="robot_version" default="$(arg robot_version)"/>
+        </include>
+
+        <include file="$(find alpha_bringup)/launch/include/localization_sim.launch.xml">
+            <arg name="robot_name" value="$(arg robot_name)"/>
+        </include>
+    </group>
+
+    <group if="$(arg legacy)">
+        <include file="$(find alpha_bringup)/launch/include/simulator.launch.xml">
+            <arg name="robot_name" value="$(arg robot_name)"/>
+        </include>
+
+        <include file="$(find alpha_bringup)/launch/include/control.launch.xml">
+            <arg name="robot_name" value="$(arg robot_name)"/>
+            <arg name="robot_version" default="v1"/>
+        </include>
+    </group>
+
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find alpha_description)/rviz/config.rviz"/>
 
 </launch>

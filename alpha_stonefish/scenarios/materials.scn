@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<scenario>
+
+    <materials>
+        <material name="Foam" density="320.37" restitution="0.1"/>
+        <material name="Neutral" density="1000.0" restitution="0.1"/>
+        <material name="Resin" density="1150.0" restitution="0.1"/>
+        <material name="Rock" density="3000.0" restitution="0.8"/>
+        <material name="Fiberglass" density="1500.0" restitution="0.3"/>
+        <material name="Aluminium" density="2710.0" restitution="0.5"/>
+        <material name="Vehicle" density="990.0" restitution="0.8"/>
+        <friction_table>
+            <friction material1="Neutral" material2="Neutral" static="0.5" dynamic="0.2"/>
+            <friction material1="Neutral" material2="Rock" static="0.2" dynamic="0.1"/>
+            <friction material1="Neutral" material2="Fiberglass" static="0.5" dynamic="0.2"/>
+            <friction material1="Neutral" material2="Aluminium" static="0.1" dynamic="0.02"/>
+            <friction material1="Rock" material2="Rock" static="0.9" dynamic="0.7"/>
+            <friction material1="Rock" material2="Fiberglass" static="0.6" dynamic="0.4"/>
+            <friction material1="Rock" material2="Aluminium" static="0.6" dynamic="0.3"/>
+            <friction material1="Fiberglass" material2="Fiberglass" static="0.5" dynamic="0.2"/>
+            <friction material1="Fiberglass" material2="Aluminium" static="0.5" dynamic="0.2"/>
+            <friction material1="Aluminium" material2="Aluminium" static="0.8" dynamic="0.5"/>
+        </friction_table>
+    </materials>
+
+</scenario>

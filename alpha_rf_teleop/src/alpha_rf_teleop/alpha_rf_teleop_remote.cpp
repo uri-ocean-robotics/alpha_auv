@@ -62,7 +62,7 @@ void RfRemote::f_serial_callback(std::string incoming) {
         return;
     }
 
-    seal_msgs::NMEA nmea_msg;
+    mvp_msgs::NMEA nmea_msg;
 
     nmea_msg.header.stamp = ros::Time::now();
     nmea_msg.command = std::string(data.get_cmd());

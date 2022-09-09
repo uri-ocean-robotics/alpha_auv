@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<launch>
+
+    <arg name="robot_name" default="alpha"/>
+
+    <node name="alpha_localization_local" pkg="robot_localization" type="ekf_localization_node" output="screen">
+        <rosparam command="load" file="$(find alpha_localization)/config/robot_localization_local_sim.yaml"/>
+        <param name="base_link_frame" type="string" value="$(arg robot_name)/base_link"/>
+        <param name="odom_frame" type="string" value="$(arg robot_name)/odom"/>
+        <param name="world_frame" type="string" value="$(arg robot_name)/odom"/>
+        <remap from="odometry/filtered" to="odometry/local"/>
+        <remap from="accel/filtered" to="accel/local"/>
+    </node>
+
+    <node name="imu_transformer" pkg="imu_transformer" type="imu_transformer_node" output="screen">
+        <remap from="imu_in/data" to="imu/data"/>
+        <remap from="imu_in/mag" to="imu/mag"/>
+        <remap from="imu_out/data" to="imu/transformed/data"/>
+        <remap from="imu_out/mag" to="imu/transformed/mag"/>
+        <param name="target_frame" value="$(arg robot_name)/base_link"/>
+    </node>
+
+    <node name="alpha_depth_filter" pkg="alpha_localization" type="depth_filter_node" output="screen">
+        <param name="frame_id" value="$(arg robot_name)/odom"/>
+    </node>
+
+    <node name="alpha_pressure_to_depth" pkg="alpha_localization" type="pressure_to_depth_node" output="screen">
+        <param name="frame_id" value="world_ned"/>
+    </node>
+
+</launch>

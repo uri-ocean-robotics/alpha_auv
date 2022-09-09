@@ -3,8 +3,8 @@
 
 #include "AlphaDriver.h"
 
-#include "seal_msgs/NMEA.h"
-#include "seal_msgs/Float64Stamped.h"
+#include "mvp_msgs/NMEA.h"
+#include "mvp_msgs/Float64Stamped.h"
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "std_msgs/Float64.h"
@@ -88,7 +88,7 @@ private:
 
     void f_raw_nmea_callback(const std_msgs::String::ConstPtr& msg);
 
-    void f_struct_nmea_callback(const seal_msgs::NMEA::ConstPtr& msg);
+    void f_struct_nmea_callback(const mvp_msgs::NMEA::ConstPtr& msg);
 
     void f_pwm_cb(const std_msgs::Float64::ConstPtr &msg, uint16_t channel, uint8_t mode);
 

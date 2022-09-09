@@ -10,17 +10,17 @@ AlphaDriverRos::AlphaDriverRos() : m_nh(""), m_pnh("~") {
 
     m_raw_nmea_pub = m_nh.advertise<std_msgs::String>("driver/incoming_raw_nmea", 1000);
 
-    m_struct_nmea_pub = m_nh.advertise<seal_msgs::NMEA>("driver/incoming_struct_nmea", 1000);
+    m_struct_nmea_pub = m_nh.advertise<mvp_msgs::NMEA>("driver/incoming_struct_nmea", 1000);
 
     m_thrust_report_pub = m_nh.advertise<geometry_msgs::Vector3Stamped>("driver/thrust_report", 1000);
 
-    m_pressure_pub = m_nh.advertise<seal_msgs::Float64Stamped>("pressure", 1000);
-    m_depth_pub = m_nh.advertise<seal_msgs::Float64Stamped>("depth", 1000);
-    m_temperature_pub = m_nh.advertise<seal_msgs::Float64Stamped>("temperature", 1000);
+    m_pressure_pub = m_nh.advertise<mvp_msgs::Float64Stamped>("pressure", 1000);
+    m_depth_pub = m_nh.advertise<mvp_msgs::Float64Stamped>("depth", 1000);
+    m_temperature_pub = m_nh.advertise<mvp_msgs::Float64Stamped>("temperature", 1000);
 
-    m_current_pub = m_nh.advertise<seal_msgs::Float64Stamped>("power/current", 1000);
-    m_voltage_pub = m_nh.advertise<seal_msgs::Float64Stamped>("power/voltage", 1000);
-    m_power_pub = m_nh.advertise<seal_msgs::Float64Stamped>("power/power", 1000);
+    m_current_pub = m_nh.advertise<mvp_msgs::Float64Stamped>("power/current", 1000);
+    m_voltage_pub = m_nh.advertise<mvp_msgs::Float64Stamped>("power/voltage", 1000);
+    m_power_pub = m_nh.advertise<mvp_msgs::Float64Stamped>("power/power", 1000);
 
     f_initialize_topics();
 
@@ -136,7 +136,7 @@ void AlphaDriverRos::f_raw_nmea_callback(const std_msgs::String::ConstPtr &msg) 
     m_driver->send_raw(msg->data);
 }
 
-void AlphaDriverRos::f_struct_nmea_callback(const seal_msgs::NMEA::ConstPtr &msg) {
+void AlphaDriverRos::f_struct_nmea_callback(const mvp_msgs::NMEA::ConstPtr &msg) {
     NMEA nmea;
 
     nmea.construct(msg->command.c_str(), (float*)&msg->values[0], msg->values.size());
@@ -152,7 +152,7 @@ void AlphaDriverRos::f_driver_serial_callback(std::string incoming) {
     raw_msg.data = incoming;
     m_raw_nmea_pub.publish(raw_msg);
 
-    seal_msgs::NMEA nmea_msg;
+    mvp_msgs::NMEA nmea_msg;
     NMEA data;
     data.parse(incoming.c_str());
 
@@ -167,7 +167,7 @@ void AlphaDriverRos::f_driver_serial_callback(std::string incoming) {
     m_struct_nmea_pub.publish(nmea_msg);
 
     if(nmea_msg.command == NMEA_BAROMETER_REPORT) {
-        seal_msgs::Float64Stamped pressure, depth, temperature;
+        mvp_msgs::Float64Stamped pressure, depth, temperature;
 
         std_msgs::Header header;
         header.stamp = ros::Time::now();
@@ -186,7 +186,7 @@ void AlphaDriverRos::f_driver_serial_callback(std::string incoming) {
         m_temperature_pub.publish(temperature);
 
     } else if (nmea_msg.command == NMEA_MULTIMETER_REPORT) {
-        seal_msgs::Float64Stamped current, voltage, power;
+        mvp_msgs::Float64Stamped current, voltage, power;
 
         std_msgs::Header header;
         header.stamp = ros::Time::now();

@@ -55,7 +55,7 @@
 
   <depend>geometry_msgs</depend>
 
-  <depend>seal_msgs</depend>
+  <depend>mvp_msgs</depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
