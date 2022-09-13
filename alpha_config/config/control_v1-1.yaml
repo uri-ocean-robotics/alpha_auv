@@ -1,10 +1,5 @@
 generator_type: tf
 
-control_tf:
-  surge: surge_thruster_link
-  sway_bow: sway_bow_thruster_link
-  heave_bow: heave_bow_thruster_link
-  heave_stern: heave_stern_thruster_link
 
 tf_prefix: alpha
 
@@ -68,6 +63,12 @@ thruster_ids:
   - heave_bow
   - heave_stern
 
+control_tf:
+  surge: surge_thruster_link
+  sway_bow: sway_bow_thruster_link
+  heave_bow: heave_bow_thruster_link
+  heave_stern: heave_stern_thruster_link
+
 thruster_command_topics:
   surge: control/thruster/surge
   sway_bow: control/thruster/sway_bow
@@ -95,9 +96,9 @@ thruster_force_topics:
 #
 # Array would hold the lower degrees in lower indexes. Shown below:
 # [a_0, a_1, ... ,a_(n-1), a(n)]
+#   f(x) = a5*x^5 + a4*x^4 + a3*x^3 + a2*x^2 + a1*x + a0
 #
 # For T200 bluerobotics thrusters:
-#   f(x) = a5*x^5 + a4*x^4 + a3*x^3 + a2*x^2 + a1*x + a0
 # Curve fitting results:
 #   a0 =      0.06165
 #   a1 =      20.32
@@ -105,12 +106,22 @@ thruster_force_topics:
 #   a3 =      93.05
 #   a4 =      -2.856
 #   a5 =      -74.1
+#
+# For T500 bluerobotics thrusters:
+# Curve fitting results:
+#   a0 =      -0.03703
+#   a1 =      4.217
+#   a2 =      2.84
+#   a3 =      4.976
+#   a4 =      -0.4119
+#   a5 =      -0.8448
+#
 ##
 thruster_polynomials:
-  surge:        [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
+  surge:        [-0.03703, 4.217, 2.84, 4.976, -0.4119, -0.8448]
   sway_bow:     [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
   heave_bow:    [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
-  heave_stern:   [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
+  heave_stern:  [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
 
 ## Force limits
 thruster_limits:
