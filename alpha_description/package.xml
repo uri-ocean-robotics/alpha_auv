@@ -5,8 +5,10 @@
   <description>The alpha_description package</description>
 
   <maintainer email="emircem@uri.edu">Emir Cem Gezer</maintainer>
+  <author email="emircem@uri.edu">Emir Cem Gezer</author>
+  <author email="mzhou@uri.edu">Mingxi Zhou</author>
 
-  <license>MIT</license>
+  <license>GPLv3</license>
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>tf2_ros</depend>

@@ -1,0 +1,26 @@
+##
+# Behavior: Teleoperation
+# States:
+#   - survey_utm
+#   - survey_local
+##
+
+max_surge: 0.70
+max_pitch_rate: 4.7
+max_yaw_rate: 4.7
+joy_topic: joy
+
+# Logitech F710 configuration
+joy_map:
+  # Position: Left stick Up-Down
+  # Value: Up(positive), Down(negitive)
+  axes_surge: 1
+  # Position: Right stick Up-Down
+  # Value: Up(positive), Down(negitive)
+  axes_pitch: 4
+  # Position: Left stick Left-Right
+  # Value: Left(positive), Right(negitive)
+  axes_yaw: 3
+  # Position: RB
+  # Value: enable(1), disable(0)
+  button_enable: 5

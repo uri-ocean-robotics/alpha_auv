@@ -1,10 +1,6 @@
 generator_type: tf
 
-control_tf:
-  surge: surge_thruster_link
-  sway_bow: sway_bow_thruster_link
-  heave_bow: heave_bow_thruster_link
-  heave_stern: heave_stern_thruster_link
+controller_frequency: 10
 
 tf_prefix: alpha
 
@@ -14,7 +10,7 @@ world_link: world_ned
 
 odometry_source: /odometry/local
 
-enabled: true
+enabled: false
 
 control_modes:
   idle: false
@@ -33,13 +29,10 @@ control_modes:
     surge:    {p: 10.0,   i: 3.0,   d: 5.0,   i_max: 10, i_min: -10}
 
   flight:
-    yaw:      {p: 7.0,    i: 0.5,   d: 7.0,  i_max: 20, i_min: -20}
-    surge:    {p: 10.0,    i: 5.0,   d: 5.0,   i_max: 30, i_min: -30}
-    pitch:    {p: 10.0,    i: 0.0,   d: 0.0,  i_max: 20, i_min: -20}
     z:        {p: 10.0,    i: 0.1 ,  d: 20.0,  i_max: 20, i_min: -20}
-
-    # Z is newly added: may 6th 2022, 14:15
-    # Z is deleted again: may 6th 2022, 15:16
+    surge:    {p: 10.0,    i: 5.0,   d: 5.0,   i_max: 30, i_min: -30}
+    pitch:    {p: 10.0,    i: 0.0,   d: 10.0,  i_max: 20, i_min: -20}
+    yaw:      {p: 15.0,    i: 1.0,   d: 10.0,  i_max: 20, i_min: -20}
 
   hold:
     x:        {p: 2.5,    i: 1.0,   d: 5.0,  i_max: 10, i_min: -10}
@@ -68,6 +61,12 @@ thruster_ids:
   - heave_bow
   - heave_stern
 
+control_tf:
+  surge: surge_thruster_link
+  sway_bow: sway_bow_thruster_link
+  heave_bow: heave_bow_thruster_link
+  heave_stern: heave_stern_thruster_link
+
 thruster_command_topics:
   surge: control/thruster/surge
   sway_bow: control/thruster/sway_bow
@@ -95,9 +94,9 @@ thruster_force_topics:
 #
 # Array would hold the lower degrees in lower indexes. Shown below:
 # [a_0, a_1, ... ,a_(n-1), a(n)]
+#   f(x) = a5*x^5 + a4*x^4 + a3*x^3 + a2*x^2 + a1*x + a0
 #
 # For T200 bluerobotics thrusters:
-#   f(x) = a5*x^5 + a4*x^4 + a3*x^3 + a2*x^2 + a1*x + a0
 # Curve fitting results:
 #   a0 =      0.06165
 #   a1 =      20.32
@@ -105,21 +104,31 @@ thruster_force_topics:
 #   a3 =      93.05
 #   a4 =      -2.856
 #   a5 =      -74.1
+#
+# For T500 bluerobotics thrusters:
+# Curve fitting results:
+#   a0 =      -0.03703
+#   a1 =      4.217
+#   a2 =      2.84
+#   a3 =      4.976
+#   a4 =      -0.4119
+#   a5 =      -0.8448
+#
 ##
 thruster_polynomials:
-  surge:        [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
+  surge:        [0.5038, 31.49, 29.78, 139.5, -18.66, -113.1]
   sway_bow:     [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
   heave_bow:    [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
-  heave_stern:   [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
+  heave_stern:  [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
 
 ## Force limits
 thruster_limits:
   surge:
-    max: 40
+    max: 50
     min: -30
   sway_bow:
-    max: 20
-    min: -20
+    max: 35
+    min: -35
   heave_bow:
     max: 40
     min: -40

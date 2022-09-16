@@ -13,6 +13,7 @@
         <rosparam command="load" ns="bhv01" file="$(find alpha_config)/mission/param/bhv01.yaml"/>
         <rosparam command="load" ns="bhv02" file="$(find alpha_config)/mission/param/bhv02.yaml"/>
         <rosparam command="load" ns="bhv03" file="$(find alpha_config)/mission/param/bhv03.yaml"/>
+        <rosparam command="load" ns="bhv04" file="$(find alpha_config)/mission/param/bhv04.yaml"/>
     </node>
 
 </launch>

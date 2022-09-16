@@ -1,0 +1,60 @@
+surge:
+  type: topic
+  message_type: std_msgs/Float64
+  topic_name: control/thruster/surge
+  deadman_buttons: [4]
+  axis_mappings:
+    -
+      axis: 1
+      target: data
+      scale: 0.3
+      offset: 0.0
+
+sway_bow:
+  type: topic
+  message_type: std_msgs/Float64
+  topic_name: control/thruster/sway_bow
+  deadman_buttons: [4]
+  axis_mappings:
+    -
+      axis: 3
+      target: data
+      scale: 1
+      offset: 0
+
+heave_bow:
+  type: topic
+  message_type: std_msgs/Float64
+  topic_name: control/thruster/heave_bow
+  deadman_buttons: [4]
+  axis_mappings:
+    -
+      axis: 4
+      target: data
+      scale: -1
+      offset: 0
+
+heave_stern:
+  type: topic
+  message_type: std_msgs/Float64
+  topic_name: control/thruster/heave_stern
+  deadman_buttons: [4]
+  axis_mappings:
+    -
+      axis: 4
+      target: data
+      scale: -1
+      offset: 0
+
+enable_controller:
+  type: service
+  service_name: /controller/enable
+  service_request: {}
+  buttons: [0]
+
+disable_controller:
+  type: service
+  service_name: /controller/disable
+  interface_type: std_srvs/Empty
+  service_request: {}
+  buttons: [1]

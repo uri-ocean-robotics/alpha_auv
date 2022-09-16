@@ -11,7 +11,6 @@
         </visual>
     </link>
 
-
     <link name="cg_link"/>
     <joint name="cg_joint" type="fixed">
         <origin xyz="0.100 0.000 0.10" rpy="3.14159265359 0.0 0.0"/>
@@ -71,21 +70,21 @@
 
     <link name="heave_bow_thruster_link"/>
     <joint name="heave_bow_thruster_joint" type="fixed">
-        <origin xyz="0.48735 0.0 0.089" rpy="0.0 -1.57079632679 0.0"/>
+        <origin xyz="0.48735 0.0 0.089" rpy="0.0 1.57079632679 0.0"/>
         <parent link="base_link"/>
         <child link="heave_bow_thruster_link"/>
     </joint>
 
     <link name="heave_stern_thruster_link"/>
     <joint name="heave_stern_thruster_joint" type="fixed">
-        <origin xyz="-0.28045 0.0 0.089" rpy="0.0 -1.57079632679 0.0"/>
+        <origin xyz="-0.28045 0.0 0.089" rpy="0.0 1.57079632679 0.0"/>
         <parent link="base_link"/>
         <child link="heave_stern_thruster_link"/>
     </joint>
 
     <link name="sway_bow_thruster_link"/>
     <joint name="sway_bow_thruster_joint" type="fixed">
-        <origin xyz="0.57635 0.0 0.105" rpy="0.0 0.0 -1.57079632679"/>
+        <origin xyz="0.57635 0.0 0.105" rpy="0.0 0.0 1.57079632679"/>
         <parent link="base_link"/>
         <child link="sway_bow_thruster_link"/>
     </joint>

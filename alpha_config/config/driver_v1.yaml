@@ -1,22 +1,17 @@
 port: /dev/PICO
 
 pwm_control:
-  main:
+  surge:
     channel: 2
     mode: thruster
-    topic: control/thruster/main
+    topic: control/thruster/surge
 
-  horizontal:
-    channel: 3
+  heave_bow:
+    channel: 0
     mode: thruster
-    topic: control/thruster/horizontal
+    topic: control/thruster/heave_bow
 
-  vertical:
+  sway_bow:
     channel: 4
     mode: thruster
-    topic: control/thruster/vertical
-
-  led:
-    channel: 1
-    mode: pure
-    topic: control/led
+    topic: control/thruster/sway_bow
