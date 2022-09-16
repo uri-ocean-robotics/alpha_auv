@@ -49,7 +49,6 @@ heave_stern:
 enable_controller:
   type: service
   service_name: /controller/enable
-  # service_persistent: False # False by default
   service_request: {}
   buttons: [0]
 
@@ -58,5 +57,4 @@ disable_controller:
   service_name: /controller/disable
   interface_type: std_srvs/Empty
   service_request: {}
-  # service_persistent: False # False by default
   buttons: [1]

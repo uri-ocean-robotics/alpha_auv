@@ -1,9 +1,6 @@
 generator_type: tf
 
-control_tf:
-  main: main_thruster_link
-  horizontal: horizontal_thruster_link
-  vertical: vertical_thruster_link
+controller_frequency: 10
 
 tf_prefix: alpha
 
@@ -65,20 +62,24 @@ control_modes:
 # THRUSTERS
 ##
 thruster_ids:
-  - main
-  - horizontal
-  - vertical
+  - surge
+  - sway_bow
+  - heave_bow
 
 thruster_command_topics:
-  main: control/thruster/main
-  horizontal: control/thruster/horizontal
-  vertical: control/thruster/vertical
+  surge: control/thruster/surge
+  sway_bow: control/thruster/sway_bow
+  heave_bow: control/thruster/heave_bow
 
 thruster_force_topics:
-  main: control/force/main
-  horizontal: control/force/horizontal
-  vertical: control/force/vertical
+  surge: control/force/main
+  sway_bow: control/force/sway_bow
+  heave_bow: control/force/heave_bow
 
+control_tf:
+  surge: surge_thruster_link
+  sway_bow: sway_bow_thruster_link
+  heave_bow: heave_bow_thruster_link
 
 ##
 # Polynomials for each thruster.
@@ -104,20 +105,30 @@ thruster_force_topics:
 #   a3 =      93.05
 #   a4 =      -2.856
 #   a5 =      -74.1
+#
+# For T500 bluerobotics thrusters:
+# Curve fitting results:
+#   a0 =      -0.03703
+#   a1 =      4.217
+#   a2 =      2.84
+#   a3 =      4.976
+#   a4 =      -0.4119
+#   a5 =      -0.8448
+#
 ##
 thruster_polynomials:
-  main:       [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
-  horizontal: [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
-  vertical:   [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
+  surge:     [0.5038, 31.49, 29.78, 139.5, -18.66, -113.1]
+  sway_bow:  [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
+  heave_bow: [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
 
 ## Force limits
 thruster_limits:
-  main:
-    max: 40
+  surge:
+    max: 50
     min: -30
-  horizontal:
+  sway_bow:
     max: 20
     min: -20
-  vertical:
+  heave_bow:
     max: 20
     min: -20

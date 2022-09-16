@@ -21,31 +21,15 @@
     Copyright (C) 2022 Smart Ocean Systems Laboratory
 */
 
-#include "pico/multicore.h"
-#include "pico/stdio.h"
-#include "pico/stdlib.h"
+#include "alpha_rf_teleop/alpha_rf_teleop.h"
 
-#include "alpha/common.h"
-#include "alpha/ina260.h"
-#include "alpha/ms5837.h"
-#include "alpha/handler.h"
-#include "alpha/strobe.h"
-#include "alpha/globals.h"
+int main(int argc, char** argv) {
 
-int main() {
+    ros::init(argc, argv, "rf_node");
 
-    stdio_init_all();
+    RfTeleop r;
 
-    initialize_i2c();
-
-    globals::initialize();
-
-    multicore_launch_core1(listen_incoming_messages);
-
-    // todo: is it needed?
-    while(true) {
-        sleep_ms(100);
-    }
+    ros::spin();
 
     return 0;
 }

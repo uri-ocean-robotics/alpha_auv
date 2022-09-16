@@ -21,31 +21,67 @@
     Copyright (C) 2022 Smart Ocean Systems Laboratory
 */
 
-#include "pico/multicore.h"
-#include "pico/stdio.h"
-#include "pico/stdlib.h"
+#ifndef NMEA_H_
+#define NMEA_H_
 
-#include "alpha/common.h"
-#include "alpha/ina260.h"
-#include "alpha/ms5837.h"
-#include "alpha/handler.h"
-#include "alpha/strobe.h"
-#include "alpha/globals.h"
+#include "cstdio"
+#include "cstdint"
+#include "cstdarg"
+#include "string"
 
-int main() {
+#define PURGE(x) \
+    if(x != nullptr) {free(x) ; x = nullptr;}
 
-    stdio_init_all();
 
-    initialize_i2c();
+class NMEA {
+private:
+    char _raw[BUFSIZ];
 
-    globals::initialize();
+    char _cmd[BUFSIZ];
 
-    multicore_launch_core1(listen_incoming_messages);
+    float _values[BUFSIZ];
 
-    // todo: is it needed?
-    while(true) {
-        sleep_ms(100);
-    }
+    int _argc;
 
-    return 0;
-}
+    uint8_t _checksum;
+
+    uint8_t _crc;
+
+    bool _valid;
+
+    void _clean_up();
+
+public:
+    NMEA();
+
+    NMEA(const char* msg);
+
+    ~NMEA();
+
+    bool crc(uint8_t &crc, uint8_t *buf, size_t size);
+
+    void parse();
+
+    void parse(const char *msg);
+
+    void parse(std::string msg);
+
+    void construct(const char* cmd, float* values, size_t size);
+
+    void construct(const char* format, ...);
+
+    char* get_raw();
+
+    int get_argc();
+
+    bool get_valid();
+
+    char* get_cmd();
+
+    float* get_values();
+
+    void debug();
+
+};
+
+#endif

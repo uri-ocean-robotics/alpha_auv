@@ -4,16 +4,11 @@
   <version>0.0.0</version>
   <description>The alpha_devices package</description>
 
-  <!-- One maintainer tag required, multiple allowed, one person per tag -->
-  <!-- Example:  -->
-  <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="ubuntu@todo.todo">ubuntu</maintainer>
+  <author email="mzhou@uri.edu">Mingxi Zhou</author>
+  <author email="emircem@uri.edu">Emir Cem Gezer</author>
+  <maintainer email="emircem@uri.edu">Emir Cem Gezer</maintainer>
 
-
-  <!-- One license tag required, multiple allowed, one license per tag -->
-  <!-- Commonly used license strings: -->
-  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>TODO</license>
+  <license>GLPv3</license>
 
 
   <!-- Url tags are optional, but multiple are allowed, one per tag -->

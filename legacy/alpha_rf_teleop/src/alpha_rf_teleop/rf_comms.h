@@ -21,31 +21,36 @@
     Copyright (C) 2022 Smart Ocean Systems Laboratory
 */
 
-#include "pico/multicore.h"
-#include "pico/stdio.h"
-#include "pico/stdlib.h"
+#ifndef ALPHA_RF_TELEOP_RF_COMMS_H
+#define ALPHA_RF_TELEOP_RF_COMMS_H
 
-#include "alpha/common.h"
-#include "alpha/ina260.h"
-#include "alpha/ms5837.h"
-#include "alpha/handler.h"
-#include "alpha/strobe.h"
-#include "alpha/globals.h"
+#include "boost/asio/serial_port.hpp"
+#include "boost/asio.hpp"
+#include "boost/thread.hpp"
 
-int main() {
+class RfComms {
+private:
+    boost::asio::io_service m_io;
+    boost::asio::serial_port m_serial_port;
+    boost::thread m_serial_read_th;
+    std::string m_port;
+    int m_baud;
+    void f_serial_read_loop();
+    std::string f_serial_read_line();
+    boost::function <void(std::string)> m_serial_callback;
+    bool m_active;
 
-    stdio_init_all();
+public:
+    RfComms();
+    RfComms(std::string port, int baud);
 
-    initialize_i2c();
+    bool activate();
+    bool deactivate();
 
-    globals::initialize();
+    bool sendLine(std::string msg);
 
-    multicore_launch_core1(listen_incoming_messages);
+    void setCallback(boost::function<void(std::string)> func);
+};
 
-    // todo: is it needed?
-    while(true) {
-        sleep_ms(100);
-    }
 
-    return 0;
-}
+#endif //ALPHA_RF_TELEOP_RF_COMMS_H
