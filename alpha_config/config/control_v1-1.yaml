@@ -1,5 +1,10 @@
 generator_type: tf
 
+<<<<<<< Updated upstream
+=======
+controller_frequency: 10
+
+>>>>>>> Stashed changes
 tf_prefix: alpha
 
 cg_link: cg_link
