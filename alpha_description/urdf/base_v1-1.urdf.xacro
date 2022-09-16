@@ -92,9 +92,39 @@
 
     <link name="multibeam"/>
     <joint name="multibeam_joint" type="fixed">
-        <origin xyz="0.0 0.0 0.2" rpy="3.1416 1.0471975511965976 0.0"/>
+        <origin xyz="0.0 0.0 -0.2" rpy="3.1416 1.0471975511965976 0.0"/>
         <parent link="base_link"/>
         <child link="multibeam"/>
+    </joint>
+
+    <!-- TF between Base frame and Transducer frame -->
+    <link name="ifss_port"/>
+    <joint name="ifss_port_joint" type="fixed">
+        <origin xyz="0 0.0762 -0.2" rpy="-1.5708 0.523599 1.5708"/>
+        <parent link="base_link"/>
+        <child link="ifss_port"/>
+    </joint>
+
+    <link name="ifss_starboard"/>
+    <joint name="ifss_starboard_joint" type="fixed">
+        <origin xyz="0 -0.0762 -0.2" rpy="1.5708 0.523599 -1.5708"/>
+        <parent link="base_link"/>
+        <child link="ifss_starboard"/>
+    </joint>
+
+    <!-- TF between Transducer frame and Swath frame -->
+    <link name="ifss_port_swath"/>
+    <joint name="ifss_port_swath_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0.261799383"/>
+        <parent link="ifss_port"/>
+        <child link="ifss_port_swath"/>
+    </joint>
+
+    <link name="ifss_starboard_swath"/>
+    <joint name="ifss_starboard_swath_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 -0.261799383"/>
+        <parent link="ifss_starboard"/>
+        <child link="ifss_starboard_swath"/>
     </joint>
 
 </robot>
