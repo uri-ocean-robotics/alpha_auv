@@ -1,6 +1,5 @@
 generator_type: tf
 
-
 tf_prefix: alpha
 
 cg_link: cg_link
@@ -9,7 +8,7 @@ world_link: world_ned
 
 odometry_source: /odometry/local
 
-enabled: true
+enabled: false
 
 control_modes:
   idle: false
@@ -28,13 +27,10 @@ control_modes:
     surge:    {p: 10.0,   i: 3.0,   d: 5.0,   i_max: 10, i_min: -10}
 
   flight:
-    yaw:      {p: 7.0,    i: 0.5,   d: 7.0,  i_max: 20, i_min: -20}
-    surge:    {p: 10.0,    i: 5.0,   d: 5.0,   i_max: 30, i_min: -30}
-    pitch:    {p: 10.0,    i: 0.0,   d: 0.0,  i_max: 20, i_min: -20}
     z:        {p: 10.0,    i: 0.1 ,  d: 20.0,  i_max: 20, i_min: -20}
-
-    # Z is newly added: may 6th 2022, 14:15
-    # Z is deleted again: may 6th 2022, 15:16
+    surge:    {p: 10.0,    i: 5.0,   d: 5.0,   i_max: 30, i_min: -30}
+    pitch:    {p: 10.0,    i: 0.0,   d: 10.0,  i_max: 20, i_min: -20}
+    yaw:      {p: 15.0,    i: 1.0,   d: 10.0,  i_max: 20, i_min: -20}
 
   hold:
     x:        {p: 2.5,    i: 1.0,   d: 5.0,  i_max: 10, i_min: -10}
@@ -118,7 +114,7 @@ thruster_force_topics:
 #
 ##
 thruster_polynomials:
-  surge:        [-0.03703, 4.217, 2.84, 4.976, -0.4119, -0.8448]
+  surge:        [0.5038, 31.49, 29.78, 139.5, -18.66, -113.1]
   sway_bow:     [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
   heave_bow:    [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
   heave_stern:  [0.06165, 20.32, 9.632, 93.05, -2.856, -74.1]
@@ -126,11 +122,11 @@ thruster_polynomials:
 ## Force limits
 thruster_limits:
   surge:
-    max: 40
+    max: 50
     min: -30
   sway_bow:
-    max: 20
-    min: -20
+    max: 35
+    min: -35
   heave_bow:
     max: 40
     min: -40

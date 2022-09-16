@@ -49,3 +49,10 @@ behaviors:
     states:
       - {name: survey_local, priority: 2 }
       - {name: survey_global, priority: 2 }
+
+  - name: bhv04
+    plugin: helm::Teleoperation
+    states:
+      - {name: survey_local, priority: 2 }
+      - {name: survey_global, priority: 2 }
+      - {name: teleop, priority: 1 }

@@ -6,17 +6,17 @@ pwm_control:
     mode: thruster
     topic: control/thruster/surge
 
-  sway:
-    channel: 3
-    mode: thruster
-    topic: control/thruster/sway
-
   heave_bow:
-    channel: 4
+    channel: 0
     mode: thruster
     topic: control/thruster/heave_bow
 
   heave_stern:
     channel: 1
-    mode: pure
+    mode: thruster
     topic: control/thruster/heave_stern
+
+  sway_bow:
+    channel: 4
+    mode: thruster
+    topic: control/thruster/sway_bow

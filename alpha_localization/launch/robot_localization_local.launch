@@ -13,7 +13,7 @@
     </node>
 
     <node name="alpha_depth_filter" pkg="alpha_localization" type="depth_filter_node" output="screen">
-        <param name="frame_id" value="world_ned"/>
+        <param name="frame_id" value="world"/>
     </node>
 
 </launch>
