@@ -5,12 +5,6 @@
 frequency: 20
 sensor_timeout: 2.0
 
-##
-# 2 dimentional mode
-#
-two_d_mode: false
-
-
 transform_time_offset: 1.0
 transform_timeout: 0.0
 print_diagnostics: true
@@ -30,13 +24,13 @@ history_length: 5.0
 #    V_roll,  V_pitch,    V_yaw,
 #        ax,       ay,       az]
 
-imu0: /imu/transformed/data
+imu0: /imu/data
 imu0_config: [false, false, false,
               true, true, true,
               false, false, false,
               true, true, true,
               true, true, true]
-imu0_remove_gravitational_acceleration: false      # the raw data is not removed
+imu0_remove_gravitational_acceleration: false
 imu0_nodelay: true
 imu0_relative: false
 imu0_queue_size: 100

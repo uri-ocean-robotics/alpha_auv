@@ -8,8 +8,8 @@
         <param name="base_link_frame" type="string" value="$(arg robot_name)/base_link"/>
         <param name="odom_frame" type="string" value="$(arg robot_name)/odom"/>
         <param name="world_frame" type="string" value="$(arg robot_name)/odom"/>
-        <remap from="odometry/filtered" to="odometry/local"/>
-        <remap from="accel/filtered" to="accel/local"/>
+        <remap from="odometry/filtered" to="odometry/filtered/local"/>
+        <remap from="accel/filtered" to="accel/filtered/local"/>
     </node>
 
     <node name="alpha_depth_filter" pkg="alpha_localization" type="depth_filter_node" output="screen">
