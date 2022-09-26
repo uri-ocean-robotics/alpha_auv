@@ -192,7 +192,7 @@ Simulator::Simulator() : m_nh() , m_pnh("~"){
 
     m_pnh.param<std::string>("tf_prefix", m_tf_prefix, "");
 
-    m_odom_publisher = m_nh.advertise<nav_msgs::Odometry>("odometry/local", 1000);
+    m_odom_publisher = m_nh.advertise<nav_msgs::Odometry>("odometry/filtered/local", 1000);
 
     m_pose_publisher = m_nh.advertise<geometry_msgs::PoseStamped>("dynamics/pose", 100);
 

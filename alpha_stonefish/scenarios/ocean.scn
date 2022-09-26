@@ -6,7 +6,7 @@
     <include file="$(find alpha_stonefish)/scenarios/materials.scn"/>
 
     <environment>
-        <ned latitude="41.7777" longitude="3.0333"/>
+        <ned latitude="41" longitude="71"/>
         <ocean>
             <water density="1000.0" jerlov="0.2"/>
             <waves height="0.0"/>

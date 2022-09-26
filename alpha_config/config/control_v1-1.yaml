@@ -8,9 +8,9 @@ cg_link: cg_link
 
 world_link: world_ned
 
-odometry_source: /odometry/local
+odometry_source: /odometry/filtered/local
 
-enabled: false
+enabled: true
 
 control_modes:
   idle: false
