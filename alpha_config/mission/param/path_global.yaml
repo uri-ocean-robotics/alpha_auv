@@ -11,19 +11,11 @@
 # UTM Zone: 19
 # North up.
 
-waypoints:
-  - {x: 299685.8445722851, y: 4599855.127124295}
-  - {x: 299685.8445722851, y: 4599875.127124295}
-  - {x: 299705.8445722851, y: 4599875.127124295}
-  - {x: 299705.8445722851, y: 4599855.127124295}
-  - {x: 299685.8445722851, y: 4599855.127124295}
-frame_id: utm
-
 acceptance_radius: 3.0
 update_topic: update_waypoints
 append_topic: append_waypoints
-surge_velocity: 0.60
+surge_velocity: 0.80
 lookahead_distance: 5.0
-beta_gain: 0.0
+beta_gain: 1.0
 state_done: start
 state_fail: kill

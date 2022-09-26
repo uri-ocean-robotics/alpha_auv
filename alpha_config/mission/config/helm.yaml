@@ -3,7 +3,7 @@ helm_configuration:
 
 finite_state_machine:
   - name: start
-    mode: flight
+    mode: hold3
     initial: true
     transitions:
       - survey_local
@@ -28,31 +28,47 @@ finite_state_machine:
       - start
 
 behaviors:
-  - name: bhv00
+  - name: path_local
     plugin: helm::PathFollowing
     states:
       - { name: survey_local, priority: 1 }
 
-  - name: bhv01
+  - name: path_global
     plugin: helm::PathFollowing
     states:
       - { name: survey_global, priority: 1 }
 
-  - name: bhv02
+  - name: depth_tracking
     plugin: helm::DepthTracking
     states:
       - { name: survey_local, priority: 1 }
       - { name: survey_global, priority: 1 }
 
-  - name: bhv03
+  - name: periodic_sufacing
     plugin: helm::PeriodicSurface
     states:
       - {name: survey_local, priority: 2 }
       - {name: survey_global, priority: 2 }
 
-  - name: bhv04
+  - name: teleop
     plugin: helm::Teleoperation
     states:
       - {name: survey_local, priority: 2 }
       - {name: survey_global, priority: 2 }
       - {name: teleop, priority: 1 }
+
+  - name: hold_pos
+    plugin: helm::HoldPosition
+    states:
+      - {name: start, priority: 1}
+
+  - name: gps_wpt
+    plugin: helm::GpsWaypoint
+    states:
+      - {name: survey_global, priority: 1}
+
+  - name: timer
+    plugin: helm::Timer
+    states:
+      - {name: start, priority: 1}
+

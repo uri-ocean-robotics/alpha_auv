@@ -6,6 +6,6 @@
 ##
 
 max_pitch: 0.17453292519943295 # radians -> 10 degrees
-desired_depth: 2.0 # meters
+desired_depth: 0.0 # meters
 forward_distance: 8.0
 use_heave_velocity: false

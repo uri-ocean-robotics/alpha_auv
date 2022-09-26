@@ -9,11 +9,13 @@
             command="load"
             file="$(arg config_file)"/>
 
-        <rosparam command="load" ns="bhv00" file="$(find alpha_config)/mission/param/bhv00.yaml"/>
-        <rosparam command="load" ns="bhv01" file="$(find alpha_config)/mission/param/bhv01.yaml"/>
-        <rosparam command="load" ns="bhv02" file="$(find alpha_config)/mission/param/bhv02.yaml"/>
-        <rosparam command="load" ns="bhv03" file="$(find alpha_config)/mission/param/bhv03.yaml"/>
-        <rosparam command="load" ns="bhv04" file="$(find alpha_config)/mission/param/bhv04.yaml"/>
+        <rosparam command="load" ns="depth_tracking" file="$(find alpha_config)/mission/param/depth_tracking.yaml"/>
+        <rosparam command="load" ns="gps_wpt" file="$(find alpha_config)/mission/param/gps_wpt.yaml"/>
+        <rosparam command="load" ns="hold_pos" file="$(find alpha_config)/mission/param/hold_pos.yaml"/>
+        <rosparam command="load" ns="path_global" file="$(find alpha_config)/mission/param/path_global.yaml"/>
+        <rosparam command="load" ns="path_local" file="$(find alpha_config)/mission/param/path_local.yaml"/>
+        <rosparam command="load" ns="periodic_surfacing" file="$(find alpha_config)/mission/param/periodic_surfacing.yaml"/>
+        <rosparam command="load" ns="timer" file="$(find alpha_config)/mission/param/timer.yaml"/>
     </node>
 
 </launch>

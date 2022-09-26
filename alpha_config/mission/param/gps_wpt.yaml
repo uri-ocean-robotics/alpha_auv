@@ -1,0 +1,12 @@
+state_fail: start
+
+target_topic: /helm/path_global/update_waypoints
+
+target_frame_id: alpha/odom
+
+waypoints:
+  - {lat: 41.0000, long: 71.0000}
+  - {lat: 41.0003, long: 71.0000}
+  - {lat: 41.0003, long: 71.0003}
+  - {lat: 41.0000, long: 71.0003}
+  - {lat: 41.0000, long: 71.0000}
