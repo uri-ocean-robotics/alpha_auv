@@ -63,25 +63,25 @@
         <child link="dvl_altitude"/>
     </joint>
 
-    <link name="main_thruster_link"/>
-    <joint name="main_thruster_joint" type="fixed">
+    <link name="surge_thruster_link"/>
+    <joint name="surge_thruster_joint" type="fixed">
         <origin xyz="-0.524 0.0 -0.130" rpy="0.0 0.0 0.0"/>
         <parent link="base_link"/>
-        <child link="main_thruster_link"/>
+        <child link="surge_thruster_link"/>
     </joint>
 
-    <link name="vertical_thruster_link"/>
-    <joint name="vertical_thruster_joint" type="fixed">
+    <link name="heave_bow_thruster_link"/>
+    <joint name="heave_bow_thruster_joint" type="fixed">
         <origin xyz="0.48735 0.0 -0.029" rpy="0.0 1.57079632679 0.0"/>
         <parent link="base_link"/>
-        <child link="vertical_thruster_link"/>
+        <child link="heave_bow_thruster_link"/>
     </joint>
 
-    <link name="horizontal_thruster_link"/>
-    <joint name="horizontal_thruster_joint" type="fixed">
+    <link name="sway_bow_thruster_link"/>
+    <joint name="sway_bow_thruster_joint" type="fixed">
         <origin xyz="0.57635 -0.118 -0.125" rpy="0.0 0.0 -1.57079632679"/>
         <parent link="base_link"/>
-        <child link="horizontal_thruster_link"/>
+        <child link="sway_bow_thruster_link"/>
     </joint>
 
 </robot>
