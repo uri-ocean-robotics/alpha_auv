@@ -127,7 +127,7 @@
             <link name="Vehicle"/>
             <origin rpy="0.0 0.0 0.0" xyz="-0.65 0.0 0.0"/>
             <noise angle="0.000001745" angular_velocity="0.00001745"/>
-            <ros_publisher topic="/imu/data"/>
+            <ros_publisher topic="/imu/stonefish/data"/>
         </sensor>
 
         <sensor name="gps" type="gps" rate="1.0">
@@ -137,7 +137,7 @@
             <ros_publisher topic="/gps/fix"/>
         </sensor>
 
-        <sensor name="multibeam" rate="10.0" type="multibeam">
+        <sensor name="multibeam" rate="50.0" type="multibeam">
             <specs fov="90.0" steps="64"/>
             <range distance_min="0.5" distance_max="200.0"/>
             <noise distance="0.0"/>
@@ -156,7 +156,7 @@
             <origin xyz="0.0 0.0 0.0" rpy="1.57 0.00 1.57"/>
             <ros_publisher topic="/msis/data"/>
         </sensor> -->
- 
+
         <sensor name="ifss_port_swath" rate="10.0" type="multibeam">
             <specs fov="53.0" steps="64"/>
             <range distance_min="0.1" distance_max="150.0"/>
@@ -164,6 +164,7 @@
             <history samples="1"/>
             <origin xyz="-0.75 -0.0762 0.2" rpy="-1.5708 -2.35619 1.5708"/>
             <link name="Vehicle"/>
+            <pcl_topic topic="/ifss/port/pcl"/>
             <ros_publisher topic="/ifss/port"/>
         </sensor>
 
@@ -174,6 +175,7 @@
             <history samples="1"/>
             <origin xyz="-0.75 0.0762 0.2" rpy="1.5708 -2.35619 -1.5708"/>
             <link name="Vehicle"/>
+            <pcl_topic topic="/ifss/starboard/pcl"/>
             <ros_publisher topic="/ifss/starboard"/>
         </sensor>
 

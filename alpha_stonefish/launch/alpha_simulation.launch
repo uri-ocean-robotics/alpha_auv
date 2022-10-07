@@ -3,6 +3,8 @@
 
     <node name="world2sim" pkg="tf2_ros" type="static_transform_publisher" args="0.0 0.0 0.0 0.0 0.0 3.141592653589793 world world_sim"/>
 
+    <param name="use_sim_time" type="boolean" value="true"/>
+
     <!-- Run Simulator -->
     <include file="$(find stonefish_mvp)/launch/simulator.launch">
         <arg name="simulation_data" value="$(find alpha_stonefish)/data"/>
