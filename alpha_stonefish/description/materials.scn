@@ -1,4 +1,13 @@
 <?xml version="1.0"?>
+<!--
+    This file is part of ALPHA AUV project.
+
+    Author: Emir Cem Gezer
+    Email: emircem@uri.edu;emircem.gezer@gmail.com
+    Year: 2022
+
+    Copyright (C) 2022 Smart Ocean Systems Laboratory
+-->
 <scenario>
 
     <materials>

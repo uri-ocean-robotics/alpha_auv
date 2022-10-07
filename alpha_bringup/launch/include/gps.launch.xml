@@ -1,15 +1,20 @@
 <?xml version="1.0"?>
+<!--
+    This file is part of ALPHA AUV project.
+
+    Author: Emir Cem Gezer
+    Email: emircem@uri.edu;emircem.gezer@gmail.com
+    Year: 2022
+
+    Copyright (C) 2022 Smart Ocean Systems Laboratory
+-->
 <launch>
 
-  <arg name="robot_name" default="alpha"/>
+    <arg name="robot_name" default="alpha"/>
 
-  <node pkg="gpsd_client" type="gpsd_client" name="gpsd_client" output="screen">
-    <remap from="fix" to="gps/fix"/>
-    <param name="frame_id" value="$(arg robot_name)/gps"/>
-  </node>
-
-  <node pkg="geographic_tools" type="geographic_tools_node" name="geographic_tools" output="screen">
-
-  </node>
+    <node pkg="gpsd_client" type="gpsd_client" name="gpsd_client" output="screen">
+        <remap from="fix" to="gps/fix"/>
+        <param name="frame_id" value="$(arg robot_name)/gps"/>
+    </node>
 
 </launch>

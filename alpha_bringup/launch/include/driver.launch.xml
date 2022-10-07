@@ -1,9 +1,17 @@
 <?xml version="1.0"?>
+<!--
+    This file is part of ALPHA AUV project.
+
+    Author: Emir Cem Gezer
+    Email: emircem@uri.edu;emircem.gezer@gmail.com
+    Year: 2022
+
+    Copyright (C) 2022 Smart Ocean Systems Laboratory
+-->
 <launch>
 
   <arg name="robot_name" default="alpha"/>
   <arg name="robot_version" default="v1-1"/>
-
 
   <node pkg="alpha_driver" type="alpha_driver_node" name="alpha_driver" output="screen">
     <rosparam command="load" file="$(find alpha_config)/config/driver_$(arg robot_version).yaml"/>

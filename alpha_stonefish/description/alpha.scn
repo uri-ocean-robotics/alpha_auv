@@ -1,5 +1,16 @@
 <?xml version="1.0"?>
+<!--
+    This file is part of ALPHA AUV project.
+
+    Author: Emir Cem Gezer
+    Email: emircem@uri.edu;emircem.gezer@gmail.com
+    Year: 2022
+
+    Copyright (C) 2022 Smart Ocean Systems Laboratory
+-->
 <scenario>
+    <include file="$(find alpha_stonefish)/description/looks.scn"/>
+    <include file="$(find alpha_stonefish)/description/materials.scn"/>
 
     <robot name="alpha" fixed="false" self_collisions="false">
 

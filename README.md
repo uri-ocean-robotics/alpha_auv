@@ -1,5 +1,52 @@
 # Alpha AUV
 
+This repository contains source codes for ALPHA AUV.
+
+<img
+  src="docs/images/alpha_auv_cad.png"
+  alt="ALPHA AUV - CAD Model"
+  style="display: inline-block; margin: 0 auto; max-width: 600px">
+
+## Directory Structure
+
+`alpha_auv`
+Meta Package for ALPHA AUV.
+
+`alpha_bringup`
+Launch files for firing up the vehicle and simulator.
+
+`alpha_config`
+Configuration files for devices, vehicle controller, mission controller, and etc.
+
+`alpha_description`
+URDF descriptions, 3D Mesh, and launch files for the ALPHA AUV.
+
+`alpha_driver`
+This directory contains code for embedded devices on the ALPHA AUV.
+The code for embedded device, namely [RP2040](https://www.raspberrypi.com/products/rp2040/),
+and the code for its client program resides in its sub-directories.
+
+`alpha_localization`
+Contains `robot_localization` configuration for local and global navigation.
+It filters the depth information with Linear Quadratic Estimator.
+
+`alpha_stonefish`
+Stonefish descriptions for ALPHA AUV.
+
+`alpha_teleop`
+Simple teleoperation package.
+Contains configurations for joy_teleop node.
+
+`alpha_viz`
+Contains configuration for RViZ.
+
+`external`
+Contains drivers for devices and utilities.
+
+`legacy`
+Outdated but still _somewhat_ maintained code.
+Not deprecated but should not be used.
+
 ## Installation
 
 ### MVP Installation
@@ -39,7 +86,7 @@ Pull the stonefish simulator library repository in somewhere other than ROS
 workspace. Follow the installation instuctions at the Stonefish Readme.
 
 ```bash
-git pull https://github.com/GSO-soslab/stonefish
+git clone https://github.com/GSO-soslab/stonefish
 ```
 
 Clone the Stonefish MVP at the ROS workspace.
@@ -82,6 +129,11 @@ rosservice call /helm/change_state "state: 'survey_local'"
 ```
 
 ## Citation
+
+If you find this software useful in your research, please cite:
+
+> Note, this work is published in OCEANS 2022 conference. Once the paper is publicly available, bibtex entry
+will be updated with the one from IEEExplore.
 
 ```
 @inproceedings{

@@ -1,14 +1,26 @@
 <?xml version="1.0"?>
+<!--
+    This file is part of ALPHA AUV project.
+
+    Author: Emir Cem Gezer
+    Email: emircem@uri.edu;emircem.gezer@gmail.com
+    Year: 2022
+
+    Copyright (C) 2022 Smart Ocean Systems Laboratory
+-->
 <launch>
 
-    <arg name="config_file"
-         default="$(find alpha_config)/mission/config/helm.yaml"/>
-
     <node pkg="mvp_helm" type="helm" name="helm" output="screen">
+        <!--
+            Load the parameters for the MVP Helm
+        -->
         <rosparam
             command="load"
-            file="$(arg config_file)"/>
+            file="$(find alpha_config)/mission/config/helm.yaml"/>
 
+        <!--
+            Load all the parameters for the behaviors.
+        -->
         <rosparam command="load" ns="depth_tracking" file="$(find alpha_config)/mission/param/depth_tracking.yaml"/>
         <rosparam command="load" ns="gps_wpt" file="$(find alpha_config)/mission/param/gps_wpt.yaml"/>
         <rosparam command="load" ns="hold_pos" file="$(find alpha_config)/mission/param/hold_pos.yaml"/>
