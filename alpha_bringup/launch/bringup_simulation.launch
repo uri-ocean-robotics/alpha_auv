@@ -23,8 +23,9 @@
             <arg name="robot_version" default="$(arg robot_version)"/>
         </include>
 
-        <include file="$(find alpha_bringup)/launch/include/localization_sim.launch.xml">
+        <include file="$(find alpha_bringup)/launch/include/localization.launch.xml">
             <arg name="robot_name" value="$(arg robot_name)"/>
+            <arg name="is_sim" value="true"/>
         </include>
     </group>
 

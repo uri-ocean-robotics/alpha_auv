@@ -1,18 +1,19 @@
-frequency: 5
+frequency: 30
 
+delay: 3.0
 # magnetic_declination_radians: -0.2408554
 
 yaw_offset: 1.5707963267948966
 
 publish_filtered_gps: true
 
-broadcast_cartesian_transform: true
+# broadcast_cartesian_transform: true
 
 # use_odometry_yaw: true
 
-use_local_cartesian: true
+# use_local_cartesian: true
 
-zero_altitude: true
+# zero_altitude: true
 
 
 ## If you want to set a datum uncomment the following

@@ -2,8 +2,10 @@
 <launch>
 
     <arg name="robot_name" default="alpha"/>
+    <arg name="is_sim" default="false"/>
 
     <include file="$(find alpha_localization)/launch/robot_localization_local.launch">
+        <arg name="is_sim" value="$(arg is_sim)"/>
         <arg name="robot_name" value="$(arg robot_name)"/>
     </include>
 
