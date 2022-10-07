@@ -2,9 +2,11 @@
 <launch>
 
     <arg name="robot_name" default="alpha"/>
+    <arg name="robot_version" default="v1-1"/>
 
     <include file="$(find alpha_bringup)/launch/include/control.launch.xml">
         <arg name="robot_name" value="$(arg robot_name)"/>
+        <arg name="robot_version" value="$(arg robot_version)"/>
     </include>
 
 </launch>
