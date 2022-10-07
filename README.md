@@ -81,5 +81,18 @@ Start the local path tracking mission
 rosservice call /helm/change_state "state: 'survey_local'"
 ```
 
+## Citation
+
+```
+@inproceedings{
+    ALPHA_PAPER,
+    title = {Acrobatic Low-cost Portable Hybrid AUV (ALPHA): System Design and Preliminary Results},
+    author={Zhou, Mingxi and Gezer, Emir Cem and McConnell, William},
+    booktitle={OCEANS 2022: Hampton Roads},
+    year={2022},
+    organization={IEEE}
+}
+```
+
 ## Funding
 This work is supported by the [National Science Foundation](https://www.nsf.gov/) award [#2154901](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2154901&HistoricalAwards=false)

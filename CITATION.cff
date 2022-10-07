@@ -1,8 +1,15 @@
-@inproceedings{
-    ALPHA_PAPER,
-    title = {Acrobatic Low-cost Portable Hybrid AUV (ALPHA): System Design and Preliminary Results},
-    author={Zhou, Mingxi and Gezer, Emir Cem and McConnell, William},
-    booktitle={OCEANS 2022: Hampton Roads},
-    year={2022},
-    organization={IEEE}
-}
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Zhou"
+  given-names: "Mingxi"
+  orcid: "https://orcid.org/0000-0002-7081-0901"
+- family-names: "Gezer"
+  given-names: "Emir Cem"
+  orcid: "https://orcid.org/0000-0002-6223-9805"
+- family-names: "McConnell"
+  given-names: "William"
+  orcid: ""
+title: "Acrobatic Low-cost Portable Hybrid AUV (ALPHA): System Design and Preliminary Results"
+date-released: 2022
+proceedings: OCEANS 2022: Hampton Roads
