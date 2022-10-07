@@ -1,15 +1,28 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
+title: >-
+  Acrobatic Low-cost Portable Hybrid AUV (ALPHA):
+  System Design and Preliminary Results
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
 authors:
-- family-names: "Zhou"
-  given-names: "Mingxi"
-  orcid: "https://orcid.org/0000-0002-7081-0901"
-- family-names: "Gezer"
-  given-names: "Emir Cem"
-  orcid: "https://orcid.org/0000-0002-6223-9805"
-- family-names: "McConnell"
-  given-names: "William"
-  orcid: ""
-title: "Acrobatic Low-cost Portable Hybrid AUV (ALPHA): System Design and Preliminary Results"
-date-released: 2022
-proceedings: OCEANS 2022: Hampton Roads
+  - given-names: Mingxi
+    family-names: Zhou
+    email: mzhou@uri.edu
+    affiliation: University of Rhode Island
+    orcid: 'https://orcid.org/0000-0002-7081-0901'
+  - given-names: Emir Cem
+    family-names: Gezer
+    email: 'emircem.gezer@gmail.com,emircem@uri.edu'
+    affiliation: University of Rhode Island
+    orcid: 'https://orcid.org/0000-0002-6223-9805'
+  - given-names: William
+    family-names: McConnell
+    email: wmcconnell@uri.edu
+    affiliation: University of Rhode Island
+license: GPL-3.0
+year: 2022
+proceedings: 'OCEANS 2022: Hampton Roads'
+# todo: replace it with DOI after publication
+unpublished: true

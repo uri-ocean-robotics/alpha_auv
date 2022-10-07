@@ -202,9 +202,9 @@ Simulator::Simulator() : m_nh() , m_pnh("~"){
 
     m_clock_publisher = m_nh.advertise<rosgraph_msgs::Clock>("/clock", 100);
 
-    m_main_thruster_setpoint = m_nh.subscribe("control/thruster/main", 100, &Simulator::main_thruster_cb, this);
-    m_horizontal_thruster_setpoint = m_nh.subscribe("control/thruster/horizontal", 100, &Simulator::horizontal_thruster_cb, this);
-    m_vertical_thruster_setpoint = m_nh.subscribe("control/thruster/vertical", 100, &Simulator::vertical_thruster_cb, this);
+    m_main_thruster_setpoint = m_nh.subscribe("control/thruster/surge", 100, &Simulator::main_thruster_cb, this);
+    m_horizontal_thruster_setpoint = m_nh.subscribe("control/thruster/sway_bow", 100, &Simulator::horizontal_thruster_cb, this);
+    m_vertical_thruster_setpoint = m_nh.subscribe("control/thruster/heave_bow", 100, &Simulator::vertical_thruster_cb, this);
 
     // m_gazebo_set_model_state = m_nh.serviceClient<gazebo_msgs::SetModelState>("/gazebo/set_model_state");
 
