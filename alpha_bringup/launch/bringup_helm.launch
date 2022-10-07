@@ -16,6 +16,7 @@
         <rosparam command="load" ns="path_local" file="$(find alpha_config)/mission/param/path_local.yaml"/>
         <rosparam command="load" ns="periodic_surfacing" file="$(find alpha_config)/mission/param/periodic_surfacing.yaml"/>
         <rosparam command="load" ns="timer" file="$(find alpha_config)/mission/param/timer.yaml"/>
+        <rosparam command="load" ns="motion_evaluation" file="$(find alpha_config)/mission/param/motion_evaluation.yaml"/>
     </node>
 
 </launch>
