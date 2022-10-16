@@ -139,7 +139,8 @@ will be updated with the one from IEEExplore.
 @inproceedings{
     ALPHA_PAPER,
     title = {Acrobatic Low-cost Portable Hybrid AUV (ALPHA): System Design and Preliminary Results},
-    author={Zhou, Mingxi and Gezer, Emir Cem and McConnell, William},
+    author={Zhou, Mingxi and Gezer, Emir Cem and McConnell, William, and Yuan, Chengzhi},
+    
     booktitle={OCEANS 2022: Hampton Roads},
     year={2022},
     organization={IEEE}
