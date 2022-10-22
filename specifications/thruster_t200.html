@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlueRobotics T200 Thruster Specifications &mdash; Waterlinked DVL ROS Driver  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/tooltipster.custom.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/tooltipster.bundle.min.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/tooltipster-sideTip-shadow.min.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/tooltipster-sideTip-punk.min.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/tooltipster-sideTip-noir.min.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/tooltipster-sideTip-light.min.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/tooltipster-sideTip-borderless.min.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/micromodal.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/sphinx_rtd_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/js/hoverxref.js"></script>
+        <script src="../_static/js/tooltipster.bundle.min.js"></script>
+        <script src="../_static/js/micromodal.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Waterlinked DVL ROS Driver
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Alpha AUV</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Waterlinked DVL ROS Driver</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>BlueRobotics T200 Thruster Specifications</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/specifications/thruster_t200.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="tex2jax_ignore mathjax_ignore section" id="bluerobotics-t200-thruster-specifications">
+<h1>BlueRobotics T200 Thruster Specifications<a class="headerlink" href="#bluerobotics-t200-thruster-specifications" title="Permalink to this heading"></a></h1>
+<div class="section" id="thrust-curve">
+<h2>Thrust Curve<a class="headerlink" href="#thrust-curve" title="Permalink to this heading"></a></h2>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Voltage</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p><span class="math">a^0</span></p></th>
+<th class="head"><p><span class="math">a^1</span></p></th>
+<th class="head"><p><span class="math">a^2</span></p></th>
+<th class="head"><p><span class="math">a^3</span></p></th>
+<th class="head"><p><span class="math">a^4</span></p></th>
+<th class="head"><p><span class="math">a^5</span></p></th>
+<th class="head"><p><span class="math">a^6</span></p></th>
+<th class="head"><p><span class="math">a^7</span></p></th>
+<th class="head"><p><span class="math">a^8</span></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>14V</p></td>
+<td><p><span class="math">[-1.0,1.0]</span></p></td>
+<td><p><span class="math">0.06165</span></p></td>
+<td><p><span class="math">20.32</span></p></td>
+<td><p><span class="math">9.632</span></p></td>
+<td><p><span class="math">93.05</span></p></td>
+<td><p><span class="math">-2.856</span></p></td>
+<td><p><span class="math">-74.1</span></p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, URI Ocean Robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

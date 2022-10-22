@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alpha AUV &mdash; Waterlinked DVL ROS Driver  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/tooltipster.custom.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/tooltipster.bundle.min.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/tooltipster-sideTip-shadow.min.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/tooltipster-sideTip-punk.min.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/tooltipster-sideTip-noir.min.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/tooltipster-sideTip-light.min.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/tooltipster-sideTip-borderless.min.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/micromodal.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/sphinx_rtd_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/js/hoverxref.js"></script>
+        <script src="_static/js/tooltipster.bundle.min.js"></script>
+        <script src="_static/js/micromodal.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> Waterlinked DVL ROS Driver
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Alpha AUV</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Waterlinked DVL ROS Driver</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>Alpha AUV</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="toctree-wrapper compound">
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="alpha-auv">
+<h1>Alpha AUV<a class="headerlink" href="#alpha-auv" title="Permalink to this heading"></a></h1>
+<p>This repository contains source codes for ALPHA AUV.</p>
+<p><img
+  src="https://github.com/uri-ocean-robotics/alpha_auv/raw/master/docs/images/alpha_auv_cad.png"
+  alt="ALPHA AUV - CAD Model"
+  style="display: inline-block; margin: 0 auto; max-width: 600px"></p>
+<div class="section" id="directory-structure">
+<h2>Directory Structure<a class="headerlink" href="#directory-structure" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">alpha_auv</span></code>
+Meta Package for ALPHA AUV.</p>
+<p><code class="docutils literal notranslate"><span class="pre">alpha_bringup</span></code>
+Launch files for firing up the vehicle and simulator.</p>
+<p><code class="docutils literal notranslate"><span class="pre">alpha_config</span></code>
+Configuration files for devices, vehicle controller, mission controller, and etc.</p>
+<p><code class="docutils literal notranslate"><span class="pre">alpha_description</span></code>
+URDF descriptions, 3D Mesh, and launch files for the ALPHA AUV.</p>
+<p><code class="docutils literal notranslate"><span class="pre">alpha_driver</span></code>
+This directory contains code for embedded devices on the ALPHA AUV.
+The code for embedded device, namely <a class="reference external" href="https://www.raspberrypi.com/products/rp2040/">RP2040</a>,
+and the code for its client program resides in its sub-directories.</p>
+<p><code class="docutils literal notranslate"><span class="pre">alpha_localization</span></code>
+Contains <code class="docutils literal notranslate"><span class="pre">robot_localization</span></code> configuration for local and global navigation.
+It filters the depth information with Linear Quadratic Estimator.</p>
+<p><code class="docutils literal notranslate"><span class="pre">alpha_stonefish</span></code>
+Stonefish descriptions for ALPHA AUV.</p>
+<p><code class="docutils literal notranslate"><span class="pre">alpha_teleop</span></code>
+Simple teleoperation package.
+Contains configurations for joy_teleop node.</p>
+<p><code class="docutils literal notranslate"><span class="pre">alpha_viz</span></code>
+Contains configuration for RViZ.</p>
+<p><code class="docutils literal notranslate"><span class="pre">external</span></code>
+Contains drivers for devices and utilities.</p>
+<p><code class="docutils literal notranslate"><span class="pre">legacy</span></code>
+Outdated but still <em>somewhat</em> maintained code.
+Not deprecated but should not be used.</p>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<div class="section" id="mvp-installation">
+<h3>MVP Installation<a class="headerlink" href="#mvp-installation" title="Permalink to this heading"></a></h3>
+<p>Currently MVP packages should be build from the source.
+Target platform must be Ubuntu 20.04 because of the dependencies.</p>
+<p>Pull repository and other dependencies</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone --single-branch --branch noetic-devel https://github.com/uri-ocean-robotics/mvp_msgs
+git clone --single-branch --branch noetic-devel https://github.com/uri-ocean-robotics/mvp_control
+git clone --single-branch --branch noetic-devel https://github.com/uri-ocean-robotics/mvp_mission
+</pre></div>
+</div>
+</div>
+<div class="section" id="alpha-auv-simulation-and-hardware-installation">
+<h3>ALPHA AUV Simulation and Hardware Installation<a class="headerlink" href="#alpha-auv-simulation-and-hardware-installation" title="Permalink to this heading"></a></h3>
+<p>Pull repository and other dependencies</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/uri-ocean-robotics/alpha_auv
+<span class="nb">cd</span> alpha_auv
+git submodule update --init --recursive
+</pre></div>
+</div>
+<p>Install pip and setup python3 as default</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt install python3-pip
+</pre></div>
+</div>
+<p>Install dependencies</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rosdep install --from-paths src --ignore-src --rosdistro <span class="si">${</span><span class="nv">ROS_DISTRO</span><span class="si">}</span> -y
+</pre></div>
+</div>
+<div class="section" id="install-stonefish-simulator">
+<h4>Install Stonefish Simulator<a class="headerlink" href="#install-stonefish-simulator" title="Permalink to this heading"></a></h4>
+<p>Pull the stonefish simulator library repository in somewhere other than ROS
+workspace. Follow the installation instuctions at the Stonefish Readme.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/uri-ocean-robotics/stonefish
+</pre></div>
+</div>
+<p>Clone the Stonefish MVP at the ROS workspace.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone --single-branch --branch noetic-devel https://github.com/uri-ocean-robotics/stonefish_mvp
+</pre></div>
+</div>
+<p>Build the stonefish library and install it.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> stonefish
+mkdir build
+<span class="nb">cd</span> build
+cmake -DCMAKE_BUILD_TYPE<span class="o">=</span>Release ..
+make -j<span class="k">$(</span>nproc<span class="k">)</span>
+sudo make install
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="test-the-installation">
+<h3>Test the installation<a class="headerlink" href="#test-the-installation" title="Permalink to this heading"></a></h3>
+<p>To run the simulation</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>roslaunch alpha_bringup bringup_simulation.launch
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this heading"></a></h2>
+<p>Run the simulation and MVP Helm</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>roslaunch alpha_bringup bringup_simulation.launch
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>roslaunch alpha_bringup bringup_helm.launch
+</pre></div>
+</div>
+<p>Start the local path tracking mission</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rosservice call /helm/change_state <span class="s2">&quot;state: &#39;survey_local&#39;&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="citation">
+<h2>Citation<a class="headerlink" href="#citation" title="Permalink to this heading"></a></h2>
+<p>If you find this software useful in your research, please cite:</p>
+<blockquote>
+<div><p>Note, this work is published in OCEANS 2022 conference. Once the paper is publicly available, bibtex entry
+will be updated with the one from IEEExplore.</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@inproceedings</span><span class="p">{</span>
+    <span class="n">ALPHA_PAPER</span><span class="p">,</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="p">{</span><span class="n">Acrobatic</span> <span class="n">Low</span><span class="o">-</span><span class="n">cost</span> <span class="n">Portable</span> <span class="n">Hybrid</span> <span class="n">AUV</span> <span class="p">(</span><span class="n">ALPHA</span><span class="p">):</span> <span class="n">System</span> <span class="n">Design</span> <span class="ow">and</span> <span class="n">Preliminary</span> <span class="n">Results</span><span class="p">},</span>
+    <span class="n">author</span><span class="o">=</span><span class="p">{</span><span class="n">Zhou</span><span class="p">,</span> <span class="n">Mingxi</span> <span class="ow">and</span> <span class="n">Gezer</span><span class="p">,</span> <span class="n">Emir</span> <span class="n">Cem</span> <span class="ow">and</span> <span class="n">McConnell</span><span class="p">,</span> <span class="n">William</span><span class="p">,</span> <span class="ow">and</span> <span class="n">Yuan</span><span class="p">,</span> <span class="n">Chengzhi</span><span class="p">},</span>
+    
+    <span class="n">booktitle</span><span class="o">=</span><span class="p">{</span><span class="n">OCEANS</span> <span class="mi">2022</span><span class="p">:</span> <span class="n">Hampton</span> <span class="n">Roads</span><span class="p">},</span>
+    <span class="n">year</span><span class="o">=</span><span class="p">{</span><span class="mi">2022</span><span class="p">},</span>
+    <span class="n">organization</span><span class="o">=</span><span class="p">{</span><span class="n">IEEE</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="funding">
+<h2>Funding<a class="headerlink" href="#funding" title="Permalink to this heading"></a></h2>
+<p>This work is supported by the <a class="reference external" href="https://www.nsf.gov/">National Science Foundation</a> award <a class="reference external" href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2154901&amp;HistoricalAwards=false">#2154901</a></p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, URI Ocean Robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
