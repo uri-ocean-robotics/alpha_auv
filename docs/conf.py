@@ -9,7 +9,7 @@
 import sphinx_rtd_theme
 import myst_parser
 
-project = 'Waterlinked DVL ROS Driver'
+project = 'ALPHA AUV'
 copyright = '2022, URI Ocean Robotics'
 author = 'URI Ocean Robotics Authors'
 
