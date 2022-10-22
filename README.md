@@ -3,7 +3,7 @@
 This repository contains source codes for ALPHA AUV.
 
 <img
-  src="docs/images/alpha_auv_cad.png"
+  src="https://github.com/uri-ocean-robotics/alpha_auv/raw/master/docs/images/alpha_auv_cad.png"
   alt="ALPHA AUV - CAD Model"
   style="display: inline-block; margin: 0 auto; max-width: 600px">
 
@@ -56,20 +56,19 @@ Target platform must be Ubuntu 20.04 because of the dependencies.
 
 Pull repository and other dependencies
 ```bash
-git clone https://github.com/GSO-soslab/mvp_msgs
-git clone https://github.com/GSO-soslab/mvp_control
-git clone https://github.com/GSO-soslab/mvp_mission
+git clone --single-branch --branch noetic-devel https://github.com/uri-ocean-robotics/mvp_msgs
+git clone --single-branch --branch noetic-devel https://github.com/uri-ocean-robotics/mvp_control
+git clone --single-branch --branch noetic-devel https://github.com/uri-ocean-robotics/mvp_mission
 ```
 
 ### ALPHA AUV Simulation and Hardware Installation
 
 Pull repository and other dependencies
 ```bash
-git clone https://github.com/GSO-soslab/alpha_auv
+git clone https://github.com/uri-ocean-robotics/alpha_auv
 cd alpha_auv
 git submodule update --init --recursive
 ```
-> Username password login via git command is not supported by github anymore. Use ssh keys or personal access tokens.
 
 Install pip and setup python3 as default
 ```bash
@@ -86,12 +85,12 @@ Pull the stonefish simulator library repository in somewhere other than ROS
 workspace. Follow the installation instuctions at the Stonefish Readme.
 
 ```bash
-git clone https://github.com/GSO-soslab/stonefish
+git clone https://github.com/uri-ocean-robotics/stonefish
 ```
 
 Clone the Stonefish MVP at the ROS workspace.
 ```bash
-git clone https://github.com/GSO-soslab/stonefish_mvp
+git clone --single-branch --branch noetic-devel https://github.com/uri-ocean-robotics/stonefish_mvp
 ```
 
 Build the stonefish library and install it.

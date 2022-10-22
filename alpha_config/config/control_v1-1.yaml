@@ -20,14 +20,6 @@ control_modes:
     yaw_rate:   {p: 2.0,  i: 0.5,   d: 3.0,  i_max: 20, i_min: -20}
     pitch_rate: {p: 2.0,  i: 0.5,   d: 3.0,  i_max: 20, i_min: -20}
 
-  heading:
-    yaw:      {p: 20.0,  i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
-
-  tuning:
-    yaw:      {p: 10.0,  i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
-    pitch:    {p: 10.0,  i: 0.2,   d: 5.0,  i_max: 20, i_min: -20}
-    surge:    {p: 10.0,   i: 3.0,   d: 5.0,   i_max: 10, i_min: -10}
-
   flight:
     z:        {p: 10.0,    i: 0.1 ,  d: 20.0,  i_max: 20, i_min: -20}
     surge:    {p: 10.0,    i: 5.0,   d: 5.0,   i_max: 30, i_min: -30}
