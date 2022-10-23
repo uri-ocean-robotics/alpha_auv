@@ -3,7 +3,7 @@
 This repository contains source codes for ALPHA AUV.
 
 <img
-  src="https://github.com/uri-ocean-robotics/alpha_auv/raw/master/docs/images/alpha_auv_cad.png"
+  src="https://raw.githubusercontent.com/uri-ocean-robotics/alpha_auv/noetic-devel/docs/images/alpha_auv_cad.png"
   alt="ALPHA AUV - CAD Model"
   style="display: inline-block; margin: 0 auto; max-width: 600px">
 
