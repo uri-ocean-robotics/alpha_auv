@@ -59,6 +59,7 @@ Pull repository and other dependencies
 git clone --single-branch --branch noetic-devel https://github.com/uri-ocean-robotics/mvp_msgs
 git clone --single-branch --branch noetic-devel https://github.com/uri-ocean-robotics/mvp_control
 git clone --single-branch --branch noetic-devel https://github.com/uri-ocean-robotics/mvp_mission
+git clone --single-branch --branch noetic-devel https://github.com/uri-ocean-robotics/stonefish_mvp
 ```
 
 ### ALPHA AUV Simulation and Hardware Installation
@@ -75,22 +76,12 @@ Install pip and setup python3 as default
 sudo apt install python3-pip
 ```
 
-Install dependencies
-```bash
-rosdep install --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} -y
-```
-
-#### Install Stonefish Simulator
+### Install Stonefish Simulator
 Pull the stonefish simulator library repository in somewhere other than ROS
 workspace. Follow the installation instuctions at the Stonefish Readme.
 
 ```bash
 git clone https://github.com/uri-ocean-robotics/stonefish
-```
-
-Clone the Stonefish MVP at the ROS workspace.
-```bash
-git clone --single-branch --branch noetic-devel https://github.com/uri-ocean-robotics/stonefish_mvp
 ```
 
 Build the stonefish library and install it.
@@ -102,6 +93,13 @@ cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j$(nproc)
 sudo make install
+```
+
+### Install Dependencies
+
+Install dependencies
+```bash
+rosdep install --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} -y
 ```
 
 ### Test the installation
@@ -139,7 +137,7 @@ will be updated with the one from IEEExplore.
     ALPHA_PAPER,
     title = {Acrobatic Low-cost Portable Hybrid AUV (ALPHA): System Design and Preliminary Results},
     author={Zhou, Mingxi and Gezer, Emir Cem and McConnell, William, and Yuan, Chengzhi},
-    
+
     booktitle={OCEANS 2022: Hampton Roads},
     year={2022},
     organization={IEEE}
