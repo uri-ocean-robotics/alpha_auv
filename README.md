@@ -79,7 +79,7 @@ sudo apt install python3-pip
 ### Install Stonefish Simulator
 
 Pull the stonefish simulator library repository in **somewhere other than ROS workspace**.
-Follow the installation instuctions at the Stonefish Readme.
+Follow the installation instuctions at the [Stonefish Readme](https://stonefish.readthedocs.io/en/latest/install.html).
 
 ```bash
 git clone https://github.com/uri-ocean-robotics/stonefish
