@@ -77,11 +77,18 @@ sudo apt install python3-pip
 ```
 
 ### Install Stonefish Simulator
-Pull the stonefish simulator library repository in somewhere other than ROS
-workspace. Follow the installation instuctions at the Stonefish Readme.
+
+Pull the stonefish simulator library repository in **somewhere other than ROS workspace**.
+Follow the installation instuctions at the Stonefish Readme.
 
 ```bash
 git clone https://github.com/uri-ocean-robotics/stonefish
+```
+
+Install the dependencies
+
+```bash
+sudo apt install libglm-dev libsdl2-dev
 ```
 
 Build the stonefish library and install it.
