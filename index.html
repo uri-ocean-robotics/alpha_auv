@@ -144,9 +144,13 @@ git submodule update --init --recursive
 </div>
 <div class="section" id="install-stonefish-simulator">
 <h3>Install Stonefish Simulator<a class="headerlink" href="#install-stonefish-simulator" title="Permalink to this heading"></a></h3>
-<p>Pull the stonefish simulator library repository in somewhere other than ROS
-workspace. Follow the installation instuctions at the Stonefish Readme.</p>
+<p>Pull the stonefish simulator library repository in <strong>somewhere other than ROS workspace</strong>.
+Follow the installation instuctions at the Stonefish Readme.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/uri-ocean-robotics/stonefish
+</pre></div>
+</div>
+<p>Install the dependencies</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt install libglm-dev libsdl2-dev
 </pre></div>
 </div>
 <p>Build the stonefish library and install it.</p>
