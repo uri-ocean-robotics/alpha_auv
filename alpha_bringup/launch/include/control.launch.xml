@@ -10,11 +10,13 @@
 -->
 <launch>
 
-    <arg name="robot_name" default="alpha"/>
+    <arg name="robot_name" default="changeme"/>
     <arg name="robot_version" default="v1-1"/>
 
-    <node pkg="mvp_control" type="mvp_control_ros_node" name="alpha_control" output="screen">
+    <node ns="$(arg robot_name)" pkg="mvp_control" type="mvp_control_ros_node" name="alpha_control" output="screen">
         <rosparam command="load" file="$(find alpha_config)/config/control_$(arg robot_version).yaml"/>
+        <param name="tf_prefix" value="$(arg robot_name)"/>
+        <param name="odometry_source" value="odometry/filtered/local"/>
     </node>
 
 </launch>

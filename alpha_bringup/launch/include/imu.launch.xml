@@ -10,11 +10,11 @@
 -->
 <launch>
 
-  <arg name="robot_name" default="alpha"/>
+    <arg name="robot_name" default="changeme"/>
 
-  <node  name="xsens_mti_node" pkg="xsens_mti_driver" type="xsens_mti_node" output="screen">
-    <rosparam command="load" file="$(find alpha_config)/config/xsens_mti_node.yaml" />
-    <param name="frame_id" value="$(arg robot_name)/imu"/>
-  </node>
+    <node ns="$(arg robot_name)" name="xsens_mti_node" pkg="xsens_mti_driver" type="xsens_mti_node" output="screen">
+        <rosparam command="load" file="$(find alpha_config)/config/xsens_mti_node.yaml" />
+        <param name="frame_id" value="$(arg robot_name)/imu"/>
+    </node>
 
 </launch>

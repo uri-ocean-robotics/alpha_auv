@@ -10,10 +10,10 @@
 -->
 <launch>
 
-  <arg name="robot_name" default="alpha"/>
+  <arg name="robot_name" default="changeme"/>
   <arg name="robot_version" default="v1-1"/>
 
-  <node pkg="alpha_driver" type="alpha_driver_node" name="alpha_driver" output="screen">
+  <node ns="$(arg robot_name)" pkg="alpha_driver" type="alpha_driver_node" name="alpha_driver" output="screen">
     <rosparam command="load" file="$(find alpha_config)/config/driver_$(arg robot_version).yaml"/>
   </node>
 

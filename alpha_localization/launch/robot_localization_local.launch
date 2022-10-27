@@ -10,35 +10,83 @@
 -->
 <launch>
 
-    <arg name="robot_name" default="alpha"/>
+    <arg name="robot_name" default="changeme"/>
 
     <arg name="is_sim" default="false"/>
 
-    <node name="alpha_localization_local" pkg="robot_localization" type="ekf_localization_node" output="screen">
+    <node ns="$(arg robot_name)" name="alpha_localization_local" pkg="robot_localization" type="ekf_localization_node" output="screen">
         <rosparam command="load" file="$(find alpha_localization)/config/robot_localization_local.yaml"/>
+
         <param name="base_link_frame" type="string" value="$(arg robot_name)/base_link"/>
         <param name="odom_frame" type="string" value="$(arg robot_name)/odom"/>
         <param name="world_frame" type="string" value="$(arg robot_name)/odom"/>
+
         <remap from="odometry/filtered" to="odometry/filtered/local"/>
         <remap from="accel/filtered" to="accel/filtered/local"/>
 
+
+        <param name="imu0" value="imu/data"/>
+        <rosparam param="imu0_config">
+        [false, false, false,
+         true,   true,  true,
+         false, false, false,
+         true,   true,  true,
+         true,   true,  true]
+        </rosparam>
+        <param name="imu0_nodelay" value="true"/>
+        <param name="imu0_relative" value="false"/>
+        <param name="imu0_queue_size" value="100"/>
         <param name="imu0_remove_gravitational_acceleration" value="$(eval not arg('is_sim'))"/>
+
+        <param name="twist0" value="dvl/twist"/>
+        <rosparam param="twist0_config">
+        [false, false, false,
+         false, false, false,
+         true,   true, false,
+         false, false, false,
+         false, false, false]
+        </rosparam>
+        <param name="twist0_nodelay" value="true"/>
+        <param name="twist0_relative" value="false"/>
+        <param name="twist0_queue_size" value="20"/>
+
+        <param name="pose0" value="depth_filtered"/>
+        <rosparam param="pose0_config">
+        [false, false,  true,
+         false, false, false,
+         false, false, false,
+         false, false, false,
+         false, false, false]
+        </rosparam>
+        <param name="pose0_differential" value="false"/>
+        <param name="pose0_relative" value="false"/>
+        <param name="pose0_queue_size" value="10"/>
+        <param name="pose0_nodelay" value="true"/>
+
     </node>
 
     <group if="$(arg is_sim)">
-        <node name="imu_transformer" pkg="imu_transformer" type="imu_transformer_node" output="screen">
+        <node ns="$(arg robot_name)" name="imu_transformer" pkg="imu_transformer" type="imu_transformer_node" output="screen">
+            <param name="target_frame" value="$(arg robot_name)/base_link"/>
+
             <remap from="imu_in/data" to="imu/stonefish/data"/>
             <remap from="imu_out/data" to="imu/data"/>
-            <param name="target_frame" value="$(arg robot_name)/base_link"/>
         </node>
 
-        <node name="alpha_pressure_to_depth" pkg="alpha_localization" type="pressure_to_depth_node" output="screen">
+        <node ns="$(arg robot_name)" name="pressure_to_depth" pkg="alpha_localization" type="pressure_to_depth_node" output="screen">
             <param name="frame_id" value="$(arg robot_name)/odom"/>
+
+            <remap from="depth" to="depth"/>
+            <remap from="pressure" to="pressure"/>
         </node>
     </group>
 
-    <node name="alpha_depth_filter" pkg="alpha_localization" type="depth_filter_node" output="screen">
+    <node ns="$(arg robot_name)" name="depth_filter" pkg="alpha_localization" type="depth_filter_node" output="screen">
         <param name="frame_id" value="$(arg robot_name)/odom"/>
+
+        <remap from="depth" to="depth"/>
+        <remap from="depth_filtered" to="depth_filtered"/>
     </node>
+
 
 </launch>

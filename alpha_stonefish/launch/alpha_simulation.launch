@@ -16,13 +16,23 @@
 
     <arg name="scenario" default="ocean"/>
 
-    <!-- Run Simulator -->
-    <include file="$(find stonefish_mvp)/launch/simulator.launch">
-        <arg name="simulation_data" value="$(find alpha_stonefish)/data"/>
-        <arg name="scenario_description" value="$(find alpha_stonefish)/scenarios/$(arg scenario).scn"/>
-        <arg name="simulation_rate" value="100.0"/>
-        <arg name="graphics_resolution" value="1200 800"/>
-        <arg name="graphics_quality" value="low"/>
-    </include>
+    <arg name="robot_name" default="changeme"/>
+
+    <arg name="data_path" default="$(find alpha_stonefish)/data"/>
+    <arg name="simulation_rate" default="100.0"/>
+    <arg name="graphics_resolution" default="1200 800"/>
+    <arg name="graphics_quality" default="low"/>
+
+    <node
+        name="stonefish_simulator"
+        pkg="stonefish_mvp"
+        type="parsed_simulator"
+        args="$(arg data_path) $(arg simulation_rate) $(arg graphics_resolution) $(arg graphics_quality)"
+        output="screen">
+        <param
+            name="scenario_description"
+            command="$(find xacro)/xacro robot_name:=$(arg robot_name) '$(find alpha_stonefish)/scenarios/$(arg scenario).scn.xacro'"/>
+
+    </node>
 
 </launch>
