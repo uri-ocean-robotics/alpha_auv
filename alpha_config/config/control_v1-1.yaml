@@ -6,8 +6,6 @@ tf_prefix: alpha
 
 cg_link: cg_link
 
-world_link: world_ned
-
 odometry_source: /odometry/filtered/local
 
 enabled: true

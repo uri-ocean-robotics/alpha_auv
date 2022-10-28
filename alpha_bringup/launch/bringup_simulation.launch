@@ -10,13 +10,13 @@
 -->
 <launch>
 
-    <arg name="robot_name" default="husnu"/>
+    <arg name="robot_name" default="emir"/>
     <arg name="robot_version" default="v1-1"/>
 
     <!--
         List of the simulated worlds in the 'alpha_stonefish'
     -->
-    <arg name="scenario" default="ocean"/>
+    <arg name="scenario" default="ocean_multi_agent"/>
 
     <include file="$(find alpha_stonefish)/launch/alpha_simulation.launch">
         <arg name="robot_name" value="$(arg robot_name)"/>
