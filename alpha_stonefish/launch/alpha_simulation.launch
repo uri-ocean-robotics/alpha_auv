@@ -20,14 +20,19 @@
 
     <arg name="data_path" default="$(find alpha_stonefish)/data"/>
     <arg name="simulation_rate" default="100.0"/>
-    <arg name="graphics_resolution" default="1200 800"/>
+    <arg name="graphics_resolution_width" default="1200"/>
+    <arg name="graphics_resolution_height" default="800"/>
     <arg name="graphics_quality" default="low"/>
 
     <node
         name="stonefish_simulator"
         pkg="stonefish_mvp"
         type="parsed_simulator"
-        args="$(arg data_path) $(arg simulation_rate) $(arg graphics_resolution) $(arg graphics_quality)"
+        args="-d $(arg data_path)
+              -r $(arg simulation_rate)
+              -w $(arg graphics_resolution_width)
+              -h $(arg graphics_resolution_height)
+              -n $(arg graphics_quality)"
         output="screen">
         <param
             name="scenario_description"
