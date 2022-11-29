@@ -19,37 +19,37 @@ history_length: 10.0
 #    V_roll,  V_pitch,    V_yaw,
 #        ax,       ay,       az]
 
-imu0: /imu/data
-imu0_config: [false, false, false,
-              true, true, true,
-              false, false, false,
-              true, true, true,
-              true, true, true]
-imu0_nodelay: true
-imu0_relative: false
-imu0_queue_size: 100
+# imu0: /imu/data
+# imu0_config: [false, false, false,
+#               true, true, true,
+#               false, false, false,
+#               true, true, true,
+#               true, true, true]
+# imu0_nodelay: true
+# imu0_relative: false
+# imu0_queue_size: 100
 # imu0_remove_gravitational_acceleration: {if sim -> false, else true}, Launch files automatically sets it
 
-twist0: /dvl/twist
-twist0_config: [false, false, false,
-                false, false, false,
-                true, true, false,
-                false, false, false,
-                false, false, false]
-twist0_nodelay: true
-twist0_relative: false
-twist0_queue_size: 20
+# twist0: /dvl/twist
+# twist0_config: [false, false, false,
+#                 false, false, false,
+#                 true, true, false,
+#                 false, false, false,
+#                 false, false, false]
+# twist0_nodelay: true
+# twist0_relative: false
+# twist0_queue_size: 20
 
-pose0: /depth_filtered
-pose0_config: [false, false, true,
-               false, false, false,
-               false, false, false,
-               false, false, false,
-               false, false, false]
-pose0_differential: false
-pose0_relative: false
-pose0_queue_size: 10
-pose0_nodelay: true
+# pose0: /depth_filtered
+# pose0_config: [false, false, true,
+#                false, false, false,
+#                false, false, false,
+#                false, false, false,
+#                false, false, false]
+# pose0_differential: false
+# pose0_relative: false
+# pose0_queue_size: 10
+# pose0_nodelay: true
 
 # [ADVANCED] The process noise covariance matrix can be difficult to tune, and can vary for each application, so it is
 # exposed as a configuration parameter. Thvinyl noise camerais matrix represents the noise we add to the total error after each

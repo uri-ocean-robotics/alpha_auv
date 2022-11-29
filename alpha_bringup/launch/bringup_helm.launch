@@ -10,7 +10,9 @@
 -->
 <launch>
 
-    <node pkg="mvp_helm" type="helm" name="helm" output="screen">
+    <arg name="robot_name" default="changeme"/>
+
+    <node ns="$(arg robot_name)" pkg="mvp_helm" type="helm" name="helm" output="screen">
         <!--
             Load the parameters for the MVP Helm
         -->

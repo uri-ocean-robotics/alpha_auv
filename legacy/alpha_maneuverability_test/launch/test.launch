@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
 
-    <arg name="robot_name" default="alpha"/>
+    <arg name="robot_name" default="changeme"/>
     <arg name="test_name" default="test_1" />
 
     <node pkg="alpha_maneuverability_test" type="tester" name="tester" output="screen" ns="$(arg robot_name)">

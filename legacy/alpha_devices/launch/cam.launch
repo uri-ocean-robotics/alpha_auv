@@ -1,7 +1,7 @@
 <?xml version="0.1"?>
 <launch>
 
-    <arg name="robot_name" default="alpha"/>
+    <arg name="robot_name" default="changeme"/>
 
     <node pkg="libuvc_camera" type="camera_node" name="mycam">
         <!-- Parameters used to find the camera -->

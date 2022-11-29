@@ -10,9 +10,9 @@
 -->
 <launch>
 
-    <arg name="robot_name" default="alpha"/>
+    <arg name="robot_name" default="changeme"/>
 
-    <node pkg="gpsd_client" type="gpsd_client" name="gpsd_client" output="screen">
+    <node ns="$(arg robot_name)" pkg="gpsd_client" type="gpsd_client" name="gpsd_client" output="screen">
         <remap from="fix" to="gps/fix"/>
         <param name="frame_id" value="$(arg robot_name)/gps"/>
     </node>

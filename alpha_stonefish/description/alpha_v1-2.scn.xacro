@@ -1,0 +1,256 @@
+<?xml version="1.0"?>
+<!--
+    This file is part of ALPHA AUV project.
+
+    Author: Emir Cem Gezer
+    Email: emircem@uri.edu;emircem.gezer@gmail.com
+    Year: 2022
+
+    Copyright (C) 2022 Smart Ocean Systems Laboratory
+-->
+<scenario xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <xacro:include filename="$(find alpha_stonefish)/description/looks.scn.xacro"/>
+    <xacro:include filename="$(find alpha_stonefish)/description/materials.scn.xacro"/>
+
+    <xacro:macro name="alpha_v1-2" params="xyz rpy robot_name">
+        <robot name="${robot_name}" fixed="false" self_collisions="false">
+
+            <base_link name="Vehicle" type="compound" physics="submerged">
+                <external_part name="Hull" type="model" physics="submerged" buoyant="false">
+                    <physical>
+                        <mesh filename="hull_phy_reduced.obj" scale="1.0"/>
+                        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                    </physical>
+                    <visual>
+                        <mesh filename="hull.obj" scale="1.0"/>
+                        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                    </visual>
+                    <material name="Vehicle"/>
+                    <look name="yellow"/>
+                    <mass value="24.8"/>
+                    <compound_transform rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                    <cg xyz="-0.65 0.0 0.05" rpy="0.0 0.0 0.0"/>
+                </external_part>
+
+                <internal_part name="Foam" type="cylinder" physics="floating" buoyant="true">
+                    <dimensions radius="0.1" height="1.0"/>
+                    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                    <material name="Foam"/>
+                    <mass value="6.0"/>
+                    <look name="grey"/>
+                    <compound_transform rpy="0.0 1.571 0.0" xyz="-0.65 0.0 -0.05"/>
+                </internal_part>
+
+                <external_part name="Mast" type="model" physics="submerged">
+                    <physical>
+                        <mesh filename="mast.obj" scale="0.001"/>
+                        <origin rpy="-1.571 0.0 1.571"  xyz="-1.0 0.0 0.0"/>
+                    </physical>
+                    <visual>
+                        <mesh filename="mast.obj" scale="0.001"/>
+                        <origin rpy="-1.571 0.0 1.571" xyz="-1.0 0.0 0.0"/>
+                    </visual>
+                    <material name="Resin"/>
+                    <look name="white"/>
+                    <compound_transform rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                </external_part>
+
+                <!-- <external_part name="ThrusterDuctSurge" type="model" physics="submerged" buoyant="false">
+                    <physical>
+                        <mesh filename="duct.obj" scale="0.0015"/>
+                        <origin rpy="0.0 1.571 0.0" xyz="-1.325 0.0 0.0"/>
+                    </physical>
+                    <visual>
+                        <mesh filename="duct.obj" scale="0.0015"/>
+                        <origin rpy="0.0 1.571 0.0" xyz="-1.325 0.0 0.0"/>
+                    </visual>
+                    <material name="Neutral"/>
+                    <look name="black"/>
+                    <compound_transform rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                </external_part> -->
+            </base_link>
+
+            <actuator name="ThrusterHeaveBow" type="thruster">
+                <link name="Vehicle"/>
+                <origin rpy="0.0 -1.571 0.0" xyz="-0.2857 0.0 0.0"/>
+                <specs thrust_coeff="0.4315" thrust_coeff_backward="0.3404" torque_coeff="0.01" max_rpm="3000.0"/>
+                <propeller diameter="0.08" right="true">
+                    <mesh filename="prop.obj" scale="1.0"/>
+                    <material name="Neutral"/>
+                    <look name="white"/>
+                </propeller>
+                <ros_subscriber topic="/${robot_name}/control/thruster/heave_bow"/>
+            </actuator>
+
+            <actuator name="ThrusterSwayBow" type="thruster">
+                <link name="Vehicle"/>
+                <origin rpy="0.0 0.0 -1.571" xyz="-0.171 0.0 0.0"/>
+                <specs thrust_coeff="0.4315" thrust_coeff_backward="0.3404" torque_coeff="0.01" max_rpm="3000.0"/>
+                <propeller diameter="0.08" right="true">
+                    <mesh filename="prop.obj" scale="1.0"/>
+                    <material name="Neutral"/>
+                    <look name="white"/>
+                </propeller>
+                <ros_subscriber topic="/${robot_name}/control/thruster/sway_bow"/>
+            </actuator>
+
+            <!-- Start: Starboard Surge -->
+
+            <link name="ThrusterSurgeStarboardDuct" type="compound" physics="submerged">
+                <external_part name="SurgeStarboardDuct" type="model" physics="submerged" buoyant="true">
+                    <physical>
+                        <mesh filename="duct_reduced.obj" scale="0.001"/>
+                        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                    </physical>
+                    <visual>
+                        <mesh filename="duct.obj" scale="0.001"/>
+                        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                    </visual>
+                    <material name="Neutral"/>
+                    <look name="black"/>
+                    <compound_transform rpy="0.0 -1.57 0.0" xyz="0.0 0.0 0.0"/>
+                </external_part>
+            </link>
+
+            <actuator name="ThrusterSurgeStarboard" type="thruster">
+                <link name="ThrusterSurgeStarboardDuct"/>
+                <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                <specs thrust_coeff="0.4315" thrust_coeff_backward="0.3404" torque_coeff="0.01" max_rpm="3000.0"/>
+                <propeller diameter="0.08" right="true">
+                    <mesh filename="prop.obj" scale="1.0"/>
+                    <material name="Neutral"/>
+                    <look name="white"/>
+                </propeller>
+                <ros_subscriber topic="/${robot_name}/control/thruster/surge_starboard"/>
+            </actuator>
+
+            <joint name="surge_starboard_joint" type="revolute">
+                <parent name="Vehicle"/>
+                <child name="ThrusterSurgeStarboardDuct"/>
+                <origin rpy="0.0 0.0 0.0" xyz="-1.0956 0.165 0.0"/>
+                <axis xyz="0.0 1.0 0.0"/>
+                <limits min="-1.5705" max="1.5705"/>
+            </joint>
+
+            <actuator name="ServoStarboardPort" type="servo">
+                <joint name="surge_starboard_joint"/>
+                <controller position_gain="1.1" velocity_gain="0.1" max_torque="10.0"/>
+            </actuator>
+
+            <!-- End: Starboard Surge -->
+            <!-- Start: Port Surge -->
+
+            <link name="ThrusterSurgePortDuct" type="compound" physics="submerged">
+                <external_part name="SurgePortDuct" type="model" physics="submerged" buoyant="true">
+                    <physical>
+                        <mesh filename="duct_reduced.obj" scale="0.001"/>
+                        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                    </physical>
+                    <visual>
+                        <mesh filename="duct.obj" scale="0.001"/>
+                        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                    </visual>
+                    <material name="Neutral"/>
+                    <look name="black"/>
+                    <compound_transform rpy="0.0 -1.57 0.0" xyz="0.0 0.0 0.0"/>
+                </external_part>
+            </link>
+
+            <actuator name="ThrusterSurgePort" type="thruster">
+                <link name="ThrusterSurgePortDuct"/>
+                <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                <specs thrust_coeff="0.4315" thrust_coeff_backward="0.3404" torque_coeff="0.01" max_rpm="3000.0"/>
+                <propeller diameter="0.08" right="true">
+                    <mesh filename="prop.obj" scale="1.0"/>
+                    <material name="Neutral"/>
+                    <look name="white"/>
+                </propeller>
+                <ros_subscriber topic="/${robot_name}/control/thruster/surge_port"/>
+            </actuator>
+
+            <joint name="surge_port_joint" type="revolute">
+                <parent name="Vehicle"/>
+                <child name="ThrusterSurgePortDuct"/>
+                <origin rpy="0.0 0.0 0.0" xyz="-1.0956 -0.165 0.0"/>
+                <axis xyz="0.0 1.0 0.0"/>
+                <limits min="-1.5705" max="1.5705"/>
+            </joint>
+
+            <actuator name="ServoSurgePort" type="servo">
+                <joint name="surge_port_joint"/>
+                <controller position_gain="1.1" velocity_gain="0.1" max_torque="10.0"/>
+            </actuator>
+
+            <!-- End: Port Surge -->
+
+            <sensor name="pressure" type="pressure" rate="5.0">
+                <link name="Vehicle"/>
+                <origin rpy="0.0 0.0 0.0" xyz="-1.20 0.0 0.0"/>
+                <noise pressure="5.0"/>
+                <ros_publisher topic="/${robot_name}/pressure"/>
+            </sensor>
+
+            <sensor name="dvl" type="dvl" rate="5.0">
+                <link name="Vehicle"/>
+                <origin rpy="3.1416 0.0 0.0" xyz="-0.75 0.0 0.10"/>
+                <specs beam_angle="30.0"/>
+                <range velocity="9.0 9.0 9.0" altitude_min="0.05" altitude_max="200.0"/>
+                <noise velocity="0.0015" altitude="0.001"/>
+                <ros_publisher topic="/${robot_name}/dvl/twist" altitude_topic="/${robot_name}/dvl/altitude"/>
+            </sensor>
+
+            <sensor name="imu" type="imu" rate="20.0">
+                <link name="Vehicle"/>
+                <origin rpy="0.0 0.0 0.0" xyz="-0.65 0.0 0.0"/>
+                <noise angle="0.000001745" angular_velocity="0.00001745"/>
+                <ros_publisher topic="/${robot_name}/imu/stonefish/data"/>
+            </sensor>
+
+            <sensor name="gps" type="gps" rate="1.0">
+                <link name="Vehicle"/>
+                <origin rpy="0.0 0.0 0.0" xyz="-0.54 0.0 -0.2"/>
+                <noise ned_position="0.5"/>
+                <ros_publisher topic="/${robot_name}/gps/fix"/>
+            </sensor>
+
+            <sensor name="multibeam" rate="50.0" type="multibeam">
+                <specs fov="90.0" steps="64"/>
+                <range distance_min="0.5" distance_max="200.0"/>
+                <noise distance="0.0"/>
+                <history samples="1"/>
+                <origin xyz="0.0 0.0 0.2" rpy="0.0 -1.0471975511965976 0.0"/>
+                <link name="Vehicle"/>
+                <ros_publisher topic="/${robot_name}/mbs/data"/>
+            </sensor>
+
+            <sensor name="ifss_port_swath" rate="10.0" type="multibeam">
+                <specs fov="53.0" steps="64"/>
+                <range distance_min="0.1" distance_max="150.0"/>
+                <noise distance="0.0"/>
+                <history samples="1"/>
+                <origin xyz="-0.75 -0.0762 0.2" rpy="-1.5708 -2.35619 1.5708"/>
+                <link name="Vehicle"/>
+                <pcl_topic topic="/${robot_name}/ifss/port/pcl"/>
+                <ros_publisher topic="/${robot_name}/ifss/port"/>
+            </sensor>
+
+            <sensor name="ifss_starboard_swath" rate="10.0" type="multibeam">
+                <specs fov="53.0" steps="64"/>
+                <range distance_min="0.1" distance_max="150.0"/>
+                <noise distance="0.0"/>
+                <history samples="1"/>
+                <origin xyz="-0.75 0.0762 0.2" rpy="1.5708 -2.35619 -1.5708"/>
+                <link name="Vehicle"/>
+                <pcl_topic topic="/${robot_name}/ifss/starboard/pcl"/>
+                <ros_publisher topic="/${robot_name}/ifss/starboard"/>
+            </sensor>
+
+            <world_transform rpy="${rpy}" xyz="${xyz}"/>
+
+            <ros_subscriber2 servos="/${robot_name}/servos/joint_states" thrusters="/${robot_name}/controller/thruster_state"/>
+
+        </robot>
+    </xacro:macro>
+
+</scenario>

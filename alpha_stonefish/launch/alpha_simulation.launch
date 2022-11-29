@@ -10,19 +10,34 @@
 -->
 <launch>
 
-    <node name="world2sim" pkg="tf2_ros" type="static_transform_publisher" args="0.0 0.0 0.0 0.0 0.0 3.141592653589793 world world_sim"/>
+    <!-- <node name="world2sim" pkg="tf2_ros" type="static_transform_publisher" args="0.0 0.0 0.0 0.0 0.0 3.141592653589793 world world_sim"/> -->
 
     <param name="use_sim_time" type="boolean" value="true"/>
 
     <arg name="scenario" default="ocean"/>
 
-    <!-- Run Simulator -->
-    <include file="$(find stonefish_mvp)/launch/simulator.launch">
-        <arg name="simulation_data" value="$(find alpha_stonefish)/data"/>
-        <arg name="scenario_description" value="$(find alpha_stonefish)/scenarios/$(arg scenario).scn"/>
-        <arg name="simulation_rate" value="100.0"/>
-        <arg name="graphics_resolution" value="1200 800"/>
-        <arg name="graphics_quality" value="low"/>
-    </include>
+    <arg name="robot_name" default="changeme"/>
+
+    <arg name="data_path" default="$(find alpha_stonefish)/data"/>
+    <arg name="simulation_rate" default="100.0"/>
+    <arg name="graphics_resolution_width" default="1200"/>
+    <arg name="graphics_resolution_height" default="800"/>
+    <arg name="graphics_quality" default="low"/>
+
+    <node
+        name="stonefish_simulator"
+        pkg="stonefish_mvp"
+        type="parsed_simulator"
+        args="-d $(arg data_path)
+              -r $(arg simulation_rate)
+              -w $(arg graphics_resolution_width)
+              -h $(arg graphics_resolution_height)
+              -n $(arg graphics_quality)"
+        output="screen">
+        <param
+            name="scenario_description"
+            command="$(find xacro)/xacro robot_name:=$(arg robot_name) '$(find alpha_stonefish)/scenarios/$(arg scenario).scn.xacro'"/>
+
+    </node>
 
 </launch>

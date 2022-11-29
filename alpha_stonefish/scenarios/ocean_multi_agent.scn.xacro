@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!--
+    This file is part of ALPHA AUV project.
+
+    Author: Emir Cem Gezer
+    Email: emircem@uri.edu;emircem.gezer@gmail.com
+    Year: 2022
+
+    Copyright (C) 2022 Smart Ocean Systems Laboratory
+-->
+<scenario xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <xacro:include filename="$(find alpha_stonefish)/description/alpha.scn.xacro"/>
+
+
+    <xacro:alpha_v1-1 robot_name="bill" xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <xacro:alpha_v1-1 robot_name="lin" xyz="5.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <xacro:alpha_v1-1 robot_name="emir" xyz="5.0 5.0 0.0" rpy="0.0 0.0 0.0"/>
+    <xacro:alpha_v1-1 robot_name="mingxi" xyz="0.0 5.0 0.0" rpy="0.0 0.0 0.0"/>
+
+    <environment>
+        <ned latitude="41" longitude="71"/>
+        <ocean>
+            <water density="1000.0" jerlov="0.2"/>
+            <waves height="0.0"/>
+            <particles enabled="true"/>
+            <current type="uniform">
+                <velocity xyz="0.0 0.0 0.0"/>
+            </current>
+        </ocean>
+        <atmosphere>
+            <sun azimuth="50.0" elevation="50.0"/>
+        </atmosphere>
+    </environment>
+
+    <static name="Bottom" type="model">
+        <physical>
+            <mesh filename="seabed.obj" scale="2.0" convex="false"/>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        </physical>
+        <visual>
+            <mesh filename="seabed.obj" scale="2.0"/>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        </visual>
+        <material name="Rock"/>
+        <look name="Gray"/>
+        <world_transform xyz="-500.0 -500.0 -130.0" rpy="0.0 0.0 0.0"/>
+    </static>
+
+</scenario>

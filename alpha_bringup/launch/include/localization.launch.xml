@@ -10,7 +10,7 @@
 -->
 <launch>
 
-    <arg name="robot_name" default="alpha"/>
+    <arg name="robot_name" default="changeme"/>
 
     <!--
         In the simulation, IMU doesn't include gravitational acceleration.

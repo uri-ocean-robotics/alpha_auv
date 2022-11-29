@@ -8,12 +8,16 @@
 
     Copyright (C) 2022 Smart Ocean Systems Laboratory
 -->
-<scenario>
+<scenario xmlns:xacro="http://ros.org/wiki/xacro">
 
-    <include file="$(find alpha_stonefish)/description/alpha.scn"/>
+    <xacro:arg name="robot_name" default="changeme"/>
+
+    <xacro:include filename="$(find alpha_stonefish)/description/alpha.scn.xacro"/>
+
+    <xacro:alpha_v1-2 robot_name="$(arg robot_name)" xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
 
     <environment>
-        <ned latitude="41.7777" longitude="3.0333"/>
+        <ned latitude="41" longitude="71"/>
         <ocean>
             <water density="1000.0" jerlov="0.2"/>
             <waves height="0.0"/>
@@ -27,18 +31,18 @@
         </atmosphere>
     </environment>
 
-    <static name="tank" type="model">
+    <static name="Bottom" type="model">
         <physical>
-            <mesh filename="tank.obj" scale="1.0" convex="false"/>
+            <mesh filename="seabed.obj" scale="2.0" convex="false"/>
             <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
         </physical>
         <visual>
-            <mesh filename="tank.obj" scale="1.0"/>
+            <mesh filename="seabed.obj" scale="2.0"/>
             <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
         </visual>
         <material name="Rock"/>
         <look name="Gray"/>
-        <world_transform xyz="0.0 0.0 18.0" rpy="3.1415926 0.0 0.0"/>
+        <world_transform xyz="-500.0 -500.0 -130.0" rpy="0.0 0.0 0.0"/>
     </static>
 
 </scenario>

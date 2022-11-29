@@ -10,9 +10,9 @@
 -->
 <launch>
 
-    <arg name="robot_name" default="alpha"/>
+    <arg name="robot_name" default="changeme"/>
 
-    <node pkg="libuvc_camera" type="camera_node" name="camera_node">
+    <node ns="$(arg robot_name)" pkg="libuvc_camera" type="camera_node" name="camera_node">
         <rosparam command="load" file="$(find alpha_config)/config/uvc_cam.yaml"/>
         <param name="frame_id" value="$(arg robot_name)/usb_cam"/>
     </node>
