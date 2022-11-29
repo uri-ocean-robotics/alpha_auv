@@ -8,7 +8,7 @@ cg_link: cg_link
 
 odometry_source: /odometry/filtered/local
 
-enabled: true
+enabled: false
 
 control_modes:
   idle: false

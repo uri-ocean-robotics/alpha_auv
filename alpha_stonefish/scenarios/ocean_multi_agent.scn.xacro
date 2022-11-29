@@ -13,10 +13,10 @@
     <xacro:include filename="$(find alpha_stonefish)/description/alpha.scn.xacro"/>
 
 
-    <xacro:alpha robot_name="bill" xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-    <xacro:alpha robot_name="lin" xyz="5.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-    <xacro:alpha robot_name="emir" xyz="5.0 5.0 0.0" rpy="0.0 0.0 0.0"/>
-    <xacro:alpha robot_name="mingxi" xyz="0.0 5.0 0.0" rpy="0.0 0.0 0.0"/>
+    <xacro:alpha_v1-1 robot_name="bill" xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <xacro:alpha_v1-1 robot_name="lin" xyz="5.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <xacro:alpha_v1-1 robot_name="emir" xyz="5.0 5.0 0.0" rpy="0.0 0.0 0.0"/>
+    <xacro:alpha_v1-1 robot_name="mingxi" xyz="0.0 5.0 0.0" rpy="0.0 0.0 0.0"/>
 
     <environment>
         <ned latitude="41" longitude="71"/>
