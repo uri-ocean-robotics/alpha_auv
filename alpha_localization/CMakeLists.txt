@@ -43,6 +43,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
+add_executable(imu_ned_to_enu src/imu_ned_enu.cpp)
 add_executable(depth_filter_node src/depth_filter_node.cpp)
 add_executable(pressure_to_depth_node src/pressure_to_depth_node.cpp)
 
@@ -54,10 +55,15 @@ add_executable(pressure_to_depth_node src/pressure_to_depth_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
+add_dependencies(imu_ned_to_enu ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(depth_filter_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(pressure_to_depth_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
+target_link_libraries(imu_ned_to_enu
+  ${catkin_LIBRARIES}
+)
+
 target_link_libraries(depth_filter_node
   ${catkin_LIBRARIES}
 )

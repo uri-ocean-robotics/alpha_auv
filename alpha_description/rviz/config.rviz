@@ -5,9 +5,11 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
+        - /RobotModel1
         - /TF1/Frames1
+        - /Marker2
       Splitter Ratio: 0.5089927911758423
-    Tree Height: 826
+    Tree Height: 832
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -79,8 +81,77 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        cg_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        dvl:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        dvl_altitude:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        gps:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        heave_bow_thruster_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        heave_stern_thruster_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        ifss_port:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        ifss_port_swath:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        ifss_starboard:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        ifss_starboard_swath:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        imu:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        multibeam:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        pressure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        surge_thruster_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        sway_bow_thruster_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        usb_cam:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
       Name: RobotModel
-      Robot Description: robot_description
+      Robot Description: alpha/robot_description
       TF Prefix: alpha
       Update Interval: 0
       Value: true
@@ -90,49 +161,47 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        husnu/base_link:
+        alpha/base_link:
           Value: true
-        husnu/cg_link:
+        alpha/cg_link:
           Value: true
-        husnu/dvl:
+        alpha/dvl:
           Value: true
-        husnu/dvl_altitude:
+        alpha/dvl_altitude:
           Value: true
-        husnu/gps:
+        alpha/gps:
           Value: true
-        husnu/heave_bow_thruster_link:
+        alpha/heave_bow_thruster_link:
           Value: true
-        husnu/heave_stern_thruster_link:
+        alpha/heave_stern_thruster_link:
           Value: true
-        husnu/ifss_port:
+        alpha/ifss_port:
           Value: true
-        husnu/ifss_port_swath:
+        alpha/ifss_port_swath:
           Value: true
-        husnu/ifss_starboard:
+        alpha/ifss_starboard:
           Value: true
-        husnu/ifss_starboard_swath:
+        alpha/ifss_starboard_swath:
           Value: true
-        husnu/imu:
+        alpha/imu:
           Value: true
-        husnu/map:
+        alpha/map:
           Value: true
-        husnu/multibeam:
+        alpha/multibeam:
           Value: true
-        husnu/odom:
+        alpha/odom:
           Value: true
-        husnu/pressure:
+        alpha/pressure:
           Value: true
-        husnu/surge_thruster_link:
+        alpha/surge_thruster_link:
           Value: true
-        husnu/sway_bow_thruster_link:
+        alpha/sway_bow_thruster_link:
           Value: true
-        husnu/usb_cam:
+        alpha/usb_cam:
           Value: true
-        world:
+        alpha/world:
           Value: true
-        world_ned:
-          Value: true
-        world_sim:
+        alpha/world_ned:
           Value: true
       Marker Alpha: 1
       Marker Scale: 0.5
@@ -141,50 +210,64 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        husnu/map:
-          husnu/odom:
-            husnu/base_link:
-              husnu/cg_link:
+        alpha/map:
+          alpha/odom:
+            alpha/base_link:
+              alpha/cg_link:
                 {}
-              husnu/dvl:
-                husnu/dvl_altitude:
+              alpha/dvl:
+                alpha/dvl_altitude:
                   {}
-              husnu/gps:
+              alpha/gps:
                 {}
-              husnu/heave_bow_thruster_link:
+              alpha/heave_bow_thruster_link:
                 {}
-              husnu/heave_stern_thruster_link:
+              alpha/heave_stern_thruster_link:
                 {}
-              husnu/ifss_port:
-                husnu/ifss_port_swath:
+              alpha/ifss_port:
+                alpha/ifss_port_swath:
                   {}
-              husnu/ifss_starboard:
-                husnu/ifss_starboard_swath:
+              alpha/ifss_starboard:
+                alpha/ifss_starboard_swath:
                   {}
-              husnu/imu:
+              alpha/imu:
                 {}
-              husnu/multibeam:
+              alpha/multibeam:
                 {}
-              husnu/pressure:
+              alpha/pressure:
                 {}
-              husnu/surge_thruster_link:
+              alpha/surge_thruster_link:
                 {}
-              husnu/sway_bow_thruster_link:
+              alpha/sway_bow_thruster_link:
                 {}
-              husnu/usb_cam:
+              alpha/usb_cam:
                 {}
-            world:
-              world_ned:
-                {}
-              world_sim:
+            alpha/world:
+              alpha/world_ned:
                 {}
       Update Interval: 0
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /alpha/helm/path_local/path
+      Name: Marker
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /alpha/helm/path_local/segment
+      Name: Marker
+      Namespaces:
+        {}
+      Queue Size: 100
       Value: true
   Enabled: true
   Global Options:
     Background Color: 238; 238; 236
     Default Light: true
-    Fixed Frame: world
+    Fixed Frame: alpha/odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -208,7 +291,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 10
+      Distance: 5.996953964233398
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -234,7 +317,7 @@ Window Geometry:
   Height: 1016
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000022e000003c5fc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c0061007900730100000016000003c5000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f000003c5fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a005600690065007700730100000016000003c5000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004f30000003efc0100000002fb0000000800540069006d00650000000000000004f30000041800fffffffb0000000800540069006d0065010000000000000450000000000000000000000437000003c500000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730000000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000022e000003c9fc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c0061007900730100000014000003c9000000c700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f000003c9fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a005600690065007700730100000014000003c9000000a000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004f30000003efc0100000002fb0000000800540069006d00650000000000000004f30000035c00fffffffb0000000800540069006d0065010000000000000450000000000000000000000437000003c900000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730000000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:

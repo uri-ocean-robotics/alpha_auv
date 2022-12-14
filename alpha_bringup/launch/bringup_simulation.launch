@@ -11,7 +11,6 @@
 <launch>
 
     <arg name="robot_name" default="alpha"/>
-    <arg name="robot_version" default="v1-1"/>
 
     <!--
         List of the simulated worlds in the 'alpha_stonefish'
@@ -25,12 +24,10 @@
 
     <include file="$(find alpha_bringup)/launch/include/control.launch.xml">
         <arg name="robot_name" value="$(arg robot_name)"/>
-        <arg name="robot_version" value="$(arg robot_version)"/>
     </include>
 
     <include file="$(find alpha_bringup)/launch/include/description.launch.xml">
         <arg name="robot_name" value="$(arg robot_name)"/>
-        <arg name="robot_version" default="$(arg robot_version)"/>
     </include>
 
     <include file="$(find alpha_bringup)/launch/include/localization.launch.xml">

@@ -11,11 +11,9 @@
 <launch>
 
   <arg name="robot_name" default="changeme"/>
-  <arg name="robot_version" default="v1-1"/>
 
   <include file="$(find alpha_bringup)/launch/include/driver.launch.xml">
     <arg name="robot_name" value="$(arg robot_name)"/>
-    <arg name="robot_version" default="$(arg robot_version)"/>
   </include>
 
   <include file="$(find alpha_bringup)/launch/include/dvl.launch.xml">
@@ -36,7 +34,6 @@
 
   <include file="$(find alpha_bringup)/launch/include/description.launch.xml">
     <arg name="robot_name" value="$(arg robot_name)"/>
-    <arg name="robot_version" default="$(arg robot_version)"/>
   </include>
 
   <include file="$(find alpha_bringup)/launch/include/localization.launch.xml">
@@ -45,7 +42,6 @@
 
   <include file="$(find alpha_bringup)/launch/include/control.launch.xml">
     <arg name="robot_name" value="$(arg robot_name)"/>
-    <arg name="robot_version" default="$(arg robot_version)"/>
   </include>
 
 </launch>

@@ -1,0 +1,22 @@
+port: /dev/PICO
+
+pwm_control:
+  surge:
+    channel: 2
+    mode: thruster
+    topic: control/thruster/surge
+
+  heave_bow:
+    channel: 0
+    mode: thruster
+    topic: control/thruster/heave_bow
+
+  heave_stern:
+    channel: 1
+    mode: thruster
+    topic: control/thruster/heave_stern
+
+  sway_bow:
+    channel: 4
+    mode: thruster
+    topic: control/thruster/sway_bow

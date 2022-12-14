@@ -10,8 +10,6 @@
 -->
 <launch>
 
-    <arg name="robot_version" default="v1-1"/>
-
     <!--
         List of the simulated worlds in the 'alpha_stonefish'
     -->
@@ -24,12 +22,10 @@
     <group>
         <include file="$(find alpha_bringup)/launch/include/control.launch.xml">
             <arg name="robot_name" value="bill"/>
-            <arg name="robot_version" value="$(arg robot_version)"/>
         </include>
 
         <include file="$(find alpha_bringup)/launch/include/description.launch.xml">
             <arg name="robot_name" value="bill"/>
-            <arg name="robot_version" default="$(arg robot_version)"/>
         </include>
 
         <include file="$(find alpha_bringup)/launch/include/localization.launch.xml">
@@ -41,12 +37,10 @@
     <group>
         <include file="$(find alpha_bringup)/launch/include/control.launch.xml">
             <arg name="robot_name" value="emir"/>
-            <arg name="robot_version" value="$(arg robot_version)"/>
         </include>
 
         <include file="$(find alpha_bringup)/launch/include/description.launch.xml">
             <arg name="robot_name" value="emir"/>
-            <arg name="robot_version" default="$(arg robot_version)"/>
         </include>
 
         <include file="$(find alpha_bringup)/launch/include/localization.launch.xml">
@@ -58,12 +52,10 @@
     <group>
         <include file="$(find alpha_bringup)/launch/include/control.launch.xml">
             <arg name="robot_name" value="mingxi"/>
-            <arg name="robot_version" value="$(arg robot_version)"/>
         </include>
 
         <include file="$(find alpha_bringup)/launch/include/description.launch.xml">
             <arg name="robot_name" value="mingxi"/>
-            <arg name="robot_version" default="$(arg robot_version)"/>
         </include>
 
         <include file="$(find alpha_bringup)/launch/include/localization.launch.xml">
@@ -75,12 +67,10 @@
     <group>
         <include file="$(find alpha_bringup)/launch/include/control.launch.xml">
             <arg name="robot_name" value="lin"/>
-            <arg name="robot_version" value="$(arg robot_version)"/>
         </include>
 
         <include file="$(find alpha_bringup)/launch/include/description.launch.xml">
             <arg name="robot_name" value="lin"/>
-            <arg name="robot_version" default="$(arg robot_version)"/>
         </include>
 
         <include file="$(find alpha_bringup)/launch/include/localization.launch.xml">
@@ -88,10 +78,6 @@
             <arg name="is_sim" value="true"/>
         </include>
     </group>
-
-
-
-
 
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(find alpha_description)/rviz/config.rviz"/>
 

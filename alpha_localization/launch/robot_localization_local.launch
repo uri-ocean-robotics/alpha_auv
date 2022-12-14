@@ -1,11 +1,9 @@
 <?xml version="1.0"?>
 <!--
     This file is part of ALPHA AUV project.
-
     Author: Emir Cem Gezer
     Email: emircem@uri.edu;emircem.gezer@gmail.com
     Year: 2022
-
     Copyright (C) 2022 Smart Ocean Systems Laboratory
 -->
 <launch>
@@ -66,12 +64,19 @@
     </node>
 
     <group if="$(arg is_sim)">
-        <node ns="$(arg robot_name)" name="imu_transformer" pkg="imu_transformer" type="imu_transformer_node" output="screen">
-            <param name="target_frame" value="$(arg robot_name)/base_link"/>
 
+
+        <node ns="$(arg robot_name)" name="imu_ned_to_enu" pkg="alpha_localization" type="imu_ned_to_enu" output="screen">
             <remap from="imu_in/data" to="imu/stonefish/data"/>
             <remap from="imu_out/data" to="imu/data"/>
         </node>
+
+        <!-- <node ns="$(arg robot_name)" name="imu_transformer" pkg="imu_transformer" type="imu_transformer_node" output="screen">
+            <param name="target_frame" value="$(arg robot_name)/base_link"/>
+
+            <remap from="imu_in/data" to="imu/data"/>
+            <remap from="imu_out/data" to="imu/base/data"/>
+        </node> -->
 
         <node ns="$(arg robot_name)" name="pressure_to_depth" pkg="alpha_localization" type="pressure_to_depth_node" output="screen">
             <param name="frame_id" value="$(arg robot_name)/odom"/>
@@ -79,6 +84,7 @@
             <remap from="depth" to="depth"/>
             <remap from="pressure" to="pressure"/>
         </node>
+
     </group>
 
     <node ns="$(arg robot_name)" name="depth_filter" pkg="alpha_localization" type="depth_filter_node" output="screen">

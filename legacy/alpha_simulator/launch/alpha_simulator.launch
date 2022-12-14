@@ -11,7 +11,6 @@
 
   <include file="$(find alpha_description)/launch/description.launch">
     <arg name="robot_name" value="$(arg robot_name)"/>
-    <arg name="robot_version" value="v1"/>
   </include>
 
   <node

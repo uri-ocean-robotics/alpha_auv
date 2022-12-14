@@ -24,7 +24,7 @@ waypoints:
   # - {x: 0.0, y: 100.0}
   # - {x: 50.0, y: 100.0}
 
-frame_id: world_ned
+frame_id: alpha/world_ned
 
 acceptance_radius: 3.0
 update_topic: update_waypoints
