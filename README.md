@@ -140,13 +140,15 @@ If you find this software useful in your research, please cite:
 will be updated with the one from IEEExplore.
 
 ```
-@inproceedings{
-    ALPHA_PAPER,
-    title = {Acrobatic Low-cost Portable Hybrid AUV (ALPHA): System Design and Preliminary Results},
-    author={Zhou, Mingxi and Gezer, Emir Cem and McConnell, William and Yuan, Chengzhi},
-    booktitle={OCEANS 2022: Hampton Roads},
-    year={2022},
-    organization={IEEE}
+@INPROCEEDINGS{9977113,
+  author={Zhou, Mingxi and Gezer, Emir Cem and McConnell, William and Yuan, Chengzhi},
+  booktitle={OCEANS 2022, Hampton Roads},
+  title={Acrobatic Low-cost Portable Hybrid AUV (ALPHA): System Design and Preliminary Results},
+  year={2022},
+  volume={},
+  number={},
+  pages={1-5},
+  doi={10.1109/OCEANS47191.2022.9977113}
 }
 ```
 
