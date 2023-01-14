@@ -122,23 +122,23 @@ Not deprecated but should not be used.</p>
 <p>Currently MVP packages should be build from the source.
 Target platform must be Ubuntu 20.04 because of the dependencies.</p>
 <p>Pull repository and other dependencies</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone --single-branch --branch noetic-devel https://github.com/uri-ocean-robotics/mvp_msgs
-git clone --single-branch --branch noetic-devel https://github.com/uri-ocean-robotics/mvp_control
-git clone --single-branch --branch noetic-devel https://github.com/uri-ocean-robotics/mvp_mission
-git clone --single-branch --branch noetic-devel https://github.com/uri-ocean-robotics/stonefish_mvp
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>--single-branch<span class="w"> </span>--branch<span class="w"> </span>noetic-devel<span class="w"> </span>https://github.com/uri-ocean-robotics/mvp_msgs
+git<span class="w"> </span>clone<span class="w"> </span>--single-branch<span class="w"> </span>--branch<span class="w"> </span>noetic-devel<span class="w"> </span>https://github.com/uri-ocean-robotics/mvp_control
+git<span class="w"> </span>clone<span class="w"> </span>--single-branch<span class="w"> </span>--branch<span class="w"> </span>noetic-devel<span class="w"> </span>https://github.com/uri-ocean-robotics/mvp_mission
+git<span class="w"> </span>clone<span class="w"> </span>--single-branch<span class="w"> </span>--branch<span class="w"> </span>noetic-devel<span class="w"> </span>https://github.com/uri-ocean-robotics/stonefish_mvp
 </pre></div>
 </div>
 </div>
 <div class="section" id="alpha-auv-simulation-and-hardware-installation">
 <h3>ALPHA AUV Simulation and Hardware Installation<a class="headerlink" href="#alpha-auv-simulation-and-hardware-installation" title="Permalink to this heading"></a></h3>
 <p>Pull repository and other dependencies</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/uri-ocean-robotics/alpha_auv
-<span class="nb">cd</span> alpha_auv
-git submodule update --init --recursive
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/uri-ocean-robotics/alpha_auv
+<span class="nb">cd</span><span class="w"> </span>alpha_auv
+git<span class="w"> </span>submodule<span class="w"> </span>update<span class="w"> </span>--init<span class="w"> </span>--recursive
 </pre></div>
 </div>
 <p>Install pip and setup python3 as default</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt install python3-pip
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>python3-pip
 </pre></div>
 </div>
 </div>
@@ -146,34 +146,34 @@ git submodule update --init --recursive
 <h3>Install Stonefish Simulator<a class="headerlink" href="#install-stonefish-simulator" title="Permalink to this heading"></a></h3>
 <p>Pull the stonefish simulator library repository in <strong>somewhere other than ROS workspace</strong>.
 Follow the installation instuctions at the <a class="reference external" href="https://stonefish.readthedocs.io/en/latest/install.html">Stonefish Readme</a>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/uri-ocean-robotics/stonefish
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/uri-ocean-robotics/stonefish
 </pre></div>
 </div>
 <p>Install the dependencies</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt install libglm-dev libsdl2-dev
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>libglm-dev<span class="w"> </span>libsdl2-dev
 </pre></div>
 </div>
 <p>Build the stonefish library and install it.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> stonefish
-mkdir build
-<span class="nb">cd</span> build
-cmake -DCMAKE_BUILD_TYPE<span class="o">=</span>Release ..
-make -j<span class="k">$(</span>nproc<span class="k">)</span>
-sudo make install
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>stonefish
+mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release<span class="w"> </span>..
+make<span class="w"> </span>-j<span class="k">$(</span>nproc<span class="k">)</span>
+sudo<span class="w"> </span>make<span class="w"> </span>install
 </pre></div>
 </div>
 </div>
 <div class="section" id="install-dependencies">
 <h3>Install Dependencies<a class="headerlink" href="#install-dependencies" title="Permalink to this heading"></a></h3>
 <p>Install dependencies</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rosdep install --from-paths src --ignore-src --rosdistro <span class="si">${</span><span class="nv">ROS_DISTRO</span><span class="si">}</span> -y
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rosdep<span class="w"> </span>install<span class="w"> </span>--from-paths<span class="w"> </span>src<span class="w"> </span>--ignore-src<span class="w"> </span>--rosdistro<span class="w"> </span><span class="si">${</span><span class="nv">ROS_DISTRO</span><span class="si">}</span><span class="w"> </span>-y
 </pre></div>
 </div>
 </div>
 <div class="section" id="test-the-installation">
 <h3>Test the installation<a class="headerlink" href="#test-the-installation" title="Permalink to this heading"></a></h3>
 <p>To run the simulation</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>roslaunch alpha_bringup bringup_simulation.launch
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>roslaunch<span class="w"> </span>alpha_bringup<span class="w"> </span>bringup_simulation.launch
 </pre></div>
 </div>
 </div>
@@ -181,14 +181,14 @@ sudo make install
 <div class="section" id="quick-start">
 <h2>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this heading"></a></h2>
 <p>Run the simulation and MVP Helm</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>roslaunch alpha_bringup bringup_simulation.launch
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>roslaunch<span class="w"> </span>alpha_bringup<span class="w"> </span>bringup_simulation.launch
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>roslaunch alpha_bringup bringup_helm.launch
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>roslaunch<span class="w"> </span>alpha_bringup<span class="w"> </span>bringup_helm.launch
 </pre></div>
 </div>
 <p>Start the local path tracking mission</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rosservice call /helm/change_state <span class="s2">&quot;state: &#39;survey_local&#39;&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rosservice<span class="w"> </span>call<span class="w"> </span>/helm/change_state<span class="w"> </span><span class="s2">&quot;state: &#39;survey_local&#39;&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -199,13 +199,15 @@ sudo make install
 <div><p>Note, this work is published in OCEANS 2022 conference. Once the paper is publicly available, bibtex entry
 will be updated with the one from IEEExplore.</p>
 </div></blockquote>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@inproceedings</span><span class="p">{</span>
-    <span class="n">ALPHA_PAPER</span><span class="p">,</span>
-    <span class="n">title</span> <span class="o">=</span> <span class="p">{</span><span class="n">Acrobatic</span> <span class="n">Low</span><span class="o">-</span><span class="n">cost</span> <span class="n">Portable</span> <span class="n">Hybrid</span> <span class="n">AUV</span> <span class="p">(</span><span class="n">ALPHA</span><span class="p">):</span> <span class="n">System</span> <span class="n">Design</span> <span class="ow">and</span> <span class="n">Preliminary</span> <span class="n">Results</span><span class="p">},</span>
-    <span class="n">author</span><span class="o">=</span><span class="p">{</span><span class="n">Zhou</span><span class="p">,</span> <span class="n">Mingxi</span> <span class="ow">and</span> <span class="n">Gezer</span><span class="p">,</span> <span class="n">Emir</span> <span class="n">Cem</span> <span class="ow">and</span> <span class="n">McConnell</span><span class="p">,</span> <span class="n">William</span> <span class="ow">and</span> <span class="n">Yuan</span><span class="p">,</span> <span class="n">Chengzhi</span><span class="p">},</span>
-    <span class="n">booktitle</span><span class="o">=</span><span class="p">{</span><span class="n">OCEANS</span> <span class="mi">2022</span><span class="p">:</span> <span class="n">Hampton</span> <span class="n">Roads</span><span class="p">},</span>
-    <span class="n">year</span><span class="o">=</span><span class="p">{</span><span class="mi">2022</span><span class="p">},</span>
-    <span class="n">organization</span><span class="o">=</span><span class="p">{</span><span class="n">IEEE</span><span class="p">}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@INPROCEEDINGS</span><span class="p">{</span><span class="mi">9977113</span><span class="p">,</span>
+  <span class="n">author</span><span class="o">=</span><span class="p">{</span><span class="n">Zhou</span><span class="p">,</span> <span class="n">Mingxi</span> <span class="ow">and</span> <span class="n">Gezer</span><span class="p">,</span> <span class="n">Emir</span> <span class="n">Cem</span> <span class="ow">and</span> <span class="n">McConnell</span><span class="p">,</span> <span class="n">William</span> <span class="ow">and</span> <span class="n">Yuan</span><span class="p">,</span> <span class="n">Chengzhi</span><span class="p">},</span>
+  <span class="n">booktitle</span><span class="o">=</span><span class="p">{</span><span class="n">OCEANS</span> <span class="mi">2022</span><span class="p">,</span> <span class="n">Hampton</span> <span class="n">Roads</span><span class="p">},</span>
+  <span class="n">title</span><span class="o">=</span><span class="p">{</span><span class="n">Acrobatic</span> <span class="n">Low</span><span class="o">-</span><span class="n">cost</span> <span class="n">Portable</span> <span class="n">Hybrid</span> <span class="n">AUV</span> <span class="p">(</span><span class="n">ALPHA</span><span class="p">):</span> <span class="n">System</span> <span class="n">Design</span> <span class="ow">and</span> <span class="n">Preliminary</span> <span class="n">Results</span><span class="p">},</span>
+  <span class="n">year</span><span class="o">=</span><span class="p">{</span><span class="mi">2022</span><span class="p">},</span>
+  <span class="n">volume</span><span class="o">=</span><span class="p">{},</span>
+  <span class="n">number</span><span class="o">=</span><span class="p">{},</span>
+  <span class="n">pages</span><span class="o">=</span><span class="p">{</span><span class="mi">1</span><span class="o">-</span><span class="mi">5</span><span class="p">},</span>
+  <span class="n">doi</span><span class="o">=</span><span class="p">{</span><span class="mf">10.1109</span><span class="o">/</span><span class="n">OCEANS47191</span><span class="mf">.2022.9977113</span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
