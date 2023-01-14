@@ -136,9 +136,6 @@ rosservice call /helm/change_state "state: 'survey_local'"
 
 If you find this software useful in your research, please cite:
 
-> Note, this work is published in OCEANS 2022 conference. Once the paper is publicly available, bibtex entry
-will be updated with the one from IEEExplore.
-
 ```
 @INPROCEEDINGS{9977113,
   author={Zhou, Mingxi and Gezer, Emir Cem and McConnell, William and Yuan, Chengzhi},
